@@ -23,8 +23,24 @@ const LIBRARY: Photo[] = Object.entries(credits as Record<string, Credit[]>).fla
   list.map((c) => ({ key: `lib:${species}/${c.file}`, url: `/leaves/${species}/${c.file}`, species, credit: c })),
 );
 
-export function libraryPhotos(species?: string): Photo[] {
-  return species ? LIBRARY.filter((p) => p.species === species) : LIBRARY;
+/** Every built-in photo, including ones an admin has hidden (for admin views). */
+export function allLibraryPhotos(): Photo[] {
+  return LIBRARY;
+}
+
+export function libraryPhotoByKey(key: string): Photo | undefined {
+  return LIBRARY.find((p) => p.key === key);
+}
+
+export async function hiddenImageKeys(): Promise<Set<string>> {
+  const rows = await query<{ image_key: string }>(`SELECT image_key FROM hidden_image`);
+  return new Set(rows.map((r) => r.image_key));
+}
+
+/** Built-in photos that are visible (not pulled down by an admin). */
+export async function libraryPhotos(species?: string): Promise<Photo[]> {
+  const hidden = await hiddenImageKeys();
+  return LIBRARY.filter((p) => !hidden.has(p.key) && (!species || p.species === species));
 }
 
 export async function communityPhotos(species?: string): Promise<Photo[]> {
@@ -36,7 +52,8 @@ export async function communityPhotos(species?: string): Promise<Photo[]> {
 
 /** Every photo the quiz can use: curated library plus community photos the crowd verified. */
 export async function allPhotos(): Promise<Photo[]> {
-  return [...LIBRARY, ...(await communityPhotos())];
+  const [library, community] = await Promise.all([libraryPhotos(), communityPhotos()]);
+  return [...library, ...community];
 }
 
 /** Resolve a photo key back to its true species (server-side answer checking). */

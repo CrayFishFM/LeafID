@@ -1,4 +1,5 @@
 import { recheckSubmission } from './community';
+import { moveReports } from './reports';
 import { query, transaction } from './db';
 
 /**
@@ -20,6 +21,7 @@ export async function mergeGuestInto(guestId: string, userId: string) {
     );
   });
   for (const { id } of voted) await recheckSubmission(id);
+  await moveReports(guestId, userId);
 }
 
 /**

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { GROUPS, SPECIES_BY_ID } from '@/data/species';
 import { PhotoCredit } from '@/components/PhotoCredit';
+import { ReportButton } from '@/components/ReportButton';
 import { getSession } from '@/lib/auth';
 import { communityPhotos, libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
@@ -20,8 +21,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
 
   const session = await getSession();
   const stat = session ? (await getProgress(session.user.id)).species.find((x) => x.id === id) : null;
-  const photos = libraryPhotos(id);
-  const community = await communityPhotos(id);
+  const [photos, community] = await Promise.all([libraryPhotos(id), communityPhotos(id)]);
 
   return (
     <div className="stack" style={{ gap: '1.75rem' }}>
@@ -82,6 +82,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
             <figure key={p.key} style={{ margin: 0 }}>
               <div className="photo"><img src={p.url} alt={`${s.common} leaf`} loading="lazy" /></div>
               {p.credit && <PhotoCredit credit={p.credit} />}
+              <ReportButton imageKey={p.key} />
             </figure>
           ))}
           {community.map((p) => (
@@ -90,6 +91,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
                 <img src={p.url} alt={`${s.common} leaf (community photo)`} loading="lazy" />
                 <span className="chip photo-tag">Community verified</span>
               </div>
+              <ReportButton imageKey={p.key} />
             </figure>
           ))}
         </div>

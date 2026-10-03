@@ -20,7 +20,7 @@ const STEPS = [
 export default async function Home(props: PageProps<'/'>) {
   const { deleted } = await props.searchParams;
   const session = await getSession();
-  const heroPhotos = libraryPhotos().filter((p) => HERO.includes(p.key));
+  const heroPhotos = (await libraryPhotos()).filter((p) => HERO.includes(p.key));
   const progress = session ? await getProgress(session.user.id) : null;
   const tip = progress ? suggestionsFor(progress)[0] : null;
 

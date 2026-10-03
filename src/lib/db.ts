@@ -132,5 +132,27 @@ export async function ensureSchema() {
       data MEDIUMBLOB NOT NULL,
       CONSTRAINT image_submission FOREIGN KEY (submission_id) REFERENCES submission(id) ON DELETE CASCADE
     ) ${opts}`);
+  // Reports of bad photos. image_key is "lib:<species>/<file>" or "sub:<submission id>".
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS image_report (
+      id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      image_key VARCHAR(64) NOT NULL,
+      user_id VARCHAR(64) NOT NULL,
+      reason VARCHAR(32) NOT NULL,
+      note VARCHAR(500) NULL,
+      status VARCHAR(16) NOT NULL DEFAULT 'open',
+      created_at BIGINT NOT NULL,
+      resolved_at BIGINT NULL,
+      resolved_by VARCHAR(64) NULL,
+      UNIQUE KEY report_once (image_key, user_id),
+      INDEX report_status (status, created_at)
+    ) ${opts}`);
+  // Built-in library photos an admin pulled down (they're static files, so they're hidden, not deleted).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS hidden_image (
+      image_key VARCHAR(64) PRIMARY KEY,
+      hidden_by VARCHAR(64) NOT NULL,
+      hidden_at BIGINT NOT NULL
+    ) ${opts}`);
   await renameSpeciesIds();
 }

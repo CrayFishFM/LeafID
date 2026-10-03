@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { auth, requireAdmin } from '@/lib/auth';
 import { adminDeleteSubmission, deleteUserContent, getSubmission, moderate } from '@/lib/community';
 import { describeMailError, mailEnabled, sendEmail, testEmail } from '@/lib/mail';
+import { dismissReports, pullDownImage, restoreLibraryImage } from '@/lib/reports';
 
 type Result = { ok: true; message?: string } | { ok: false; error: string };
 
@@ -89,4 +90,28 @@ export async function sendTestEmail() {
     }
     return `Test email sent to ${admin.email}`;
   }, '/admin/email');
+}
+
+export async function pullDownReported(imageKey: string) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await pullDownImage(imageKey, admin.id);
+    return 'Photo pulled down — it no longer appears anywhere in the app';
+  }, '/admin/reports');
+}
+
+export async function dismissReported(imageKey: string) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await dismissReports(imageKey, admin.id);
+    return 'Reports dismissed — the photo stays up';
+  }, '/admin/reports');
+}
+
+export async function restoreHidden(imageKey: string) {
+  return run(async () => {
+    await requireAdmin();
+    await restoreLibraryImage(imageKey);
+    return 'Photo restored';
+  }, '/admin/reports');
 }

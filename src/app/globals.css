@@ -282,3 +282,9 @@ textarea.input { min-height: 90px; resize: vertical; }
 .compare th[scope='row'] { text-align: left; font-weight: 600; white-space: normal; text-transform: none; letter-spacing: 0; font-size: 0.92rem; color: var(--text); }
 .compare td { min-width: 10rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- reporting photos ---------- */
+.report-link { align-self: flex-start; background: none; border: 0; padding: 0.35rem 0; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; white-space: nowrap; }
+.report-link:hover { color: var(--bad); }
+.report-form { gap: 0.5rem; margin-top: 0.4rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.report-done { margin: 0.35rem 0 0; }

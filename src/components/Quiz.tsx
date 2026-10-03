@@ -7,6 +7,7 @@ import { getHint, getQuestion, submitAnswer } from '@/app/actions';
 import { SPECIES_BY_ID } from '@/data/species';
 import type { Question } from '@/lib/quiz';
 import { contrastTip } from '@/lib/suggestions';
+import { ReportButton } from './ReportButton';
 
 const ROUND = 10;
 const MAX_HINTS = 3;
@@ -129,7 +130,11 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
             <img key={q.imageKey} src={q.imageUrl} alt="Leaf to identify" />
             {q.community && <span className="chip photo-tag">Community photo</span>}
           </div>
-          {q.credit && <p className="credit">Photo: {q.credit}</p>}
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            {q.credit ? <p className="credit">Photo: {q.credit}</p> : <span />}
+            {/* Keyed so a new question starts with a fresh, closed report form. */}
+            <ReportButton key={q.imageKey} imageKey={q.imageKey} />
+          </div>
         </div>
 
         <div className="stack">

@@ -16,6 +16,7 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
   const { group } = await props.searchParams;
   const active = typeof group === 'string' && group in GROUPS ? (group as GroupId) : null;
   const list = active ? SPECIES.filter((s) => s.group === active) : SPECIES;
+  const photos = await libraryPhotos();
 
   return (
     <div className="stack" style={{ gap: '1.5rem' }}>
@@ -46,7 +47,7 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
 
       <div className="grid grid-cards">
         {list.map((s) => {
-          const photo = libraryPhotos(s.id)[0];
+          const photo = photos.find((p) => p.species === s.id);
           return (
             <Link key={s.id} href={`/learn/${s.id}`} className="species-card">
               <div className="photo">{photo && <img src={photo.url} alt={`${s.common} leaf`} loading="lazy" />}</div>

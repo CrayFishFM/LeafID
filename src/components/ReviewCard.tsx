@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react';
 import { vote } from '@/app/actions';
 import { SPECIES_BY_ID, speciesLabel } from '@/data/species';
 import type { Submission } from '@/lib/community';
+import { ReportButton } from './ReportButton';
 import { SpeciesSelect } from './SpeciesSelect';
 import { StatusChip } from './StatusChip';
 
@@ -38,6 +39,7 @@ export function ReviewCard({ submission }: { submission: Submission }) {
         Uploaded by {sub.uploader}
         {sub.note && <> · “{sub.note}”</>}
       </div>
+      <ReportButton imageKey={`sub:${sub.id}`} />
 
       {!voted ? (
         <form onSubmit={submit} className="stack" style={{ gap: '0.5rem' }}>

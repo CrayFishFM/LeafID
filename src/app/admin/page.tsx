@@ -4,6 +4,7 @@ import { SPECIES_BY_ID } from '@/data/species';
 import { globalConfusions, overview, speciesDifficulty } from '@/lib/admin';
 import { requireAdmin } from '@/lib/auth';
 import { mailEnabled } from '@/lib/mail';
+import { openReportCount } from '@/lib/reports';
 
 const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : '—');
 
@@ -13,6 +14,7 @@ export default async function AdminOverview() {
   const hardest = (await speciesDifficulty()).filter((s) => s.attempts >= 5).slice(0, 8);
   const confusions = await globalConfusions();
   const needsReview = o.submissions.pending + o.submissions.disputed;
+  const reports = await openReportCount();
 
   return (
     <div className="stack" style={{ gap: '1.5rem' }}>
@@ -32,6 +34,9 @@ export default async function AdminOverview() {
           <div className="value">{needsReview}</div><div className="label">photos awaiting the crowd</div>
         </Link>
         <div className="stat"><div className="value">{o.submissions.verified}</div><div className="label">verified photos · {o.votes} votes cast</div></div>
+        <Link href="/admin/reports" className="stat" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="value">{reports}</div><div className="label">reported photos to review</div>
+        </Link>
       </div>
 
       <section className="card"><ActivityChart data={o.activity} /></section>

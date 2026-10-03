@@ -7,7 +7,8 @@ A web app for learning to identify Ontario tree species by their leaves. It cove
 - **Progress** – accuracy, mastery per species and group, most-confused pairs, and personalised suggestions for what to study next.
 - **Community** – upload your own leaf photos. Other users identify them blind (before seeing your claim). A photo is verified once at least 3 other people have voted and 70% of all IDs (including the uploader's) agree; verified photos join everyone's quiz.
 - **Admin dashboard** (`/admin`) – activity chart and stats, hardest species and most common mix-ups across all learners, user management (make/remove admin, ban with reason, delete with all data), photo moderation (approve as a species, reject, reset votes, delete — admin decisions are final), and email status with a test-send button.
-- **Accounts** – email verification and password reset by email.
+- **No account needed** – visitors get a guest session automatically and can use everything: practice, progress, uploads and votes. Signing up or signing in later (email or Discord) moves all of it to the account. Guests whose session ended without uploading or voting are cleaned up daily.
+- **Accounts** – email + password (with verification and password reset by email) or Discord login.
 
 Mobile-first, with light and dark themes (follows the device by default; toggle in the header).
 
@@ -34,6 +35,12 @@ Open http://localhost:3000 and create an account.
 
 Put your email in `ADMIN_EMAILS` in `.env.local` (comma-separate several) and restart. Matching accounts are promoted on server start, and new sign-ups with those emails become admins automatically. Admins see an **Admin** button in the header; from the dashboard they can promote other users.
 
+### Discord login
+
+1. Create an application at https://discord.com/developers/applications and open **OAuth2**.
+2. Add the redirect `<BETTER_AUTH_URL>/api/auth/callback/discord` (e.g. `http://localhost:3000/api/auth/callback/discord` locally, and your real domain in production).
+3. Copy the client ID and secret into `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` in `.env.local` and restart. The "Continue with Discord" button appears once both are set.
+
 ### Email (Hostinger)
 
 1. In Hostinger's email panel, create a Mail API token for the mailbox to send from (e.g. `no-reply@yourdomain`).
@@ -58,6 +65,7 @@ For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the p
 | `src/lib/community.ts` | Uploads, voting, consensus rules and moderation |
 | `src/lib/mail.ts` | Hostinger Mail sending and email templates |
 | `src/lib/admin.ts` | Dashboard stats and user listing |
+| `src/lib/guests.ts` | Moving guest data to a new account; guest cleanup |
 | `src/app/admin/` | Admin dashboard pages and server actions |
 | `scripts/fetch-images.mjs` | Downloads/attributes photos from Wikimedia Commons |
 

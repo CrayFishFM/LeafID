@@ -1,7 +1,8 @@
 import { UploadForm } from '@/components/UploadForm';
-import { requireUser } from '@/lib/auth';
+import { GuestGate } from '@/components/GuestGate';
+import { getUser } from '@/lib/auth';
 
 export default async function UploadPage() {
-  await requireUser();
+  if (!(await getUser())) return <GuestGate />;
   return <UploadForm />;
 }

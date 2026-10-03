@@ -2,11 +2,13 @@
 import Link from 'next/link';
 import { ReviewCard } from '@/components/ReviewCard';
 import { SPECIES_BY_ID } from '@/data/species';
-import { requireUser } from '@/lib/auth';
+import { GuestGate } from '@/components/GuestGate';
+import { getUser } from '@/lib/auth';
 import { recentlyVerified, reviewQueue } from '@/lib/community';
 
 export default async function CommunityPage() {
-  const user = await requireUser();
+  const user = await getUser();
+  if (!user) return <GuestGate />;
   const queue = await reviewQueue(user.id);
   const verified = await recentlyVerified();
 

@@ -24,7 +24,7 @@ export default async function AdminOverview() {
       )}
 
       <div className="stats">
-        <div className="stat"><div className="value">{o.users.total}</div><div className="label">users ({o.users.recent} new this week)</div></div>
+        <div className="stat"><div className="value">{o.users.total}</div><div className="label">accounts ({o.users.recent} new this week) · {o.users.guests} guests</div></div>
         <div className="stat"><div className="value">{o.answers.learners}</div><div className="label">active learners (7 days)</div></div>
         <div className="stat"><div className="value">{o.answers.total}</div><div className="label">quiz answers ({o.answers.recent} this week)</div></div>
         <div className="stat"><div className="value">{pct(o.answers.correct, o.answers.total)}</div><div className="label">overall accuracy</div></div>
@@ -81,6 +81,7 @@ export default async function AdminOverview() {
           <h2>Accounts</h2>
           <div className="tally">
             <div className="tally-row"><span>Email verified</span><span>{o.users.verified} / {o.users.total}</span></div>
+            <div className="tally-row"><span>Guests (no account)</span><span>{o.users.guests}</span></div>
             <div className="tally-row"><span>Admins</span><span>{o.users.admins}</span></div>
             <div className="tally-row"><span>Banned</span><span>{o.users.banned}</span></div>
           </div>

@@ -1,16 +1,18 @@
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthForm } from '@/components/AuthForm';
-import { getSession } from '@/lib/auth';
+import { discordEnabled, getSession } from '@/lib/auth';
 
 export const metadata = { title: 'Create account' };
 
 export default async function SignUpPage() {
-  if (await getSession()) redirect('/progress');
+  const user = (await getSession())?.user;
+  // Guests come here to upgrade, so only real accounts are sent away.
+  if (user && !user.isAnonymous) redirect('/progress');
   return (
     <div className="auth-wrap">
       <Suspense>
-        <AuthForm mode="sign-up" />
+        <AuthForm mode="sign-up" discord={discordEnabled} guest={!!user?.isAnonymous} />
       </Suspense>
     </div>
   );

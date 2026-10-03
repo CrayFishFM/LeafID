@@ -45,7 +45,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {session?.user.role === 'admin' && (
                 <Link href="/admin" className="btn btn-sm admin-link">Admin</Link>
               )}
-              {session ? (
+              {/* Guests can't sign back in to a guest account, so they get "Sign in" (to save progress) instead of "Sign out". */}
+              {session && !session.user.isAnonymous ? (
                 <SignOutButton />
               ) : (
                 <Link href="/sign-in" className="btn btn-sm btn-primary">Sign in</Link>

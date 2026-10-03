@@ -10,14 +10,18 @@ export default async function AdminUsers(props: PageProps<'/admin/users'>) {
   const sp = await props.searchParams;
   const q = typeof sp.q === 'string' ? sp.q : '';
   const page = Math.max(1, Number(sp.page) || 1);
-  const { total, users } = await listUsers(q, page);
+  const guests = sp.guests === '1';
+  const { total, users } = await listUsers(q, page, guests);
   const pages = Math.max(1, Math.ceil(total / USERS_PER_PAGE));
-  const link = (p: number) => `/admin/users?${new URLSearchParams({ ...(q && { q }), page: String(p) })}`;
+  const link = (p: number) => `/admin/users?${new URLSearchParams({ ...(q && { q }), ...(guests && { guests: '1' }), page: String(p) })}`;
 
   return (
     <div className="stack">
       <form className="row" action="/admin/users">
         <input name="q" defaultValue={q} className="input" placeholder="Search name or email" style={{ maxWidth: 320 }} />
+        <label className="row small" style={{ gap: '0.35rem', cursor: 'pointer' }}>
+          <input type="checkbox" name="guests" value="1" defaultChecked={guests} /> Include guests
+        </label>
         <button className="btn">Search</button>
         <span className="small muted">{total} user{total === 1 ? '' : 's'}</span>
       </form>
@@ -32,7 +36,8 @@ export default async function AdminUsers(props: PageProps<'/admin/users'>) {
               <tr key={u.id}>
                 <td>
                   <strong>{u.name}</strong>
-                  <div className="small muted">{u.email}</div>
+                  {/* Guest emails are random placeholders; don't show them. */}
+                  <div className="small muted">{u.isAnonymous ? 'No account (guest)' : u.email}</div>
                 </td>
                 <td className="small">{date(u.createdAt)}</td>
                 <td className="small">
@@ -45,12 +50,18 @@ export default async function AdminUsers(props: PageProps<'/admin/users'>) {
                   <div className="row" style={{ gap: '0.3rem' }}>
                     {u.role === 'admin' && <span className="chip chip-code">admin</span>}
                     {u.banned ? <span className="chip chip-bad" title={u.banReason ?? undefined}>banned</span> : null}
-                    {u.emailVerified ? <span className="chip chip-ok">verified</span> : <span className="chip chip-warn">unverified</span>}
+                    {u.isAnonymous ? (
+                      <span className="chip">guest</span>
+                    ) : u.emailVerified ? (
+                      <span className="chip chip-ok">verified</span>
+                    ) : (
+                      <span className="chip chip-warn">unverified</span>
+                    )}
                   </div>
                   {u.banned && u.banReason && <div className="small muted">{u.banReason}</div>}
                 </td>
                 <td>
-                  <UserActions id={u.id} name={u.name} role={u.role} banned={u.banned} isSelf={u.id === admin.id} />
+                  <UserActions id={u.id} name={u.name} role={u.role} banned={u.banned} isSelf={u.id === admin.id} isGuest={u.isAnonymous} />
                 </td>
               </tr>
             ))}

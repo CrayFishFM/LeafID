@@ -5,13 +5,24 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 
-export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
+export function AuthForm({ mode, discord, guest }: { mode: 'sign-in' | 'sign-up'; discord: boolean; guest: boolean }) {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next')?.startsWith('/') ? params.get('next')! : '/progress';
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+
+  async function withDiscord() {
+    setError(null);
+    setBusy(true);
+    // Redirects to Discord; a guest session is merged into the account on the way back.
+    const res = await authClient.signIn.social({ provider: 'discord', callbackURL: next, errorCallbackURL: `/${mode}?error=discord` });
+    if (res.error) {
+      setBusy(false);
+      setError(res.error.message ?? 'Could not start Discord sign-in');
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,6 +75,26 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
           : 'Sign in to keep practising where you left off.'}
       </p>
       {params.get('reset') && <div className="notice">Password updated — sign in with your new password.</div>}
+      {params.get('error') === 'discord' && (
+        <div className="error" role="alert">Discord sign-in didn&apos;t complete. Try again, or use email instead.</div>
+      )}
+      {guest && (
+        <div className="notice small">
+          You&apos;re using LeafID as a guest. Everything you&apos;ve done so far — progress, uploads and votes — moves to
+          your account when you {mode === 'sign-up' ? 'create it' : 'sign in'}.
+        </div>
+      )}
+      {discord && (
+        <>
+          <button type="button" className="btn btn-discord" onClick={withDiscord} disabled={busy}>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden fill="currentColor">
+              <path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.3 18.3 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.4C.6 9 -.3 13.6.1 18.1A19.9 19.9 0 0 0 6.2 21l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6.1-3c.5-5.2-.9-9.8-3.6-13.7ZM8.5 15.4c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm7 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z" />
+            </svg>
+            Continue with Discord
+          </button>
+          <div className="divider small muted">or use email</div>
+        </>
+      )}
       {mode === 'sign-up' && (
         <div className="field">
           <label htmlFor="name">Display name</label>

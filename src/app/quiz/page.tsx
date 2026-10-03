@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { Quiz } from '@/components/Quiz';
 import { GROUPS, type GroupId } from '@/data/species';
-import { requireUser } from '@/lib/auth';
+import { GuestGate } from '@/components/GuestGate';
+import { getUser } from '@/lib/auth';
 import { isScope, nextQuestion } from '@/lib/quiz';
 
 export const metadata = { title: 'Practice' };
 
 export default async function QuizPage(props: PageProps<'/quiz'>) {
-  const user = await requireUser();
+  const user = await getUser();
+  if (!user) return <GuestGate />;
   const { scope: raw } = await props.searchParams;
   const scope = isScope(raw) ? raw : 'all';
   const initial = await nextQuestion(user.id, scope);

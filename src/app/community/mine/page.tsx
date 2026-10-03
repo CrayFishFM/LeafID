@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { DeleteSubmissionButton } from '@/components/DeleteSubmissionButton';
 import { StatusChip } from '@/components/StatusChip';
 import { speciesLabel } from '@/data/species';
-import { requireUser } from '@/lib/auth';
+import { GuestGate } from '@/components/GuestGate';
+import { getUser } from '@/lib/auth';
 import { MIN_VOTES, userSubmissions } from '@/lib/community';
 
 export default async function MyUploadsPage(props: PageProps<'/community/mine'>) {
-  const user = await requireUser();
+  const user = await getUser();
+  if (!user) return <GuestGate />;
   const { uploaded } = await props.searchParams;
   const subs = await userSubmissions(user.id);
 

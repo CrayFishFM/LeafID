@@ -43,7 +43,10 @@ interface Row {
   moderated: number;
 }
 
-const SELECT = 'SELECT s.*, u.name AS uploader, u.email AS uploader_email FROM submission s LEFT JOIN `user` u ON u.id = s.user_id';
+// Guests have random placeholder emails, so theirs is reported as null.
+const SELECT =
+  'SELECT s.*, u.name AS uploader, CASE WHEN u.isAnonymous = 1 THEN NULL ELSE u.email END AS uploader_email ' +
+  'FROM submission s LEFT JOIN `user` u ON u.id = s.user_id';
 
 /** Attach vote tallies (and the viewer's own vote) to rows with two queries total. */
 async function hydrate(rows: Row[], viewerId: string | null): Promise<Submission[]> {
@@ -161,6 +164,12 @@ export async function castVote(submissionId: string, userId: string, species: st
 
   if (!sub.moderated) await recomputeStatus(submissionId);
   return (await getSubmission(submissionId, userId))!;
+}
+
+/** Re-evaluate a photo after its votes changed outside castVote (e.g. accounts merged). */
+export async function recheckSubmission(id: string) {
+  const sub = await getSubmission(id, null);
+  if (sub && !sub.moderated) await recomputeStatus(id);
 }
 
 /** The uploader's claim counts as one ID; the crowd's votes decide. */

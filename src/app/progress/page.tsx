@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { GROUPS, SPECIES_BY_ID } from '@/data/species';
-import { requireUser } from '@/lib/auth';
+import { GuestGate } from '@/components/GuestGate';
+import { getUser } from '@/lib/auth';
 import { getProgress, type Level } from '@/lib/progress';
 import { contrastTip, suggestionsFor } from '@/lib/suggestions';
 
@@ -10,7 +11,8 @@ const LEVEL_CHIP: Record<Level, string> = { new: '', struggling: 'chip-bad', lea
 const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
 
 export default async function ProgressPage() {
-  const user = await requireUser();
+  const user = await getUser();
+  if (!user) return <GuestGate />;
   const p = await getProgress(user.id);
   const suggestions = suggestionsFor(p);
   const counts = p.species.reduce<Record<Level, number>>(
@@ -26,8 +28,23 @@ export default async function ProgressPage() {
     <div className="stack" style={{ gap: '1.75rem' }}>
       <div>
         <p className="eyebrow">Progress</p>
-        <h1>{user.name}&apos;s progress</h1>
+        <h1>{user.isAnonymous ? 'Your progress' : `${user.name}'s progress`}</h1>
       </div>
+
+      {user.isAnonymous && (
+        <div className="card suggestion row" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <strong>You&apos;re practising as a guest.</strong>
+            <p className="small muted" style={{ margin: 0 }}>
+              Your progress is saved in this browser only. Create an account or sign in with Discord to keep it on every device.
+            </p>
+          </div>
+          <div className="row">
+            <Link href="/sign-up" className="btn btn-sm btn-primary">Create account</Link>
+            <Link href="/sign-in" className="btn btn-sm">Sign in</Link>
+          </div>
+        </div>
+      )}
 
       <div className="stats">
         <div className="stat"><div className="value">{p.total}</div><div className="label">questions answered</div></div>

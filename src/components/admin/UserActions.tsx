@@ -5,7 +5,7 @@ import { banUser, deleteUser, setUserRole, unbanUser } from '@/app/admin/actions
 
 type Mode = 'idle' | 'ban' | 'delete';
 
-export function UserActions({ id, name, role, banned, isSelf }: { id: string; name: string; role: string | null; banned: boolean; isSelf: boolean }) {
+export function UserActions({ id, name, role, banned, isSelf, isGuest }: { id: string; name: string; role: string | null; banned: boolean; isSelf: boolean; isGuest: boolean }) {
   const [mode, setMode] = useState<Mode>('idle');
   const [reason, setReason] = useState('');
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -25,9 +25,11 @@ export function UserActions({ id, name, role, banned, isSelf }: { id: string; na
     <div className="stack" style={{ gap: '0.4rem' }}>
       {mode === 'idle' && (
         <div className="row" style={{ gap: '0.35rem' }}>
-          <button className="btn btn-sm" disabled={pending} onClick={() => act(() => setUserRole(id, role === 'admin' ? 'user' : 'admin'))}>
-            {role === 'admin' ? 'Remove admin' : 'Make admin'}
-          </button>
+          {!isGuest && (
+            <button className="btn btn-sm" disabled={pending} onClick={() => act(() => setUserRole(id, role === 'admin' ? 'user' : 'admin'))}>
+              {role === 'admin' ? 'Remove admin' : 'Make admin'}
+            </button>
+          )}
           {banned ? (
             <button className="btn btn-sm" disabled={pending} onClick={() => act(() => unbanUser(id))}>Unban</button>
           ) : (

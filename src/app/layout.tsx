@@ -3,7 +3,6 @@ import { Fraunces, Inter } from 'next/font/google';
 import Link from 'next/link';
 import { LeafIcon } from '@/components/icons';
 import { BottomNav, TopNav } from '@/components/Nav';
-import { SignOutButton } from '@/components/SignOutButton';
 import { themeInitScript, ThemeToggle } from '@/components/ThemeToggle';
 import { getSession } from '@/lib/auth';
 import './globals.css';
@@ -47,7 +46,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               )}
               {/* Guests can't sign back in to a guest account, so they get "Sign in" (to save progress) instead of "Sign out". */}
               {session && !session.user.isAnonymous ? (
-                <SignOutButton />
+                // Sign out lives on the account page.
+                <Link href="/account" className="btn btn-sm account-link" title="Your account">{session.user.name}</Link>
               ) : (
                 <Link href="/sign-in" className="btn btn-sm btn-primary">Sign in</Link>
               )}

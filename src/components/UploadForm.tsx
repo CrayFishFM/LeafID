@@ -7,9 +7,18 @@ import { SpeciesSelect } from './SpeciesSelect';
 
 const MAX_SIDE = 1600;
 
-/** Shrink large phone photos before upload; also strips EXIF (including GPS location). */
+/**
+ * Shrink large phone photos and convert them to JPEG before upload (so iPhone HEIC photos
+ * work too); also strips EXIF, including GPS location.
+ */
 async function prepare(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    // e.g. a HEIC file on a desktop browser that can't decode it.
+    throw new Error("This browser can't open that image format. Try a JPEG or PNG, or upload from your phone.");
+  }
   const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(bitmap.width * scale);
@@ -68,9 +77,13 @@ export function UploadForm() {
       <div className="field">
         <label htmlFor="photo">Photo</label>
         <input
-          id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="input" required
+          // No `capture` attribute: on phones that would force the camera; without it iOS/Android
+          // offer the photo library, the camera, or files. Any image type is accepted because
+          // prepare() converts it to JPEG.
+          id="photo" type="file" accept="image/*" className="input" required
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
+        <span className="small muted">Take a new photo or choose one from your photo library.</span>
       </div>
       {preview && <div className="photo"><img src={preview} alt="Preview of your upload" /></div>}
       <div className="field">

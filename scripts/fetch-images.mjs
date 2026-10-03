@@ -23,7 +23,7 @@ const SPECIES = {
   By: ['Betula alleghaniensis'], Al: ['Alnus incana', 'Alnus rugosa'], Ew: ['Ulmus americana'],
   Bd: ['Tilia americana'], Aw: ['Fraxinus americana'], Ab: ['Fraxinus nigra'],
   El: ['Sambucus canadensis', 'Sambucus nigra subsp. canadensis'], Am: ['Sorbus americana'],
-  Bn: ['Juglans cinerea'], Wb: ['Juglans nigra'], Ss: ['Rhus typhina'],
+  Bn: ['Juglans cinerea'], Wb: ['Juglans nigra'], Sumac: ['Rhus typhina'],
   Pl: ['Populus grandidentata'], Pt: ['Populus tremuloides'], Pb: ['Populus balsamifera'],
   Pd: ['Populus deltoides'],
 };

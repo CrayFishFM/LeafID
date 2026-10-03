@@ -9,6 +9,7 @@ A web app for learning to identify Ontario tree species by their leaves. It cove
 - **Admin dashboard** (`/admin`) – activity chart and stats, hardest species and most common mix-ups across all learners, user management (make/remove admin, ban with reason, delete with all data), photo moderation (approve as a species, reject, reset votes, delete — admin decisions are final), and email status with a test-send button.
 - **No account needed** – visitors get a guest session automatically and can use everything: practice, progress, uploads and votes. Signing up or signing in later (email or Discord) moves all of it to the account. Guests whose session ended without uploading or voting are cleaned up daily.
 - **Accounts** – email + password (with verification and password reset by email) or Discord login.
+- **Account page** (`/account`) – change display name and email, change or set a password, link/unlink Discord, see signed-in devices and sign them out, and delete the account with all its data.
 
 Mobile-first, with light and dark themes (follows the device by default; toggle in the header).
 

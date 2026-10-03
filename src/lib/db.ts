@@ -58,6 +58,25 @@ export async function transaction<T>(fn: (conn: mysql.PoolConnection) => Promise
   }
 }
 
+/**
+ * Species ids that were renamed (old → new). Rows saved under an old id are moved on start.
+ * Ss became Sumac because Ss is the official Ontario code for sassafras.
+ */
+const RENAMED_SPECIES: Record<string, string> = { Ss: 'Sumac' };
+
+async function renameSpeciesIds() {
+  for (const [from, to] of Object.entries(RENAMED_SPECIES)) {
+    await pool.execute(`UPDATE attempt SET species = ? WHERE species = ?`, [to, from]);
+    await pool.execute(`UPDATE attempt SET chosen = ? WHERE chosen = ?`, [to, from]);
+    await pool.execute(`UPDATE attempt SET image = CONCAT(?, SUBSTRING(image, ?)) WHERE image LIKE ?`, [
+      `lib:${to}/`, `lib:${from}/`.length + 1, `lib:${from}/%`,
+    ]);
+    await pool.execute(`UPDATE submission SET claimed = ? WHERE claimed = ?`, [to, from]);
+    await pool.execute(`UPDATE submission SET consensus = ? WHERE consensus = ?`, [to, from]);
+    await pool.execute(`UPDATE vote SET species = ? WHERE species = ?`, [to, from]);
+  }
+}
+
 /** App tables (Better Auth creates its own). Safe to run on every start. */
 export async function ensureSchema() {
   // No explicit charset/collation: inherit the database default, like Better Auth's tables,
@@ -100,4 +119,5 @@ export async function ensureSchema() {
       INDEX vote_user (user_id),
       CONSTRAINT vote_submission FOREIGN KEY (submission_id) REFERENCES submission(id) ON DELETE CASCADE
     ) ${opts}`);
+  await renameSpeciesIds();
 }

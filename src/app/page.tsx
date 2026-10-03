@@ -17,7 +17,8 @@ const STEPS = [
   { title: 'Let it adapt', body: 'Trees you miss come back more often, wrong options are drawn from your own past mix-ups, and Progress tells you what to study next.' },
 ];
 
-export default async function Home() {
+export default async function Home(props: PageProps<'/'>) {
+  const { deleted } = await props.searchParams;
   const session = await getSession();
   const heroPhotos = libraryPhotos().filter((p) => HERO.includes(p.key));
   const progress = session ? await getProgress(session.user.id) : null;
@@ -25,6 +26,7 @@ export default async function Home() {
 
   return (
     <div className="stack" style={{ gap: '2.5rem' }}>
+      {deleted && <div className="notice">Your account and all its data have been deleted.</div>}
       <section className="hero">
         <div className="stack">
           <p className="eyebrow">Ontario tree identification</p>

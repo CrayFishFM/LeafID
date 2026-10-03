@@ -4,8 +4,17 @@ import { admin, anonymous } from 'better-auth/plugins';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { pool } from './db';
+import { deleteUserContent } from './community';
 import { mergeGuestInto } from './guests';
-import { describeMailError, mailEnabled, resetPasswordEmail, sendEmail, verificationEmail } from './mail';
+import {
+  changeEmailConfirmationEmail,
+  deleteAccountEmail,
+  describeMailError,
+  mailEnabled,
+  resetPasswordEmail,
+  sendEmail,
+  verificationEmail,
+} from './mail';
 
 /** Comma-separated emails that are made admins automatically (on sign-up and on server start). */
 export const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
@@ -50,6 +59,39 @@ export const auth = betterAuth({
       discord: { clientId: process.env.DISCORD_CLIENT_ID!, clientSecret: process.env.DISCORD_CLIENT_SECRET! },
     },
   }),
+  user: {
+    changeEmail: {
+      enabled: true,
+      // Unverified addresses (e.g. when email isn't configured) change straight away.
+      updateEmailWithoutVerification: true,
+      // Verified addresses: the old inbox must approve first, then the new one is verified.
+      ...(mailEnabled && {
+        sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+          deliver({ to: user.email, ...changeEmailConfirmationEmail(user.name, newEmail, url) });
+        },
+      }),
+    },
+    deleteUser: {
+      enabled: true,
+      // With email, deletion is confirmed by a link; otherwise the password / a fresh sign-in is enough.
+      ...(mailEnabled && {
+        sendDeleteAccountVerification: async ({ user, url }) => {
+          deliver({ to: user.email, ...deleteAccountEmail(user.name, url) });
+        },
+      }),
+      afterDelete: async (user) => {
+        await deleteUserContent(user.id);
+      },
+    },
+  },
+  account: {
+    accountLinking: {
+      enabled: true,
+      // Lets a signed-in user link a Discord account whose email differs from their LeafID email.
+      // Only applies to explicit linking from the account page, which needs both logins.
+      allowDifferentEmails: true,
+    },
+  },
   session: {
     // 30 days, rolling: guests can't log back in, so their session is their account.
     expiresIn: 60 * 60 * 24 * 30,

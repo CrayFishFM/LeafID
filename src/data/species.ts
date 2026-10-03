@@ -32,7 +32,7 @@ export const GROUPS: Record<GroupId, { label: string; blurb: string }> = {
   maples: { label: 'Maples', blurb: 'Opposite, palmately lobed (except Manitoba maple).' },
   oaks: { label: 'Oaks', blurb: 'Alternate, lobed; pointed vs. rounded lobes splits red and white oaks.' },
   'birch-family': { label: 'Birch family & look-alikes', blurb: 'Alternate, oval, toothed leaves that are easy to mix up.' },
-  compound: { label: 'Compound leaves', blurb: 'Ashes, walnuts, elderberry, mountain ash and sumac.' },
+  compound: { label: 'Compound leaves', blurb: 'Ashes, walnuts, elderberry, mountain-ash and sumac.' },
   poplars: { label: 'Poplars & aspens', blurb: 'Alternate, broad leaves; check the teeth and petiole.' },
   'other-simple': { label: 'Beech, elm & basswood', blurb: 'Distinctive simple leaves worth learning together.' },
 };
@@ -232,7 +232,7 @@ export const SPECIES: Species[] = [
     ],
   },
   {
-    id: 'Al', code: 'Al', common: 'Speckled alder', scientific: 'Alnus incana ssp. rugosa', group: 'birch-family',
+    id: 'Al', code: 'AL', common: 'Alder', scientific: 'Alnus spp.', group: 'birch-family',
     arrangement: 'alternate', leafType: 'simple',
     shape: 'Broadly oval, 5–10 cm',
     margin: 'Double-toothed and slightly wavy',
@@ -241,7 +241,12 @@ export const SPECIES: Species[] = [
       'Broad, wrinkled-looking leaf',
       'Double-toothed, wavy edge',
     ],
-    fieldClues: ['Shrub in wet ground', 'Bark speckled with pale lenticels', 'Small woody "cones" stay on all year'],
+    fieldClues: [
+      'In Ontario this is usually speckled alder (Alnus incana ssp. rugosa), shown in the photos',
+      'Shrub in wet ground',
+      'Bark speckled with pale lenticels',
+      'Small woody "cones" stay on all year',
+    ],
     lookalikes: [
       { id: 'Iw', tip: 'Ironwood leaves are thinner and smoother with less sunken veins; alder leaves look wrinkled with deep ladder-like veins.' },
       { id: 'Bw', tip: 'White birch has a smoother, pointed egg-shaped leaf; alder is broader and wrinkled with sunken veins.' },
@@ -325,11 +330,11 @@ export const SPECIES: Species[] = [
     fieldClues: ['Stems with soft white pith', 'Warty lenticels on bark', 'Flat-topped white flower clusters, purple-black berries (red elderberry has red berries)'],
     lookalikes: [
       { id: 'Ab', tip: 'Black ash is a tree with stalkless leaflets and rusty hair tufts; elderberry is a shrub with pithy stems.' },
-      { id: 'Am', tip: 'Mountain ash is alternate with 11–17 narrow leaflets; elderberry is opposite with 5–11.' },
+      { id: 'Am', tip: 'Mountain-ash is alternate with 11–17 narrow leaflets; elderberry is opposite with 5–11.' },
     ],
   },
   {
-    id: 'Am', code: 'Am', common: 'Mountain ash', scientific: 'Sorbus americana', group: 'compound',
+    id: 'Am', code: 'AM', common: 'Mountain-ash', scientific: 'Sorbus spp.', group: 'compound',
     arrangement: 'alternate', leafType: 'compound',
     shape: 'Pinnately compound, 11–17 leaflets',
     margin: 'Sharply toothed',
@@ -338,10 +343,15 @@ export const SPECIES: Species[] = [
       'Sharp teeth along most of each leaflet',
       'Leaflets all about the same size',
     ],
-    fieldClues: ['Clusters of bright orange-red berries', 'Gummy, dark red buds', 'Not a true ash (it is in the rose family)'],
+    fieldClues: [
+      'Photos show American mountain-ash (Sorbus americana); planted European mountain-ash (Ema) has blunter leaflets, hairy underneath',
+      'Clusters of bright orange-red berries',
+      'Gummy, dark red buds',
+      'Not a true ash (it is in the rose family)',
+    ],
     lookalikes: [
-      { id: 'Ss', tip: 'Staghorn sumac has velvety, antler-like twigs and milky sap; mountain ash twigs are smooth.' },
-      { id: 'Aw', tip: 'True ashes are opposite with 5–11 leaflets; mountain ash is alternate with 11–17.' },
+      { id: 'Sumac', tip: 'Staghorn sumac has velvety, antler-like twigs and milky sap; mountain-ash twigs are smooth.' },
+      { id: 'Aw', tip: 'True ashes are opposite with 5–11 leaflets; mountain-ash is alternate with 11–17.' },
     ],
   },
   {
@@ -357,7 +367,7 @@ export const SPECIES: Species[] = [
     fieldClues: ['Hairy "moustache" fringe above the leaf scar', 'Dark brown chambered pith', 'Oblong sticky nuts', 'Endangered in Ontario (butternut canker)'],
     lookalikes: [
       { id: 'Wb', tip: 'Black walnut has more leaflets (15–23), often no end leaflet, light-coloured pith and no hairy moustache above the leaf scar.' },
-      { id: 'Ss', tip: 'Staghorn sumac has velvety antler-like twigs and milky sap; butternut has sticky hairy leaflets and chambered pith.' },
+      { id: 'Sumac', tip: 'Staghorn sumac has velvety antler-like twigs and milky sap; butternut has sticky hairy leaflets and chambered pith.' },
     ],
   },
   {
@@ -373,11 +383,11 @@ export const SPECIES: Species[] = [
     fieldClues: ['Light tan chambered pith', 'Leaf scar has no hairy fringe', 'Round green husked nuts', 'Dark, diamond-ridged bark'],
     lookalikes: [
       { id: 'Bn', tip: 'Butternut has fewer leaflets (11–17), usually keeps its end leaflet, and has a hairy moustache above the leaf scar.' },
-      { id: 'Ss', tip: 'Staghorn sumac has velvety twigs and milky sap; black walnut twigs are not velvety.' },
+      { id: 'Sumac', tip: 'Staghorn sumac has velvety twigs and milky sap; black walnut twigs are not velvety.' },
     ],
   },
   {
-    id: 'Ss', code: 'Staghorn sumac', common: 'Staghorn sumac', scientific: 'Rhus typhina', group: 'compound',
+    id: 'Sumac', code: 'Staghorn sumac', common: 'Staghorn sumac', scientific: 'Rhus typhina', group: 'compound',
     arrangement: 'alternate', leafType: 'compound',
     shape: 'Pinnately compound, 11–31 leaflets',
     margin: 'Sharply toothed',
@@ -388,7 +398,7 @@ export const SPECIES: Species[] = [
     ],
     fieldClues: ['Thick, fuzzy twigs like deer antlers in velvet', 'Milky sap', 'Upright, cone-shaped clusters of fuzzy red fruit'],
     lookalikes: [
-      { id: 'Am', tip: 'Mountain ash has smooth twigs and orange berry clusters; sumac twigs are velvety with red fuzzy cones.' },
+      { id: 'Am', tip: 'Mountain-ash has smooth twigs and orange berry clusters; sumac twigs are velvety with red fuzzy cones.' },
       { id: 'Wb', tip: 'Black walnut is a large tree with non-velvety twigs; sumac is a shrub with velvety twigs and milky sap.' },
     ],
   },

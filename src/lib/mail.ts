@@ -89,6 +89,30 @@ export function resetPasswordEmail(name: string, url: string) {
   };
 }
 
+export function changeEmailConfirmationEmail(name: string, newEmail: string, url: string) {
+  return {
+    subject: 'Approve your LeafID email change',
+    ...layout(
+      `Hi ${name},`,
+      `Someone asked to change the email on your LeafID account to ${newEmail}. If that was you, approve it below — we'll then send a link to the new address to finish.`,
+      { label: 'Approve change', url },
+      "If you didn't ask for this, ignore this email and your address stays the same. Consider changing your password.",
+    ),
+  };
+}
+
+export function deleteAccountEmail(name: string, url: string) {
+  return {
+    subject: 'Confirm deleting your LeafID account',
+    ...layout(
+      `Hi ${name},`,
+      'You asked to delete your LeafID account. This permanently removes your progress, uploads and votes.',
+      { label: 'Delete my account', url },
+      "This link expires in 24 hours. If you didn't ask for this, ignore this email — nothing will be deleted.",
+    ),
+  };
+}
+
 export function testEmail(appUrl: string) {
   return {
     subject: 'LeafID test email',

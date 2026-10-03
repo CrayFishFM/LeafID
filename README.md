@@ -18,7 +18,7 @@ Mobile-first, with light and dark themes (follows the device by default; toggle 
 - [Next.js 16](https://nextjs.org) (App Router, server actions)
 - [Better Auth](https://better-auth.com) – email + password accounts, admin plugin for roles and bans
 - [Hostinger Mail API SDK](https://github.com/hostinger/mail-api-typescript-sdk) (`@hostinger/mail-sdk`) – verification and password-reset emails
-- MySQL / MariaDB via `mysql2` – connection set with `MYSQL_*` in `.env.local`; uploaded photos are files in `data/uploads/`
+- MySQL / MariaDB via `mysql2` – connection set with `MYSQL_*` in `.env.local`; uploaded photos are stored in the database too (`submission_image` table), so redeploys never lose them
 
 Database tables (Better Auth's and the app's) are created automatically on server start (`src/instrumentation.ts`).
 
@@ -51,7 +51,7 @@ Put your email in `ADMIN_EMAILS` in `.env.local` (comma-separate several) and re
 
 With a token set, new accounts must confirm their email before they can sign in. Without one (local development), verification is not required and emails are printed to the server log instead — copy reset links from there.
 
-For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the public URL. The database must already exist (tables are created on first start). The app also needs a persistent disk for uploaded photos in `data/` (set `DATA_DIR` to move it), so host it on a VPS, Railway, Fly.io or similar — not a serverless platform with an ephemeral filesystem.
+For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the public URL. The database must already exist (tables are created on first start). Everything the app saves — accounts, progress and uploaded photos — lives in MySQL, so the app folder can be replaced on every deploy.
 
 ## Project layout
 

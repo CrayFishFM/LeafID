@@ -38,6 +38,9 @@ export async function register() {
       }
     }
     await ensureSchema();
+    // Photos used to be files in the app folder; move any that are left into the database.
+    const { importLegacyImages } = await import('./lib/community');
+    await importLegacyImages();
   } finally {
     await lock.query(`SELECT RELEASE_LOCK('leafid_migrations')`).catch(() => {});
     lock.release();

@@ -1,12 +1,16 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import mysql from 'mysql2/promise';
 
-export const DATA_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR ?? path.join(process.cwd(), 'data'));
-export const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
+/**
+ * Where uploads used to be stored as files. Photos now live in the database
+ * (submission_image); this is only read once to import any files left over.
+ */
+export const LEGACY_UPLOAD_DIR = path.join(
+  path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR ?? path.join(process.cwd(), 'data')),
+  'uploads',
+);
 
 function createPool() {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   return mysql.createPool({
     host: process.env.MYSQL_HOST ?? 'localhost',
     port: Number(process.env.MYSQL_PORT ?? 3306),
@@ -26,7 +30,7 @@ function createPool() {
 const g = globalThis as unknown as { __leafPool?: mysql.Pool };
 export const pool = g.__leafPool ?? (g.__leafPool = createPool());
 
-export type Params = (string | number | boolean | null | Date)[];
+export type Params = (string | number | boolean | null | Date | Buffer)[];
 
 export async function query<T>(sql: string, params: Params = []): Promise<T[]> {
   const [rows] = await pool.query(sql, params);
@@ -118,6 +122,15 @@ export async function ensureSchema() {
       PRIMARY KEY (submission_id, user_id),
       INDEX vote_user (user_id),
       CONSTRAINT vote_submission FOREIGN KEY (submission_id) REFERENCES submission(id) ON DELETE CASCADE
+    ) ${opts}`);
+  // Uploaded photos, kept apart from submission so listing queries never load image bytes.
+  // Stored in the database because hosts like Hostinger replace the app folder on every deploy.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS submission_image (
+      submission_id CHAR(36) PRIMARY KEY,
+      mime VARCHAR(32) NOT NULL,
+      data MEDIUMBLOB NOT NULL,
+      CONSTRAINT image_submission FOREIGN KEY (submission_id) REFERENCES submission(id) ON DELETE CASCADE
     ) ${opts}`);
   await renameSpeciesIds();
 }

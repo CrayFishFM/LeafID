@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { SPECIES_BY_ID } from '@/data/species';
-import { exec, one, query, transaction, UPLOAD_DIR } from './db';
+import { exec, LEGACY_UPLOAD_DIR, one, query, transaction } from './db';
 
 export type SubmissionStatus = 'pending' | 'verified' | 'disputed' | 'rejected';
 
@@ -104,8 +104,6 @@ function sniff(buf: Buffer): string | null {
   return null;
 }
 
-const uploadPath = (file: string) => path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, file);
-
 /** `approve`: an admin uploading their own photo can verify it straight away (an admin decision). */
 export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null, approve = false) {
   if (!SPECIES_BY_ID[claimed]) throw new Error('Unknown species');
@@ -113,22 +111,19 @@ export async function createSubmission(userId: string, claimed: string, file: Bu
   const mime = sniff(file);
   if (!mime) throw new Error('Only JPEG, PNG or WebP images are allowed');
   const id = crypto.randomUUID();
-  const name = `${id}.${MIME_EXT[mime]}`;
-  await fs.writeFile(uploadPath(name), file);
-  try {
-    await exec(
+  // The photo row and its bytes are written together, so there's never one without the other.
+  await transaction(async (conn) => {
+    await conn.execute(
       `INSERT INTO submission (id, user_id, claimed, file, note, status, consensus, moderated, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        id, userId, claimed, name, note?.slice(0, 500) || null,
+        // `file` is kept as a descriptive name; the bytes live in submission_image.
+        id, userId, claimed, `${id}.${MIME_EXT[mime]}`, note?.slice(0, 500) || null,
         approve ? 'verified' : 'pending', approve ? claimed : null, approve ? 1 : 0, Date.now(),
       ],
     );
-  } catch (e) {
-    // Don't leave an orphaned file if the row couldn't be written.
-    await fs.rm(uploadPath(name), { force: true });
-    throw e;
-  }
+    await conn.execute(`INSERT INTO submission_image (submission_id, mime, data) VALUES (?, ?, ?)`, [id, mime, file]);
+  });
   return id;
 }
 
@@ -137,12 +132,35 @@ export async function getSubmission(id: string, viewerId: string | null): Promis
   return (await hydrate(rows, viewerId))[0] ?? null;
 }
 
-export async function submissionFile(id: string): Promise<{ file: string; mime: string } | null> {
-  const row = await one<{ file: string }>(`SELECT file FROM submission WHERE id = ?`, [id]);
-  if (!row) return null;
-  const ext = path.extname(row.file).slice(1);
-  const mime = Object.entries(MIME_EXT).find(([, e]) => e === ext)?.[0] ?? 'application/octet-stream';
-  return { file: uploadPath(row.file), mime };
+export async function submissionImage(id: string): Promise<{ data: Buffer; mime: string } | null> {
+  return (await one<{ data: Buffer; mime: string }>(`SELECT data, mime FROM submission_image WHERE submission_id = ?`, [id])) ?? null;
+}
+
+/**
+ * One-time move of photos saved as files (before they were stored in the database).
+ * Photos whose file is gone — e.g. wiped by a redeploy — can't be shown or recovered,
+ * so those submissions (and their votes) are removed. Safe to run on every start.
+ */
+export async function importLegacyImages() {
+  const orphans = await query<{ id: string; file: string }>(
+    `SELECT s.id, s.file FROM submission s LEFT JOIN submission_image i ON i.submission_id = s.id WHERE i.submission_id IS NULL`,
+  );
+  let imported = 0;
+  let removed = 0;
+  for (const { id, file } of orphans) {
+    const buf = await fs.readFile(path.join(/*turbopackIgnore: true*/ LEGACY_UPLOAD_DIR, path.basename(file))).catch(() => null);
+    const mime = buf && sniff(buf);
+    if (buf && mime) {
+      await exec(`INSERT IGNORE INTO submission_image (submission_id, mime, data) VALUES (?, ?, ?)`, [id, mime, buf]);
+      imported++;
+    } else {
+      await exec(`DELETE FROM submission WHERE id = ?`, [id]);
+      removed++;
+    }
+  }
+  if (imported || removed) {
+    console.log(`[uploads] moved ${imported} photo(s) into the database; removed ${removed} whose image file was missing`);
+  }
 }
 
 /** Pending photos this user can still vote on (not their own, not already voted). */
@@ -214,10 +232,10 @@ async function recomputeStatus(id: string) {
 }
 
 export async function deleteSubmission(id: string, userId: string) {
-  const row = await one<{ file: string; user_id: string }>(`SELECT file, user_id FROM submission WHERE id = ?`, [id]);
+  const row = await one<{ user_id: string }>(`SELECT user_id FROM submission WHERE id = ?`, [id]);
   if (!row || row.user_id !== userId) throw new Error('Photo not found');
+  // The image row goes with it (ON DELETE CASCADE).
   await exec(`DELETE FROM submission WHERE id = ?`, [id]);
-  await fs.rm(uploadPath(row.file), { force: true });
 }
 
 // ---------- admin moderation ----------
@@ -254,15 +272,12 @@ export async function moderate(id: string, action: 'approve' | 'reject' | 'reope
 }
 
 export async function adminDeleteSubmission(id: string) {
-  const row = await one<{ file: string }>(`SELECT file FROM submission WHERE id = ?`, [id]);
-  if (!row) throw new Error('Photo not found');
-  await exec(`DELETE FROM submission WHERE id = ?`, [id]);
-  await fs.rm(uploadPath(row.file), { force: true });
+  const res = await exec(`DELETE FROM submission WHERE id = ?`, [id]);
+  if (res.affectedRows === 0) throw new Error('Photo not found');
 }
 
 /** Remove everything a user created (used when an admin deletes the account). */
 export async function deleteUserContent(userId: string) {
-  const files = await query<{ file: string }>(`SELECT file FROM submission WHERE user_id = ?`, [userId]);
   const affected = await query<{ id: string }>(`SELECT DISTINCT submission_id AS id FROM vote WHERE user_id = ?`, [userId]);
   await transaction(async (conn) => {
     await conn.execute(`DELETE FROM submission WHERE user_id = ?`, [userId]);
@@ -274,5 +289,4 @@ export async function deleteUserContent(userId: string) {
     const sub = await getSubmission(id, null);
     if (sub && !sub.moderated) await recomputeStatus(id);
   }
-  await Promise.all(files.map((f) => fs.rm(uploadPath(f.file), { force: true })));
 }

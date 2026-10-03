@@ -1,5 +1,5 @@
 import { CommunityTabs } from '@/components/CommunityTabs';
-import { AGREEMENT, MIN_VOTES } from '@/lib/community';
+import { verificationRule } from '@/lib/community';
 
 export const metadata = { title: 'Community' };
 
@@ -10,8 +10,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
         <p className="eyebrow">Community</p>
         <h1>Crowd-verified leaf photos</h1>
         <p className="muted">
-          Upload your own leaf photos and help identify everyone else&apos;s. A photo is verified once at least{' '}
-          {MIN_VOTES} other people have voted and {Math.round(AGREEMENT * 100)}% of all IDs agree. Verified photos join
+          Upload your own leaf photos and help identify everyone else&apos;s. A photo is verified {verificationRule()}. Verified photos join
           everyone&apos;s practice questions.
         </p>
       </div>

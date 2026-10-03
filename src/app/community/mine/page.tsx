@@ -15,7 +15,11 @@ export default async function MyUploadsPage(props: PageProps<'/community/mine'>)
 
   return (
     <div className="stack">
-      {uploaded && <div className="notice">Thanks! Your photo is now in the review queue for other users.</div>}
+      {uploaded === 'approved' ? (
+        <div className="notice">Photo approved — it&apos;s now part of the practice questions.</div>
+      ) : uploaded ? (
+        <div className="notice">Thanks! Your photo is now in the review queue for other users.</div>
+      ) : null}
       {subs.length === 0 ? (
         <div className="card empty">
           <p>You haven&apos;t uploaded any photos yet.</p>
@@ -35,7 +39,9 @@ export default async function MyUploadsPage(props: PageProps<'/community/mine'>)
                 <p className="small" style={{ margin: 0 }}>Crowd says <strong>{speciesLabel(s.consensus!)}</strong></p>
               )}
               {s.status === 'pending' && (
-                <p className="small muted" style={{ margin: 0 }}>Needs at least {Math.max(0, MIN_VOTES - s.votes)} more vote(s).</p>
+                <p className="small muted" style={{ margin: 0 }}>{s.votes < MIN_VOTES
+                    ? `Needs ${MIN_VOTES - s.votes} more vote${MIN_VOTES - s.votes === 1 ? '' : 's'} that agree${MIN_VOTES - s.votes === 1 ? 's' : ''}.`
+                    : 'People disagree so far — waiting for more votes.'}</p>
               )}
               {s.tally.length > 0 && (
                 <div className="tally small">

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { SPECIES } from '@/data/species';
 import { discordEnabled, getSession } from '@/lib/auth';
-import { AGREEMENT, MIN_VOTES } from '@/lib/community';
+import { verificationRule } from '@/lib/community';
 import { libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
 import { suggestionsFor } from '@/lib/suggestions';
@@ -114,8 +114,7 @@ export default async function Home(props: PageProps<'/'>) {
         </ol>
         <p className="small muted" style={{ margin: 0 }}>
           <strong>Community photos:</strong> anyone can upload a leaf photo with their best guess. Other people identify it
-          without seeing that guess; once at least {MIN_VOTES} have voted and {Math.round(AGREEMENT * 100)}% of all IDs
-          agree, the photo is verified and joins everyone&apos;s practice questions.
+          without seeing that guess. The photo is verified {verificationRule()}, then joins everyone&apos;s practice questions.
         </p>
       </section>
 

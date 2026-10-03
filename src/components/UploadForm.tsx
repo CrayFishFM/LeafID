@@ -30,12 +30,13 @@ async function prepare(file: File): Promise<Blob> {
   );
 }
 
-export function UploadForm() {
+export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [species, setSpecies] = useState('');
   const [note, setNote] = useState('');
+  const [approve, setApprove] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,10 +58,11 @@ export function UploadForm() {
       body.set('photo', await prepare(file), 'leaf.jpg');
       body.set('species', species);
       body.set('note', note);
+      if (approve) body.set('approve', '1');
       const res = await fetch('/api/submissions', { method: 'POST', body });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Upload failed');
-      router.push('/community/mine?uploaded=1');
+      router.push(`/community/mine?uploaded=${json.approved ? 'approved' : '1'}`);
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -97,8 +99,16 @@ export function UploadForm() {
           placeholder="e.g. Found along a creek near Guelph, twigs were opposite"
         />
       </div>
+      {isAdmin && (
+        <label className="row small" style={{ gap: '0.5rem', cursor: 'pointer' }}>
+          <input type="checkbox" checked={approve} onChange={(e) => setApprove(e.target.checked)} />
+          <span><strong>Approve immediately</strong> (admin) — skip the community vote and add it to practice now</span>
+        </label>
+      )}
       {error && <div className="error" role="alert">{error}</div>}
-      <button className="btn btn-primary" disabled={busy || !file || !species}>{busy ? 'Uploading…' : 'Submit for review'}</button>
+      <button className="btn btn-primary" disabled={busy || !file || !species}>
+        {busy ? 'Uploading…' : approve ? 'Upload and approve' : 'Submit for review'}
+      </button>
     </form>
   );
 }

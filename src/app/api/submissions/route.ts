@@ -15,13 +15,16 @@ export async function POST(req: Request) {
   if (file.size > MAX_UPLOAD_BYTES) return Response.json({ error: 'Image is larger than 8 MB' }, { status: 413 });
 
   try {
+    const approve = form.get('approve') === '1' && session.user.role === 'admin';
     const id = await createSubmission(
       session.user.id,
       species,
       Buffer.from(await file.arrayBuffer()),
       typeof note === 'string' ? note.trim() : null,
+      // Only admins may skip the crowd; the role is checked here, not trusted from the form.
+      approve,
     );
-    return Response.json({ id });
+    return Response.json({ id, approved: approve });
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 400 });
   }

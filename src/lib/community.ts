@@ -7,11 +7,20 @@ import { exec, one, query, transaction, UPLOAD_DIR } from './db';
 export type SubmissionStatus = 'pending' | 'verified' | 'disputed' | 'rejected';
 
 /** Votes needed from other users before a photo can be verified. */
-export const MIN_VOTES = 3;
+export const MIN_VOTES = 1;
 /** Share of all IDs (uploader's claim + votes) the leading species needs. */
 export const AGREEMENT = 0.7;
 /** After this many votes with no agreement, the photo is marked disputed. */
 export const DISPUTE_AFTER = 6;
+
+/** Plain-language version of the rule above, for page copy. */
+export function verificationRule() {
+  if (MIN_VOTES === 1) {
+    return "as soon as someone else agrees with the uploader's ID (if people disagree, it waits until " +
+      `${Math.round(AGREEMENT * 100)}% of all IDs match)`;
+  }
+  return `once at least ${MIN_VOTES} other people have voted and ${Math.round(AGREEMENT * 100)}% of all IDs agree`;
+}
 
 export interface Submission {
   id: string;
@@ -97,7 +106,8 @@ function sniff(buf: Buffer): string | null {
 
 const uploadPath = (file: string) => path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, file);
 
-export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null) {
+/** `approve`: an admin uploading their own photo can verify it straight away (an admin decision). */
+export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null, approve = false) {
   if (!SPECIES_BY_ID[claimed]) throw new Error('Unknown species');
   if (file.length > MAX_UPLOAD_BYTES) throw new Error('Image is larger than 8 MB');
   const mime = sniff(file);
@@ -106,9 +116,14 @@ export async function createSubmission(userId: string, claimed: string, file: Bu
   const name = `${id}.${MIME_EXT[mime]}`;
   await fs.writeFile(uploadPath(name), file);
   try {
-    await exec(`INSERT INTO submission (id, user_id, claimed, file, note, created_at) VALUES (?, ?, ?, ?, ?, ?)`, [
-      id, userId, claimed, name, note?.slice(0, 500) || null, Date.now(),
-    ]);
+    await exec(
+      `INSERT INTO submission (id, user_id, claimed, file, note, status, consensus, moderated, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id, userId, claimed, name, note?.slice(0, 500) || null,
+        approve ? 'verified' : 'pending', approve ? claimed : null, approve ? 1 : 0, Date.now(),
+      ],
+    );
   } catch (e) {
     // Don't leave an orphaned file if the row couldn't be written.
     await fs.rm(uploadPath(name), { force: true });
@@ -164,6 +179,12 @@ export async function castVote(submissionId: string, userId: string, species: st
 
   if (!sub.moderated) await recomputeStatus(submissionId);
   return (await getSubmission(submissionId, userId))!;
+}
+
+/** Re-evaluate every open photo, e.g. after the voting rules above change. */
+export async function recheckOpenSubmissions() {
+  const open = await query<{ id: string }>(`SELECT id FROM submission WHERE status IN ('pending', 'disputed') AND moderated = 0`);
+  for (const { id } of open) await recomputeStatus(id);
 }
 
 /** Re-evaluate a photo after its votes changed outside castVote (e.g. accounts merged). */

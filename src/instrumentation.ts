@@ -43,6 +43,10 @@ export async function register() {
     lock.release();
   }
 
+  // Apply the current voting rules to photos still waiting (e.g. after MIN_VOTES changed).
+  const { recheckOpenSubmissions } = await import('./lib/community');
+  await recheckOpenSubmissions().catch((e) => console.error('[community] recheck failed:', e.message));
+
   // Remove guests whose session ended without leaving anything, now and daily.
   const { cleanupGuests } = await import('./lib/guests');
   const sweep = () => cleanupGuests().catch((e) => console.error('[guests] cleanup failed:', e.message));

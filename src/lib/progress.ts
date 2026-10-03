@@ -1,5 +1,5 @@
 import { GROUPS, SPECIES, SPECIES_BY_ID, type GroupId } from '@/data/species';
-import { db } from './db';
+import { exec, query } from './db';
 
 export type Level = 'new' | 'struggling' | 'learning' | 'mastered';
 
@@ -48,10 +48,11 @@ function levelFor(attempts: number, mastery: number): Level {
   return 'struggling';
 }
 
-export function getProgress(userId: string): Progress {
-  const rows = db
-    .prepare(`SELECT species, chosen, correct, hints, created_at FROM attempt WHERE user_id = ? ORDER BY created_at`)
-    .all(userId) as AttemptRow[];
+export async function getProgress(userId: string): Promise<Progress> {
+  const rows = await query<AttemptRow>(
+    `SELECT species, chosen, correct, hints, created_at FROM attempt WHERE user_id = ? ORDER BY created_at, id`,
+    [userId],
+  );
 
   const per = new Map<string, SpeciesStat>(
     SPECIES.map((s) => [s.id, { id: s.id, attempts: 0, correct: 0, mastery: 0, level: 'new', lastSeen: null }]),
@@ -105,8 +106,9 @@ export function getProgress(userId: string): Progress {
   };
 }
 
-export function recordAttempt(userId: string, a: { species: string; chosen: string; correct: boolean; hints: number; image: string }) {
-  db.prepare(
+export async function recordAttempt(userId: string, a: { species: string; chosen: string; correct: boolean; hints: number; image: string }) {
+  await exec(
     `INSERT INTO attempt (user_id, species, chosen, correct, hints, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-  ).run(userId, a.species, a.chosen, a.correct ? 1 : 0, a.hints, a.image, Date.now());
+    [userId, a.species, a.chosen, a.correct ? 1 : 0, a.hints, a.image, Date.now()],
+  );
 }

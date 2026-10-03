@@ -2,9 +2,9 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { SPECIES_BY_ID } from '@/data/species';
-import { db, UPLOAD_DIR } from './db';
+import { exec, one, query, transaction, UPLOAD_DIR } from './db';
 
-export type SubmissionStatus = 'pending' | 'verified' | 'disputed';
+export type SubmissionStatus = 'pending' | 'verified' | 'disputed' | 'rejected';
 
 /** Votes needed from other users before a photo can be verified. */
 export const MIN_VOTES = 3;
@@ -17,6 +17,7 @@ export interface Submission {
   id: string;
   userId: string;
   uploader: string;
+  uploaderEmail: string | null;
   claimed: string;
   note: string | null;
   status: SubmissionStatus;
@@ -25,43 +26,59 @@ export interface Submission {
   votes: number;
   tally: { species: string; count: number }[];
   myVote: string | null;
+  /** Set by an admin; the crowd can no longer change the outcome. */
+  moderated: boolean;
 }
 
 interface Row {
   id: string;
   user_id: string;
   uploader: string | null;
+  uploader_email: string | null;
   claimed: string;
   note: string | null;
   status: SubmissionStatus;
   consensus: string | null;
   created_at: number;
+  moderated: number;
 }
 
-const SELECT = `SELECT s.*, u.name AS uploader FROM submission s LEFT JOIN user u ON u.id = s.user_id`;
+const SELECT = 'SELECT s.*, u.name AS uploader, u.email AS uploader_email FROM submission s LEFT JOIN `user` u ON u.id = s.user_id';
 
-function hydrate(row: Row, viewerId: string | null): Submission {
-  const tally = db
-    .prepare(`SELECT species, COUNT(*) AS count FROM vote WHERE submission_id = ? GROUP BY species ORDER BY count DESC`)
-    .all(row.id) as { species: string; count: number }[];
+/** Attach vote tallies (and the viewer's own vote) to rows with two queries total. */
+async function hydrate(rows: Row[], viewerId: string | null): Promise<Submission[]> {
+  if (rows.length === 0) return [];
+  const ids = rows.map((r) => r.id);
+  const marks = ids.map(() => '?').join(',');
+  const tallies = await query<{ submission_id: string; species: string; count: number }>(
+    `SELECT submission_id, species, COUNT(*) AS count FROM vote WHERE submission_id IN (${marks})
+      GROUP BY submission_id, species ORDER BY count DESC`,
+    ids,
+  );
   const mine = viewerId
-    ? (db.prepare(`SELECT species FROM vote WHERE submission_id = ? AND user_id = ?`).get(row.id, viewerId) as
-        | { species: string }
-        | undefined)
-    : undefined;
-  return {
-    id: row.id,
-    userId: row.user_id,
-    uploader: row.uploader ?? 'Unknown',
-    claimed: row.claimed,
-    note: row.note,
-    status: row.status,
-    consensus: row.consensus,
-    createdAt: row.created_at,
-    votes: tally.reduce((n, t) => n + t.count, 0),
-    tally,
-    myVote: mine?.species ?? null,
-  };
+    ? await query<{ submission_id: string; species: string }>(
+        `SELECT submission_id, species FROM vote WHERE user_id = ? AND submission_id IN (${marks})`,
+        [viewerId, ...ids],
+      )
+    : [];
+  return rows.map((row) => {
+    const tally = tallies.filter((t) => t.submission_id === row.id).map(({ species, count }) => ({ species, count }));
+    return {
+      id: row.id,
+      userId: row.user_id,
+      uploader: row.uploader ?? 'Unknown',
+      uploaderEmail: row.uploader_email,
+      claimed: row.claimed,
+      note: row.note,
+      status: row.status,
+      consensus: row.consensus,
+      createdAt: Number(row.created_at),
+      votes: tally.reduce((n, t) => n + t.count, 0),
+      tally,
+      myVote: mine.find((m) => m.submission_id === row.id)?.species ?? null,
+      moderated: !!row.moderated,
+    };
+  });
 }
 
 const MIME_EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
@@ -75,6 +92,8 @@ function sniff(buf: Buffer): string | null {
   return null;
 }
 
+const uploadPath = (file: string) => path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, file);
+
 export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null) {
   if (!SPECIES_BY_ID[claimed]) throw new Error('Unknown species');
   if (file.length > MAX_UPLOAD_BYTES) throw new Error('Image is larger than 8 MB');
@@ -82,68 +101,72 @@ export async function createSubmission(userId: string, claimed: string, file: Bu
   if (!mime) throw new Error('Only JPEG, PNG or WebP images are allowed');
   const id = crypto.randomUUID();
   const name = `${id}.${MIME_EXT[mime]}`;
-  await fs.writeFile(path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, name), file);
-  db.prepare(`INSERT INTO submission (id, user_id, claimed, file, note, created_at) VALUES (?, ?, ?, ?, ?, ?)`).run(
-    id, userId, claimed, name, note?.slice(0, 500) || null, Date.now(),
-  );
+  await fs.writeFile(uploadPath(name), file);
+  try {
+    await exec(`INSERT INTO submission (id, user_id, claimed, file, note, created_at) VALUES (?, ?, ?, ?, ?, ?)`, [
+      id, userId, claimed, name, note?.slice(0, 500) || null, Date.now(),
+    ]);
+  } catch (e) {
+    // Don't leave an orphaned file if the row couldn't be written.
+    await fs.rm(uploadPath(name), { force: true });
+    throw e;
+  }
   return id;
 }
 
-export function getSubmission(id: string, viewerId: string | null): Submission | null {
-  const row = db.prepare(`${SELECT} WHERE s.id = ?`).get(id) as Row | undefined;
-  return row ? hydrate(row, viewerId) : null;
+export async function getSubmission(id: string, viewerId: string | null): Promise<Submission | null> {
+  const rows = await query<Row>(`${SELECT} WHERE s.id = ?`, [id]);
+  return (await hydrate(rows, viewerId))[0] ?? null;
 }
 
-export function submissionFile(id: string): { file: string; mime: string } | null {
-  const row = db.prepare(`SELECT file FROM submission WHERE id = ?`).get(id) as { file: string } | undefined;
+export async function submissionFile(id: string): Promise<{ file: string; mime: string } | null> {
+  const row = await one<{ file: string }>(`SELECT file FROM submission WHERE id = ?`, [id]);
   if (!row) return null;
   const ext = path.extname(row.file).slice(1);
   const mime = Object.entries(MIME_EXT).find(([, e]) => e === ext)?.[0] ?? 'application/octet-stream';
-  return { file: path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, row.file), mime };
+  return { file: uploadPath(row.file), mime };
 }
 
 /** Pending photos this user can still vote on (not their own, not already voted). */
-export function reviewQueue(userId: string, limit = 20): Submission[] {
-  const rows = db
-    .prepare(
-      `${SELECT} WHERE s.status IN ('pending', 'disputed') AND s.user_id != ?
-         AND NOT EXISTS (SELECT 1 FROM vote v WHERE v.submission_id = s.id AND v.user_id = ?)
-       ORDER BY s.created_at LIMIT ?`,
-    )
-    .all(userId, userId, limit) as Row[];
-  return rows.map((r) => hydrate(r, userId));
+export async function reviewQueue(userId: string, limit = 20): Promise<Submission[]> {
+  const rows = await query<Row>(
+    `${SELECT} WHERE s.status IN ('pending', 'disputed') AND s.user_id != ?
+       AND NOT EXISTS (SELECT 1 FROM vote v WHERE v.submission_id = s.id AND v.user_id = ?)
+     ORDER BY s.created_at LIMIT ?`,
+    [userId, userId, limit],
+  );
+  return hydrate(rows, userId);
 }
 
-export function userSubmissions(userId: string): Submission[] {
-  const rows = db.prepare(`${SELECT} WHERE s.user_id = ? ORDER BY s.created_at DESC`).all(userId) as Row[];
-  return rows.map((r) => hydrate(r, userId));
+export async function userSubmissions(userId: string): Promise<Submission[]> {
+  return hydrate(await query<Row>(`${SELECT} WHERE s.user_id = ? ORDER BY s.created_at DESC`, [userId]), userId);
 }
 
-export function recentlyVerified(limit = 12): Submission[] {
-  const rows = db
-    .prepare(`${SELECT} WHERE s.status = 'verified' ORDER BY s.created_at DESC LIMIT ?`)
-    .all(limit) as Row[];
-  return rows.map((r) => hydrate(r, null));
+export async function recentlyVerified(limit = 12): Promise<Submission[]> {
+  return hydrate(await query<Row>(`${SELECT} WHERE s.status = 'verified' ORDER BY s.created_at DESC LIMIT ?`, [limit]), null);
 }
 
-export function castVote(submissionId: string, userId: string, species: string): Submission {
+export async function castVote(submissionId: string, userId: string, species: string): Promise<Submission> {
   if (!SPECIES_BY_ID[species]) throw new Error('Unknown species');
-  const sub = getSubmission(submissionId, userId);
+  const sub = await getSubmission(submissionId, userId);
   if (!sub) throw new Error('Photo not found');
   if (sub.userId === userId) throw new Error("You can't vote on your own photo");
+  if (sub.status === 'rejected') throw new Error('This photo was removed by a moderator');
 
-  db.prepare(
+  await exec(
     `INSERT INTO vote (submission_id, user_id, species, created_at) VALUES (?, ?, ?, ?)
-     ON CONFLICT(submission_id, user_id) DO UPDATE SET species = excluded.species, created_at = excluded.created_at`,
-  ).run(submissionId, userId, species, Date.now());
+     ON DUPLICATE KEY UPDATE species = VALUES(species), created_at = VALUES(created_at)`,
+    [submissionId, userId, species, Date.now()],
+  );
 
-  recomputeStatus(submissionId);
-  return getSubmission(submissionId, userId)!;
+  if (!sub.moderated) await recomputeStatus(submissionId);
+  return (await getSubmission(submissionId, userId))!;
 }
 
 /** The uploader's claim counts as one ID; the crowd's votes decide. */
-function recomputeStatus(id: string) {
-  const sub = getSubmission(id, null)!;
+async function recomputeStatus(id: string) {
+  const sub = await getSubmission(id, null);
+  if (!sub) return;
   const counts = new Map<string, number>([[sub.claimed, 1]]);
   for (const t of sub.tally) counts.set(t.species, (counts.get(t.species) ?? 0) + t.count);
   const total = sub.votes + 1;
@@ -157,14 +180,69 @@ function recomputeStatus(id: string) {
   } else if (sub.votes >= DISPUTE_AFTER) {
     status = 'disputed';
   }
-  db.prepare(`UPDATE submission SET status = ?, consensus = ? WHERE id = ?`).run(status, consensus, id);
+  await exec(`UPDATE submission SET status = ?, consensus = ? WHERE id = ?`, [status, consensus, id]);
 }
 
 export async function deleteSubmission(id: string, userId: string) {
-  const row = db.prepare(`SELECT file, user_id FROM submission WHERE id = ?`).get(id) as
-    | { file: string; user_id: string }
-    | undefined;
+  const row = await one<{ file: string; user_id: string }>(`SELECT file, user_id FROM submission WHERE id = ?`, [id]);
   if (!row || row.user_id !== userId) throw new Error('Photo not found');
-  db.prepare(`DELETE FROM submission WHERE id = ?`).run(id);
-  await fs.rm(path.join(/*turbopackIgnore: true*/ UPLOAD_DIR, row.file), { force: true });
+  await exec(`DELETE FROM submission WHERE id = ?`, [id]);
+  await fs.rm(uploadPath(row.file), { force: true });
+}
+
+// ---------- admin moderation ----------
+
+export async function listSubmissions(status: SubmissionStatus | 'all', limit = 60): Promise<Submission[]> {
+  const rows =
+    status === 'all'
+      ? await query<Row>(`${SELECT} ORDER BY s.created_at DESC LIMIT ?`, [limit])
+      : await query<Row>(`${SELECT} WHERE s.status = ? ORDER BY s.created_at DESC LIMIT ?`, [status, limit]);
+  return hydrate(rows, null);
+}
+
+export async function submissionCounts(): Promise<Record<SubmissionStatus, number>> {
+  const rows = await query<{ status: SubmissionStatus; n: number }>(`SELECT status, COUNT(*) AS n FROM submission GROUP BY status`);
+  const out: Record<SubmissionStatus, number> = { pending: 0, verified: 0, disputed: 0, rejected: 0 };
+  for (const r of rows) out[r.status] = r.n;
+  return out;
+}
+
+/** Admin decision: approve as a species, reject, or hand back to the crowd. */
+export async function moderate(id: string, action: 'approve' | 'reject' | 'reopen', species?: string) {
+  if (!(await one(`SELECT 1 FROM submission WHERE id = ?`, [id]))) throw new Error('Photo not found');
+  if (action === 'approve') {
+    if (!species || !SPECIES_BY_ID[species]) throw new Error('Choose a species to approve as');
+    await exec(`UPDATE submission SET status = 'verified', consensus = ?, moderated = 1 WHERE id = ?`, [species, id]);
+  } else if (action === 'reject') {
+    await exec(`UPDATE submission SET status = 'rejected', consensus = NULL, moderated = 1 WHERE id = ?`, [id]);
+  } else {
+    await transaction(async (conn) => {
+      await conn.execute(`DELETE FROM vote WHERE submission_id = ?`, [id]);
+      await conn.execute(`UPDATE submission SET status = 'pending', consensus = NULL, moderated = 0 WHERE id = ?`, [id]);
+    });
+  }
+}
+
+export async function adminDeleteSubmission(id: string) {
+  const row = await one<{ file: string }>(`SELECT file FROM submission WHERE id = ?`, [id]);
+  if (!row) throw new Error('Photo not found');
+  await exec(`DELETE FROM submission WHERE id = ?`, [id]);
+  await fs.rm(uploadPath(row.file), { force: true });
+}
+
+/** Remove everything a user created (used when an admin deletes the account). */
+export async function deleteUserContent(userId: string) {
+  const files = await query<{ file: string }>(`SELECT file FROM submission WHERE user_id = ?`, [userId]);
+  const affected = await query<{ id: string }>(`SELECT DISTINCT submission_id AS id FROM vote WHERE user_id = ?`, [userId]);
+  await transaction(async (conn) => {
+    await conn.execute(`DELETE FROM submission WHERE user_id = ?`, [userId]);
+    await conn.execute(`DELETE FROM vote WHERE user_id = ?`, [userId]);
+    await conn.execute(`DELETE FROM attempt WHERE user_id = ?`, [userId]);
+  });
+  // Their votes are gone, so re-check photos they had voted on.
+  for (const { id } of affected) {
+    const sub = await getSubmission(id, null);
+    if (sub && !sub.moderated) await recomputeStatus(id);
+  }
+  await Promise.all(files.map((f) => fs.rm(uploadPath(f.file), { force: true })));
 }

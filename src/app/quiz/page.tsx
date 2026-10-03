@@ -10,7 +10,7 @@ export default async function QuizPage(props: PageProps<'/quiz'>) {
   const user = await requireUser();
   const { scope: raw } = await props.searchParams;
   const scope = isScope(raw) ? raw : 'all';
-  const initial = nextQuestion(user.id, scope);
+  const initial = await nextQuestion(user.id, scope);
 
   return (
     <div className="stack" style={{ gap: '1.25rem' }}>

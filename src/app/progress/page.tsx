@@ -11,7 +11,7 @@ const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
 
 export default async function ProgressPage() {
   const user = await requireUser();
-  const p = getProgress(user.id);
+  const p = await getProgress(user.id);
   const suggestions = suggestionsFor(p);
   const counts = p.species.reduce<Record<Level, number>>(
     (acc, s) => ({ ...acc, [s.level]: acc[s.level] + 1 }),

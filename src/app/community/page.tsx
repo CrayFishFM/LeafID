@@ -7,8 +7,8 @@ import { recentlyVerified, reviewQueue } from '@/lib/community';
 
 export default async function CommunityPage() {
   const user = await requireUser();
-  const queue = reviewQueue(user.id);
-  const verified = recentlyVerified();
+  const queue = await reviewQueue(user.id);
+  const verified = await recentlyVerified();
 
   return (
     <div className="stack" style={{ gap: '2rem' }}>

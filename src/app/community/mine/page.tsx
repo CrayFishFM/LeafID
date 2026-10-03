@@ -9,7 +9,7 @@ import { MIN_VOTES, userSubmissions } from '@/lib/community';
 export default async function MyUploadsPage(props: PageProps<'/community/mine'>) {
   const user = await requireUser();
   const { uploaded } = await props.searchParams;
-  const subs = userSubmissions(user.id);
+  const subs = await userSubmissions(user.id);
 
   return (
     <div className="stack">

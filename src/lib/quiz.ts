@@ -38,9 +38,8 @@ function weightedPick(items: { id: string; w: number }[]): string {
  * Adaptive question: species the learner is weak on (or hasn't seen) come up more often,
  * and wrong choices are drawn from look-alikes and the learner's own past mix-ups.
  */
-export function nextQuestion(userId: string, scope: QuizScope, avoid: string[] = []): Question | null {
-  const progress = getProgress(userId);
-  const photos = allPhotos();
+export async function nextQuestion(userId: string, scope: QuizScope, avoid: string[] = []): Promise<Question | null> {
+  const [progress, photos] = await Promise.all([getProgress(userId), allPhotos()]);
   const withPhotos = new Set(photos.map((p) => p.species));
 
   let pool = SPECIES.filter((s) => withPhotos.has(s.id));

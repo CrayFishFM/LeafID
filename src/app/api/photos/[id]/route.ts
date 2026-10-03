@@ -4,7 +4,7 @@ import { submissionFile } from '@/lib/community';
 export async function GET(_req: Request, ctx: RouteContext<'/api/photos/[id]'>) {
   const { id } = await ctx.params;
   if (!/^[0-9a-f-]{36}$/.test(id)) return new Response('Not found', { status: 404 });
-  const found = submissionFile(id);
+  const found = await submissionFile(id);
   if (!found) return new Response('Not found', { status: 404 });
   try {
     const body = await fs.readFile(found.file);

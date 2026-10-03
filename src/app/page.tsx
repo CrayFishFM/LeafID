@@ -12,7 +12,7 @@ const HERO = ['lib:Mh/8.jpg', 'lib:Or/7.jpg', 'lib:Pt/1.jpg'];
 export default async function Home() {
   const session = await getSession();
   const heroPhotos = libraryPhotos().filter((p) => HERO.includes(p.key));
-  const progress = session ? getProgress(session.user.id) : null;
+  const progress = session ? await getProgress(session.user.id) : null;
   const tip = progress ? suggestionsFor(progress)[0] : null;
 
   return (

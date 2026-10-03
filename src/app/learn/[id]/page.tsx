@@ -19,9 +19,9 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
   if (!s) notFound();
 
   const session = await getSession();
-  const stat = session ? getProgress(session.user.id).species.find((x) => x.id === id) : null;
+  const stat = session ? (await getProgress(session.user.id)).species.find((x) => x.id === id) : null;
   const photos = libraryPhotos(id);
-  const community = communityPhotos(id);
+  const community = await communityPhotos(id);
 
   return (
     <div className="stack" style={{ gap: '1.75rem' }}>

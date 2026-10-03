@@ -42,6 +42,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <TopNav />
             <div className="topbar-right">
               <ThemeToggle />
+              {session?.user.role === 'admin' && (
+                <Link href="/admin" className="btn btn-sm admin-link">Admin</Link>
+              )}
               {session ? (
                 <SignOutButton />
               ) : (

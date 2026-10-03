@@ -6,14 +6,17 @@ A web app for learning to identify Ontario tree species by their leaves. It cove
 - **Practice** – photo quiz in 10-question rounds. Species you get wrong (or haven't seen) come up more often, wrong options are drawn from look-alikes and your own past mix-ups, and every answer is explained. Up to three progressive hints per question.
 - **Progress** – accuracy, mastery per species and group, most-confused pairs, and personalised suggestions for what to study next.
 - **Community** – upload your own leaf photos. Other users identify them blind (before seeing your claim). A photo is verified once at least 3 other people have voted and 70% of all IDs (including the uploader's) agree; verified photos join everyone's quiz.
+- **Admin dashboard** (`/admin`) – activity chart and stats, hardest species and most common mix-ups across all learners, user management (make/remove admin, ban with reason, delete with all data), photo moderation (approve as a species, reject, reset votes, delete — admin decisions are final), and email status with a test-send button.
+- **Accounts** – email verification and password reset by email.
 
 Mobile-first, with light and dark themes (follows the device by default; toggle in the header).
 
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, server actions)
-- [Better Auth](https://better-auth.com) – email + password accounts
-- SQLite via `better-sqlite3` – one file at `data/leafid.db`; uploaded photos in `data/uploads/`
+- [Better Auth](https://better-auth.com) – email + password accounts, admin plugin for roles and bans
+- [Hostinger Mail API SDK](https://github.com/hostinger/mail-api-typescript-sdk) (`@hostinger/mail-sdk`) – verification and password-reset emails
+- MySQL / MariaDB via `mysql2` – connection set with `MYSQL_*` in `.env.local`; uploaded photos are files in `data/uploads/`
 
 Database tables (Better Auth's and the app's) are created automatically on server start (`src/instrumentation.ts`).
 
@@ -21,13 +24,26 @@ Database tables (Better Auth's and the app's) are created automatically on serve
 
 ```bash
 npm install
-cp .env.example .env.local   # then set BETTER_AUTH_SECRET (command in the file)
+cp .env.example .env.local   # then set BETTER_AUTH_SECRET and the MYSQL_* connection
 npm run dev
 ```
 
 Open http://localhost:3000 and create an account.
 
-For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the public URL. The app needs a persistent disk for `data/` (set `DATA_DIR` to move it), so host it on a VPS, Railway, Fly.io or similar — not a serverless platform with an ephemeral filesystem.
+### Becoming an admin
+
+Put your email in `ADMIN_EMAILS` in `.env.local` (comma-separate several) and restart. Matching accounts are promoted on server start, and new sign-ups with those emails become admins automatically. Admins see an **Admin** button in the header; from the dashboard they can promote other users.
+
+### Email (Hostinger)
+
+1. In Hostinger's email panel, create a Mail API token for the mailbox to send from (e.g. `no-reply@yourdomain`).
+2. Set `HOSTINGER_MAIL_TOKEN` in `.env.local`. `HOSTINGER_MAILBOX_ID` is optional — without it the first mailbox the token can manage is used. `MAIL_FROM_NAME` sets the sender name.
+3. Set `BETTER_AUTH_URL` to the public site URL so links in emails work.
+4. Restart, then use **Admin → Email → Send me a test email**.
+
+With a token set, new accounts must confirm their email before they can sign in. Without one (local development), verification is not required and emails are printed to the server log instead — copy reset links from there.
+
+For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the public URL. The database must already exist (tables are created on first start). The app also needs a persistent disk for uploaded photos in `data/` (set `DATA_DIR` to move it), so host it on a VPS, Railway, Fly.io or similar — not a serverless platform with an ephemeral filesystem.
 
 ## Project layout
 
@@ -39,7 +55,10 @@ For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the p
 | `src/lib/quiz.ts` | Adaptive question selection and hints |
 | `src/lib/progress.ts` | Attempt history → mastery, confusions, streaks |
 | `src/lib/suggestions.ts` | "How to improve" suggestions |
-| `src/lib/community.ts` | Uploads, voting and consensus rules |
+| `src/lib/community.ts` | Uploads, voting, consensus rules and moderation |
+| `src/lib/mail.ts` | Hostinger Mail sending and email templates |
+| `src/lib/admin.ts` | Dashboard stats and user listing |
+| `src/app/admin/` | Admin dashboard pages and server actions |
 | `scripts/fetch-images.mjs` | Downloads/attributes photos from Wikimedia Commons |
 
 ## Photos

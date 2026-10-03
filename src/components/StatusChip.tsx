@@ -4,6 +4,7 @@ const LABEL: Record<SubmissionStatus, [string, string]> = {
   pending: ['Awaiting votes', 'chip-warn'],
   verified: ['Verified', 'chip-ok'],
   disputed: ['Disputed', 'chip-bad'],
+  rejected: ['Removed by moderator', 'chip-bad'],
 };
 
 export function StatusChip({ status }: { status: SubmissionStatus }) {

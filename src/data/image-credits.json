@@ -101,13 +101,6 @@
   ],
   "Mr": [
     {
-      "file": "3.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Acer_rubrum_%27Red_Skin%27_JPG1Fe.jpg",
-      "artist": "Jean-Pol GRANDMONT",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
-    },
-    {
       "file": "4.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:Acer_rubrum_(summertime).JPG",
       "artist": "Bmerva",
@@ -187,13 +180,6 @@
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
     },
     {
-      "file": "3.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Acer_Saccharinum_%27Laciniatum%27_JPG2.jpg",
-      "artist": "Jean-Pol GRANDMONT",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
-    },
-    {
       "file": "4.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:Acer_saccharinum_002.jpg",
       "artist": "Willow",
@@ -206,13 +192,6 @@
       "artist": "M.violante 15:52, 22 May 2006 (UTC)",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
-    },
-    {
-      "file": "6.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Acer_Saccharinum_%27Laciniatum%27_JPG2a.jpg",
-      "artist": "Jean-Pol GRANDMONT",
-      "license": "CC BY 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
     },
     {
       "file": "8.jpg",
@@ -273,13 +252,6 @@
       "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
     },
     {
-      "file": "2.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Acer_negundo_californicum_Tehachapi.jpg",
-      "artist": "Joe Decruyenaere",
-      "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
       "file": "3.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:A._negundo_leaf_polymorphism_1.JPG",
       "artist": "Auró",
@@ -290,13 +262,6 @@
       "file": "4.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:20130428Acer_negundo1.jpg",
       "artist": "AnRo0002",
-      "license": "CC0",
-      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
-    },
-    {
-      "file": "6.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Acer_negundo_%27Kelly%27s_Gold%27_-_United_States_Botanic_Garden_-_DSC09479.JPG",
-      "artist": "Daderot",
       "license": "CC0",
       "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
     },
@@ -471,13 +436,6 @@
       "artist": "Andrikkos",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Red_leaf_Kearny_RA_(w)_2016-07-12_142.jpg",
-      "artist": "Chris Light",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     {
       "file": "10.jpg",
@@ -887,20 +845,6 @@
       "artist": "Daughter Dad",
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
-    },
-    {
-      "file": "12.jpg",
-      "source": "https://www.inaturalist.org/photos/521335574",
-      "artist": "John Gaskin",
-      "license": "CC0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
-    },
-    {
-      "file": "13.jpg",
-      "source": "https://www.inaturalist.org/photos/302971602",
-      "artist": "Bonnie Isaac",
-      "license": "CC0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     }
   ],
   "By": [
@@ -984,84 +928,84 @@
   ],
   "Al": [
     {
-      "file": "3.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_010701.jpg",
-      "artist": "Vassil",
-      "license": "Public domain",
-      "licenseUrl": null
+      "file": "13.jpg",
+      "source": "https://www.inaturalist.org/photos/236360229",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "4.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_tenuifolia_leaf.jpg",
-      "artist": "Robert H. Mohlenbrock. USDA NRCS. 1992. Western wetland flora: Field office guide to plant species. West Region, Sacramento, CA. Courtesy of USDA NRCS Wetland Science Institute.",
-      "license": "Public domain",
-      "licenseUrl": null
+      "file": "14.jpg",
+      "source": "https://www.inaturalist.org/photos/325268720",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "5.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_1.jpg",
-      "artist": "Franz Xaver",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      "file": "15.jpg",
+      "source": "https://www.inaturalist.org/photos/431533130",
+      "artist": "Sue Carnahan",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
     },
     {
-      "file": "6.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_f_purpurea_Punaharmaalepp%C3%A4_-_C_DSC02552.JPG",
-      "artist": "Anneli Salo",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      "file": "16.jpg",
+      "source": "https://www.inaturalist.org/photos/238541423",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "7.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_f_purpurea_Punaharmaalepp%C3%A4_-_C_DSC02554.JPG",
-      "artist": "Anneli Salo",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      "file": "17.jpg",
+      "source": "https://www.inaturalist.org/photos/316290077",
+      "artist": "icemuon",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "8.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_f_purpurea_Punaharmaalepp%C3%A4_-_C_DSC02558.JPG",
-      "artist": "Anneli Salo",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      "file": "18.jpg",
+      "source": "https://www.inaturalist.org/photos/110918473",
+      "artist": "Mara McHaffie",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Alnus_incana_tenuifolia_BLM.jpg",
-      "artist": "BLM",
-      "license": "Public domain",
-      "licenseUrl": null
+      "file": "19.jpg",
+      "source": "https://www.inaturalist.org/photos/234475217",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "10.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Grau-Erle_(Alnus_incana)_6215.JPG",
-      "artist": "Hedwig Storch",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      "file": "20.jpg",
+      "source": "https://www.inaturalist.org/photos/83304250",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     },
     {
-      "file": "11.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:(ms)_Alnus_incana_2.jpg",
-      "artist": "Hladac",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      "file": "21.jpg",
+      "source": "https://www.inaturalist.org/photos/152050332",
+      "artist": "Henrique Pacheco",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
     },
     {
-      "file": "12.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:(ms)_Alnus_incana_3.jpg",
-      "artist": "Hladac",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      "file": "22.jpg",
+      "source": "https://www.inaturalist.org/photos/282744123",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
+    },
+    {
+      "file": "23.jpg",
+      "source": "https://www.inaturalist.org/photos/212533021",
+      "artist": "Carter Dorscht",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     }
   ],
   "Ew": [
-    {
-      "file": "2.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Valley_forge_autumn_colour_2.jpg",
-      "artist": "Ptelea (talk) 13:37, 1 November 2010 (UTC)",
-      "license": "Public domain",
-      "licenseUrl": null
-    },
     {
       "file": "4.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:Ulmus_americana_(5102579854).jpg",
@@ -1089,20 +1033,6 @@
       "artist": "Jean-Pol GRANDMONT",
       "license": "CC BY 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
-    },
-    {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Ulmus_americana_Valley_Forge_1zz.jpg",
-      "artist": "Photo by David J. Stang",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "10.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Ulmus_americana_Valley_Forge_2zz.jpg",
-      "artist": "Photo by David J. Stang",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     {
       "file": "11.jpg",
@@ -1175,13 +1105,6 @@
       "artist": "Dan Keck from Ohio",
       "license": "CC0",
       "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
-    },
-    {
-      "file": "6.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Tilia_caroliniana_subsp._heterophylla,_Morris_Arboretum_03.jpg",
-      "artist": "Shuvaev",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     {
       "file": "8.jpg",
@@ -1289,13 +1212,6 @@
       "artist": "oksanaetal",
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
-    },
-    {
-      "file": "14.jpg",
-      "source": "https://www.inaturalist.org/photos/644249877",
-      "artist": "skylar_schell",
-      "license": "CC0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
     }
   ],
   "Ab": [
@@ -1377,27 +1293,6 @@
       "artist": "Unknown",
       "license": "CC BY 2.5",
       "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
-    },
-    {
-      "file": "3.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sambucus_canadensis_2zz.jpg",
-      "artist": "Photo by David J. Stang",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "4.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sambucus_canadensis_6zz.jpg",
-      "artist": "Photo by David J. Stang",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "5.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:American_Elder_(2194754081).jpg",
-      "artist": "Dinesh Valke from Thane, India",
-      "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
     },
     {
       "file": "6.jpg",
@@ -1674,20 +1569,6 @@
   ],
   "Sumac": [
     {
-      "file": "1.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Rhus_fg01.jpg",
-      "artist": "Fritz Geller-Grimm",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-      "file": "2.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Rhus_fg02.jpg",
-      "artist": "Fritz Geller-Grimm",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
       "file": "3.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:20120814Essigbaum_Hockenheim1.jpg",
       "artist": "AnRo0002",
@@ -1728,13 +1609,6 @@
       "artist": "Gmihail at Serbian Wikipedia",
       "license": "CC BY-SA 3.0 rs",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/rs/deed.en"
-    },
-    {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Rhus_typhina_%26_Hedera_helix_-_Autumn_Leaves_and_Ivy.jpg",
-      "artist": "Noël Zia Lee",
-      "license": "CC BY 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
     },
     {
       "file": "10.jpg",
@@ -2011,13 +1885,6 @@
   ],
   "Pd": [
     {
-      "file": "1.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Populus_deltoides_(5027342562).jpg",
-      "artist": "Matt Lavin from Bozeman, Montana, USA",
-      "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
       "file": "5.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:2023-05-25_19_01_53_Cottonwood_leaves_along_Willis_Drive_in_the_Mountainview_section_of_Ewing_Township,_Mercer_County,_New_Jersey.jpg",
       "artist": "Famartin",
@@ -2032,39 +1899,11 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Populus_deltoides_(5027342086).jpg",
-      "artist": "Matt Lavin from Bozeman, Montana, USA",
-      "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
-      "file": "10.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Cottonwood_(Populus_deltoides)_2016-07-12_1269.jpg",
-      "artist": "Chris Light",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
       "file": "11.jpg",
       "source": "https://commons.wikimedia.org/wiki/File:2023-10-30_16_51_21_An_Eastern_Cottonwood_leaf_in_autumn_along_Terrace_Boulevard_in_the_Parkway_Village_section_of_Ewing_Township,_Mercer_County,_New_Jersey.jpg",
       "artist": "Famartin",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "12.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Populus_deltoides_subsp_monilifera_2.jpg",
-      "artist": "Nadiatalent",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-      "file": "13.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Populus_deltoides_(4016116014).jpg",
-      "artist": "Matt Lavin from Bozeman, Montana, USA",
-      "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
     },
     {
       "file": "14.jpg",
@@ -2088,9 +1927,51 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     {
-      "file": "17.jpg",
-      "source": "https://www.inaturalist.org/photos/527801255",
-      "artist": "Bryan Connolly",
+      "file": "18.jpg",
+      "source": "https://www.inaturalist.org/photos/302752046",
+      "artist": "Andrew Sebastian",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "file": "19.jpg",
+      "source": "https://www.inaturalist.org/photos/210707007",
+      "artist": "Andrew Sebastian",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "file": "20.jpg",
+      "source": "https://www.inaturalist.org/photos/309109606",
+      "artist": "Caleb Catto",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "file": "21.jpg",
+      "source": "https://www.inaturalist.org/photos/382955378",
+      "artist": "kristinpiston",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
+    },
+    {
+      "file": "22.jpg",
+      "source": "https://www.inaturalist.org/photos/30025943",
+      "artist": "Allan Harris",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
+    },
+    {
+      "file": "23.jpg",
+      "source": "https://www.inaturalist.org/photos/713864012",
+      "artist": "Andrew Sebastian",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "file": "24.jpg",
+      "source": "https://www.inaturalist.org/photos/19666284",
+      "artist": "Quinten Wiegersma",
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
     }

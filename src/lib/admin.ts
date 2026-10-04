@@ -96,7 +96,7 @@ export async function speciesDifficulty() {
 
 export async function globalConfusions(limit = 8) {
   return query<{ species: string; chosen: string; count: number }>(
-    `SELECT species, chosen, COUNT(*) AS count FROM attempt WHERE correct = 0
+    `SELECT species, chosen, COUNT(*) AS count FROM attempt WHERE correct = 0 AND chosen != '?'
      GROUP BY species, chosen ORDER BY count DESC LIMIT ?`,
     [limit],
   );
@@ -117,24 +117,33 @@ export interface AdminUserRow {
   uploads: number;
   votes: number;
   lastActive: number | null;
+  /** When their latest session ends (null: no session left). */
+  sessionExpires: Date | null;
 }
+
+export type UserFilter = 'accounts' | 'guests' | 'all';
 
 export const USERS_PER_PAGE = 25;
 
-export async function listUsers(search: string, page: number, includeGuests: boolean) {
+export async function listUsers(search: string, page: number, type: UserFilter) {
   const q = `%${search.trim().toLowerCase()}%`;
-  const where = `WHERE (LOWER(u.name) LIKE ? OR LOWER(u.email) LIKE ?)${includeGuests ? '' : ' AND (u.isAnonymous IS NULL OR u.isAnonymous = 0)'}`;
+  const typeFilter = { accounts: ' AND (u.isAnonymous IS NULL OR u.isAnonymous = 0)', guests: ' AND u.isAnonymous = 1', all: '' }[type];
+  const where = `WHERE (LOWER(u.name) LIKE ? OR LOWER(u.email) LIKE ?)${typeFilter}`;
   const [count, rows] = await Promise.all([
     one<{ n: number }>(`SELECT COUNT(*) AS n FROM \`user\` u ${where}`, [q, q]),
     query<Omit<AdminUserRow, 'emailVerified' | 'banned' | 'isAnonymous'> & { emailVerified: number; banned: number | null; isAnonymous: number | null }>(
       `SELECT u.id, u.name, u.email, u.emailVerified, u.role, u.banned, u.banReason, u.isAnonymous, u.createdAt,
               COALESCE(a.attempts, 0) AS attempts, COALESCE(a.correct, 0) AS correct, a.lastActive,
               (SELECT COUNT(*) FROM submission s WHERE s.user_id = u.id) AS uploads,
-              (SELECT COUNT(*) FROM vote v WHERE v.user_id = u.id) AS votes
+              (SELECT COUNT(*) FROM vote v WHERE v.user_id = u.id) AS votes,
+              (SELECT MAX(se.expiresAt) FROM session se WHERE se.userId = u.id AND se.expiresAt > NOW()) AS sessionExpires
          FROM \`user\` u
          LEFT JOIN (
+           -- Leaf answers plus the extra quizzes.
            SELECT user_id, COUNT(*) AS attempts, SUM(correct) AS correct, MAX(created_at) AS lastActive
-             FROM attempt GROUP BY user_id
+             FROM (SELECT user_id, correct, created_at FROM attempt
+                   UNION ALL SELECT user_id, correct, created_at FROM topic_attempt) x
+            GROUP BY user_id
          ) a ON a.user_id = u.id
          ${where}
         ORDER BY u.createdAt DESC LIMIT ? OFFSET ?`,

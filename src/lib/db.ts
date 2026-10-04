@@ -167,6 +167,16 @@ export async function ensureSchema() {
       created_at BIGINT NOT NULL,
       INDEX topic_attempt_user (user_id, topic, created_at)
     ) ${opts}`);
+  // A guest who signed up or signed in: their data moved to user_id (the guest row is deleted).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS guest_conversion (
+      id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      user_id VARCHAR(64) NOT NULL,
+      guest_created_at BIGINT NULL,
+      answers INT NOT NULL DEFAULT 0,
+      created_at BIGINT NOT NULL,
+      INDEX guest_conversion_time (created_at)
+    ) ${opts}`);
   // Leaf species content. Filled from src/data/species.ts on start, then edited by admins.
   // Ids are fixed: answers, uploads and votes refer to them.
   await pool.query(`

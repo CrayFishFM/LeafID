@@ -2,10 +2,12 @@
 /* eslint-disable @next/next/no-img-element -- quiz photos are pre-sized */
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { getTopicHint, getTopicQuestion, submitTopicAnswer } from '@/app/quizzes/actions';
 import type { TopicItem } from '@/data/topics';
 import type { TopicQuestion } from '@/lib/topic-quiz';
+import { SKIPPED } from '@/lib/answers';
+import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
 
 const ROUND = 10;
 const MAX_HINTS = 2;
@@ -23,6 +25,17 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
   initial: TopicQuestion | null;
 }) {
   const byId = Object.fromEntries(items.map((i) => [i.id, i]));
+  const [mode, setMode] = useAnswerMode();
+  const options = useMemo<AnswerOption[]>(
+    () =>
+      items.map((i) => ({
+        id: i.id,
+        label: i.aka ? `${i.name} (${i.aka})` : i.name,
+        sub: i.scientific,
+        terms: [i.name, i.aka ?? '', i.scientific ?? ''],
+      })),
+    [items],
+  );
   const [q, setQ] = useState(initial);
   const [result, setResult] = useState<Result | null>(null);
   const [hints, setHints] = useState<string[]>([]);
@@ -84,7 +97,7 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
-      if (!result && q && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
+      if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
       else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
       else if (!result && e.key.toLowerCase() === 'h') hint();
     }
@@ -110,6 +123,8 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       <div className="scorebar">
         <span>Question <strong>{Math.min(round.length + (result ? 0 : 1), ROUND)}</strong> / {ROUND}</span>
         <span>Correct <strong>{correctCount}</strong></span>
+        <span style={{ marginLeft: 'auto' }} />
+        <AnswerModeToggle mode={mode} onChange={setMode} />
       </div>
 
       <div className="quiz">
@@ -118,8 +133,18 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
         </div>
 
         <div className="stack">
-          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : 'Not quite') : question}</h2>
+          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : result.chosen === SKIPPED ? "Here's the answer" : 'Not quite') : question}</h2>
 
+          {mode === 'type' ? (
+            <AnswerInput
+              key={q.imageKey}
+              options={options}
+              onSubmit={answer}
+              disabled={!!result || pending}
+              result={result}
+              placeholder="Start typing a name…"
+            />
+          ) : (
           <div className="choices">
             {q.choices.map((id) => {
               const it = byId[id];
@@ -132,15 +157,20 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
               );
             })}
           </div>
+          )}
 
           {!result && (
             <div className="stack" style={{ gap: '0.5rem' }}>
               {hints.map((h) => <div key={h} className="hint">{h}</div>)}
-              {hints.length < MAX_HINTS && (
-                <button className="btn btn-sm" style={{ alignSelf: 'flex-start' }} onClick={hint} disabled={pending}>
-                  {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
-                </button>
-              )}
+              <div className="row" style={{ gap: '0.5rem' }}>
+                {hints.length < MAX_HINTS && (
+                  <button className="btn btn-sm" onClick={hint} disabled={pending}>
+                    {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
+                  </button>
+                )}
+                {/* Shows the answer; counts as a miss so it comes up again soon. */}
+                <button className="btn btn-sm btn-ghost" onClick={() => answer(SKIPPED)} disabled={pending}>I don&apos;t know</button>
+              </div>
             </div>
           )}
 

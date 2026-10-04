@@ -2,10 +2,12 @@
 /* eslint-disable @next/next/no-img-element -- quiz photos come from mixed sources */
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { getHint, getQuestion, submitAnswer } from '@/app/actions';
 import type { Question } from '@/lib/quiz';
 import { contrastTip } from '@/lib/suggestions';
+import { SKIPPED } from '@/lib/answers';
+import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
 import { ReportButton } from './ReportButton';
 import { useLeaf } from './LeafProvider';
 
@@ -22,6 +24,19 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
   const [recent, setRecent] = useState<string[]>([]);
   const [round, setRound] = useState<Result[]>([]);
   const [codesOnly, setCodesOnly] = useState(false);
+  const [mode, setMode] = useAnswerMode();
+  // Typed answers accept the code, common name (with or without the bracketed part) or scientific name.
+  const options = useMemo<AnswerOption[]>(
+    () =>
+      leaf.species.map((s) => ({
+        id: s.id,
+        label: s.code === s.common ? s.common : `${s.code} · ${s.common}`,
+        sub: s.scientific,
+        // e.g. "Sugar maple (hard maple)" also matches "sugar maple" and "hard maple".
+        terms: [s.code, s.common, s.common.replace(/\s*\(.*\)/, ''), ...(s.common.match(/\((.*)\)/)?.slice(1) ?? []), s.scientific],
+      })),
+    [leaf.species],
+  );
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -86,7 +101,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
-      if (!result && q && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
+      if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
       else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
       else if (!result && e.key.toLowerCase() === 'h') hint();
     }
@@ -112,7 +127,10 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
       <div className="scorebar">
         <span>Question <strong>{Math.min(round.length + (result ? 0 : 1), ROUND)}</strong> / {ROUND}</span>
         <span>Correct <strong>{correctCount}</strong></span>
-        <label className="row" style={{ marginLeft: 'auto', gap: '0.4rem', cursor: 'pointer' }}>
+        <span style={{ marginLeft: 'auto' }} />
+        <AnswerModeToggle mode={mode} onChange={setMode} />
+        {mode === 'choice' && (
+        <label className="row" style={{ gap: '0.4rem', cursor: 'pointer' }}>
           <input
             type="checkbox"
             checked={codesOnly}
@@ -123,6 +141,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
           />
           Codes only
         </label>
+        )}
       </div>
 
       <div className="quiz">
@@ -139,8 +158,18 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
         </div>
 
         <div className="stack">
-          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : 'Not quite') : 'Which tree is this?'}</h2>
+          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : result.chosen === SKIPPED ? "Here's the answer" : 'Not quite') : 'Which tree is this?'}</h2>
 
+          {mode === 'type' ? (
+            <AnswerInput
+              key={q.imageKey}
+              options={options}
+              onSubmit={answer}
+              disabled={!!result || pending}
+              result={result}
+              placeholder="Type a code or tree name…"
+            />
+          ) : (
           <div className="choices">
             {q.choices.map((id) => {
               const s = leaf.byId[id];
@@ -153,15 +182,20 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
               );
             })}
           </div>
+          )}
 
           {!result && (
             <div className="stack" style={{ gap: '0.5rem' }}>
               {hints.map((h) => <div key={h} className="hint">{h}</div>)}
-              {hints.length < MAX_HINTS && (
-                <button className="btn btn-sm" style={{ alignSelf: 'flex-start' }} onClick={hint} disabled={pending}>
-                  {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
-                </button>
-              )}
+              <div className="row" style={{ gap: '0.5rem' }}>
+                {hints.length < MAX_HINTS && (
+                  <button className="btn btn-sm" onClick={hint} disabled={pending}>
+                    {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
+                  </button>
+                )}
+                {/* Shows the answer; counts as a miss so it comes up again soon. */}
+                <button className="btn btn-sm btn-ghost" onClick={() => answer(SKIPPED)} disabled={pending}>I don&apos;t know</button>
+              </div>
             </div>
           )}
 

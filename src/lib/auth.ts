@@ -30,10 +30,29 @@ function deliver(email: Parameters<typeof sendEmail>[0]) {
   sendEmail(email).catch((err) => console.error(`[mail] failed to send "${email.subject}" to ${email.to}: ${describeMailError(err)}`));
 }
 
+const envList = (v: string | undefined) => (v ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+
+/**
+ * Where the client IP comes from (comma-separated in .env). Hosts like Hostinger put the app
+ * behind a proxy, so the IP arrives in a forwarded header. Admin → Overview shows what each
+ * request carries, to help pick these.
+ */
+export const IP_ADDRESS_HEADERS = envList(process.env.IP_ADDRESS_HEADERS).map((h) => h.toLowerCase());
+if (IP_ADDRESS_HEADERS.length === 0) IP_ADDRESS_HEADERS.push('x-forwarded-for');
+/** Proxy IPs or CIDR ranges to skip when reading a multi-hop x-forwarded-for chain. */
+export const TRUSTED_PROXIES = envList(process.env.TRUSTED_PROXIES);
+
 export const auth = betterAuth({
   database: pool,
   // instrumentation.ts migrates the schema on startup; the built-in check runs before that and only adds noise.
-  advanced: { database: { validateSchema: false } },
+  advanced: {
+    database: { validateSchema: false },
+    // Behind a host's proxy the client IP arrives in a header; rate limiting needs it.
+    ipAddress: {
+      ipAddressHeaders: IP_ADDRESS_HEADERS,
+      ...(TRUSTED_PROXIES.length ? { trustedProxies: TRUSTED_PROXIES } : {}),
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,

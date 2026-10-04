@@ -55,7 +55,9 @@ export async function nextQuestion(userId: string, scope: QuizScope, avoid: stri
   if (pool.length === 0) return null;
 
   const stats = new Map(progress.species.map((s) => [s.id, s]));
-  const candidates = pool.length > 2 ? pool.filter((s) => !avoid.includes(s.id)) : pool;
+  // Skip recently asked species, unless that leaves nothing (e.g. a 3-species group after 3 answers).
+  const fresh = pool.filter((s) => !avoid.includes(s.id));
+  const candidates = pool.length > 2 && fresh.length > 0 ? fresh : pool;
   const target = weightedPick(
     candidates.map((s) => {
       const st = stats.get(s.id)!;

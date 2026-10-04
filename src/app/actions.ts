@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
 import { castVote, deleteSubmission } from '@/lib/community';
 import { speciesForKey } from '@/lib/photos';
+import { SKIPPED } from '@/lib/answers';
 import { getLeaf, isSpecies } from '@/lib/leaf';
 import { recordAttempt } from '@/lib/progress';
 import { isReportReason, reportImage } from '@/lib/reports';
@@ -24,7 +25,7 @@ export async function getHint(imageKey: string, level: number) {
 export async function submitAnswer(imageKey: string, chosen: string, hints: number) {
   const user = await requireUser();
   const species = await speciesForKey(imageKey);
-  if (!species || !(await isSpecies(chosen))) throw new Error('Invalid answer');
+  if (!species || (chosen !== SKIPPED && !(await isSpecies(chosen)))) throw new Error('Invalid answer');
   const correct = species === chosen;
   await recordAttempt(user.id, {
     species,

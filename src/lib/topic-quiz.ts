@@ -1,4 +1,5 @@
 import { topicImageUrl, topicItem, type Topic, type TopicItem } from '@/data/topics';
+import { SKIPPED } from './answers';
 import { exec, query } from './db';
 import { ALPHA, levelFor, type Level } from './progress';
 
@@ -47,7 +48,7 @@ export async function getTopicProgress(userId: string, topic: Topic): Promise<To
     s.correct += r.correct;
     s.mastery += ALPHA * (score - s.mastery);
     correct += r.correct;
-    if (!r.correct) {
+    if (!r.correct && r.chosen !== SKIPPED) {
       const k = `${r.item}>${r.chosen}`;
       const c = confusions.get(k) ?? { item: r.item, chosen: r.chosen, count: 0 };
       c.count++;
@@ -96,7 +97,9 @@ export async function nextTopicQuestion(userId: string, topic: Topic, scope: str
   if (pool.length === 0) return null;
 
   const stats = new Map(progress.items.map((s) => [s.id, s]));
-  const candidates = pool.length > 2 ? pool.filter((i) => !avoid.includes(i.id)) : pool;
+  // Skip recently asked items, unless that leaves nothing (e.g. a 3-item group after 3 answers).
+  const fresh = pool.filter((i) => !avoid.includes(i.id));
+  const candidates = pool.length > 2 && fresh.length > 0 ? fresh : pool;
   const weighted = candidates.map((i) => {
     const st = stats.get(i.id)!;
     return { item: i, w: st.attempts === 0 ? 3 : 0.3 + (1 - st.mastery) * 4 };

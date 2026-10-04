@@ -1,3 +1,4 @@
+import { SKIPPED } from './answers';
 import { exec, query } from './db';
 import { getLeaf } from './leaf';
 
@@ -78,7 +79,7 @@ export async function getProgress(userId: string): Promise<Progress> {
     if (r.hints > 0) hinted++;
     if (r.created_at >= weekAgo) { last7Total++; last7Correct += r.correct; }
     days.add(Math.floor((r.created_at - new Date().getTimezoneOffset() * 60_000) / DAY));
-    if (!r.correct) {
+    if (!r.correct && r.chosen !== SKIPPED) {
       const k = `${r.species}>${r.chosen}`;
       const c = confusions.get(k) ?? { species: r.species, chosen: r.chosen, count: 0 };
       c.count++;

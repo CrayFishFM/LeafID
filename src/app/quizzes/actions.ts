@@ -1,6 +1,7 @@
 'use server';
 
 import { topicItem } from '@/data/topics';
+import { SKIPPED } from '@/lib/answers';
 import { requireUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
 import { isTopicScope, itemForKey, nextTopicQuestion, recordTopicAttempt, TOPIC_MAX_HINTS, topicHint } from '@/lib/topic-quiz';
@@ -29,7 +30,7 @@ export async function submitTopicAnswer(topicId: string, imageKey: string, chose
   const user = await requireUser();
   const topic = await topicOrThrow(topicId);
   const item = itemForKey(topic, imageKey);
-  if (!item || !topicItem(topic, chosen)) throw new Error('Invalid answer');
+  if (!item || (chosen !== SKIPPED && !topicItem(topic, chosen))) throw new Error('Invalid answer');
   const correct = item.id === chosen;
   await recordTopicAttempt(user.id, topic, {
     item: item.id,

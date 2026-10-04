@@ -37,6 +37,10 @@ Open http://localhost:3000 and create an account.
 
 Put your email in `ADMIN_EMAILS` in `.env.local` (comma-separate several) and restart. Matching accounts are promoted on server start, and new sign-ups with those emails become admins automatically. Admins see an **Admin** button in the header; from the dashboard they can promote other users.
 
+### Client IP behind a proxy
+
+Better Auth rate-limits sign-in per visitor IP. On hosts like Hostinger the app sits behind a proxy, so the IP arrives in a header. Open **Admin → Overview → Client IP detection** on the live site to see which headers arrive, then set `IP_ADDRESS_HEADERS` (e.g. `x-real-ip`) or, if `x-forwarded-for` lists several addresses, `TRUSTED_PROXIES` to your host's proxy addresses. Until then Better Auth logs a warning and every visitor shares one rate-limit bucket.
+
 ### Discord login
 
 1. Create an application at https://discord.com/developers/applications and open **OAuth2**.

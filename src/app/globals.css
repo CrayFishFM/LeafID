@@ -113,7 +113,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .bottomnav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   background: var(--surface); border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -172,6 +172,12 @@ textarea.input { min-height: 90px; resize: vertical; }
 /* ---------- photos ---------- */
 .photo { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--surface-2); aspect-ratio: 4 / 3; }
 .photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo-contain { aspect-ratio: auto; background: #fff; }
+.photo-contain img { height: auto; max-height: 70vh; object-fit: contain; }
+.topic-card .photo { aspect-ratio: 16 / 9; }
+.topic-card .photo img { height: 100%; max-height: none; }
+.study-card { scroll-margin-top: 5rem; }
+.choice .name { font-weight: 600; font-size: 1rem; line-height: 1.25; }
 .photo-tag { position: absolute; left: 0.6rem; top: 0.6rem; }
 .credit { font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; overflow-wrap: anywhere; }
 .credit a { color: inherit; }
@@ -288,3 +294,20 @@ textarea.input { min-height: 90px; resize: vertical; }
 .report-link:hover { color: var(--bad); }
 .report-form { gap: 0.5rem; margin-top: 0.4rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
 .report-done { margin: 0.35rem 0 0; }
+
+/* Admin quiz editor */
+.quiz-item-editor { padding: 0.6rem 0.8rem; }
+.quiz-item-editor summary { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; list-style: none; }
+.quiz-item-editor summary::-webkit-details-marker { display: none; }
+.quiz-item-editor summary img { width: 72px; height: 48px; object-fit: cover; border-radius: 8px; background: #fff; flex: none; }
+.quiz-item-photo { display: block; max-width: min(100%, 360px); border-radius: 10px; overflow: hidden; background: #fff; border: 1px solid var(--border); }
+.quiz-item-photo img { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; }
+.lookalike-picker { border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; margin: 0; }
+.lookalike-picker legend { font-weight: 600; font-size: 0.9rem; padding: 0 0.3rem; }
+.lookalike-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); gap: 0.3rem 0.75rem; max-height: 220px; overflow-y: auto; }
+.lookalike-grid label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+
+/* Footer */
+.site-footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; font-size: 0.875rem; color: var(--muted); }
+.github-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text); font-weight: 500; text-decoration: none; }
+.github-link:hover { color: var(--primary); text-decoration: underline; }

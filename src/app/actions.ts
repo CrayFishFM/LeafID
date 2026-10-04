@@ -1,30 +1,30 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { SPECIES_BY_ID } from '@/data/species';
 import { requireUser } from '@/lib/auth';
 import { castVote, deleteSubmission } from '@/lib/community';
 import { speciesForKey } from '@/lib/photos';
+import { getLeaf, isSpecies } from '@/lib/leaf';
 import { recordAttempt } from '@/lib/progress';
 import { isReportReason, reportImage } from '@/lib/reports';
 import { hintFor, isScope, MAX_HINTS, nextQuestion } from '@/lib/quiz';
 
 export async function getQuestion(scope: string, avoid: string[]) {
   const user = await requireUser();
-  return await nextQuestion(user.id, isScope(scope) ? scope : 'all', avoid.slice(0, 5));
+  return await nextQuestion(user.id, isScope(await getLeaf(), scope) ? scope : 'all', avoid.slice(0, 5));
 }
 
 export async function getHint(imageKey: string, level: number) {
   await requireUser();
   const species = await speciesForKey(imageKey);
   if (!species || level < 0 || level >= MAX_HINTS) return null;
-  return hintFor(species, level);
+  return await hintFor(species, level);
 }
 
 export async function submitAnswer(imageKey: string, chosen: string, hints: number) {
   const user = await requireUser();
   const species = await speciesForKey(imageKey);
-  if (!species || !SPECIES_BY_ID[chosen]) throw new Error('Invalid answer');
+  if (!species || !(await isSpecies(chosen))) throw new Error('Invalid answer');
   const correct = species === chosen;
   await recordAttempt(user.id, {
     species,

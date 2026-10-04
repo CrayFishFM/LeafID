@@ -58,7 +58,8 @@ For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the p
 
 | Path | What |
 | --- | --- |
-| `src/data/species.ts` | All species content: codes, traits, key features, look-alike tips |
+| `src/data/species.ts` | Starting species content (codes, traits, key features, look-alike tips); copied into the database on start |
+| `src/lib/leaf.ts` | Reading, seeding and admin editing of species (`getLeaf()` on the server, `useLeaf()` in the browser) |
 | `src/data/image-credits.json` | Attribution for every library photo |
 | `public/leaves/<code>/` | Library photos (Wikimedia Commons, CC/PD licensed) |
 | `src/lib/quiz.ts` | Adaptive question selection and hints |
@@ -69,6 +70,11 @@ For production: `npm run build && npm start`, and set `BETTER_AUTH_URL` to the p
 | `src/lib/admin.ts` | Dashboard stats and user listing |
 | `src/lib/guests.ts` | Moving guest data to a new account; guest cleanup |
 | `src/app/admin/` | Admin dashboard pages and server actions |
+| `src/data/topics/` | Starting content for the extra quizzes (fish, hardwood defects); copied into the database on start |
+| `public/quizzes/<topic>/` | Their photos, one per slide of the original deck (`07.webp` = slide 7) |
+| `src/lib/topic-quiz.ts` | Adaptive questions and progress for the extra quizzes |
+| `src/lib/topics.ts` | Reading, seeding and admin editing of the extra quizzes' content |
+| `slides/` | The original PowerPoint decks (kept out of `public/` because the notes hold the answers) |
 | `scripts/fetch-images.mjs` | Downloads/attributes photos from Wikimedia Commons |
 
 ## Photos
@@ -79,3 +85,13 @@ Library photos come from Wikimedia Commons; each photo's author and license are 
 node scripts/fetch-images.mjs --add Pt "File:Some photo.jpg"   # add specific Commons files
 node scripts/fetch-images.mjs --prune                          # after deleting files, drop their credits
 ```
+
+## Editable content
+
+Leaf species and groups are stored in the database (`leaf_species`, `leaf_group`) and admins edit them under **Admin → Species**. `src/data/species.ts` is only the starting content: missing species and groups are copied in on each start, but existing rows are never overwritten, so admin edits survive restarts and redeploys. Species and group ids can't be changed because answers, uploads and votes refer to them.
+
+## Extra quizzes
+
+Fish species ID and hardwood defect ID live at `/quizzes`. Their text (names, tips, groups, look-alikes) is stored in the database (`quiz_topic`, `quiz_item`) and admins edit it under **Admin → Quizzes**, with a "Reset to original" per item.
+
+`src/data/topics/` is only the starting content: on each start, missing topics, items and groups are copied in and photo lists are refreshed, but text already in the database is never overwritten. To add a topic, copy `fish.ts`, list it in `src/data/topics/index.ts`, and put its photos in `public/quizzes/<id>/`. Item ids are stored with each answer, so don't rename one after people have practised it.

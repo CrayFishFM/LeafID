@@ -154,5 +154,80 @@ export async function ensureSchema() {
       hidden_by VARCHAR(64) NOT NULL,
       hidden_at BIGINT NOT NULL
     ) ${opts}`);
+  // Answers in the extra quizzes (fish, hardwood defects…). topic and item are ids from src/data/topics.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS topic_attempt (
+      id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      user_id VARCHAR(64) NOT NULL,
+      topic VARCHAR(32) NOT NULL,
+      item VARCHAR(48) NOT NULL,
+      chosen VARCHAR(48) NOT NULL,
+      correct TINYINT(1) NOT NULL,
+      hints TINYINT UNSIGNED NOT NULL DEFAULT 0,
+      created_at BIGINT NOT NULL,
+      INDEX topic_attempt_user (user_id, topic, created_at)
+    ) ${opts}`);
+  // Leaf species content. Filled from src/data/species.ts on start, then edited by admins.
+  // Ids are fixed: answers, uploads and votes refer to them.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS leaf_group (
+      id VARCHAR(32) PRIMARY KEY,
+      label VARCHAR(80) NOT NULL,
+      blurb VARCHAR(300) NOT NULL,
+      sort INT NOT NULL DEFAULT 0,
+      updated_at BIGINT NULL,
+      updated_by VARCHAR(64) NULL
+    ) ${opts}`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS leaf_species (
+      id VARCHAR(16) PRIMARY KEY,
+      code VARCHAR(16) NOT NULL,
+      common VARCHAR(80) NOT NULL,
+      scientific VARCHAR(120) NOT NULL,
+      grp VARCHAR(32) NOT NULL,
+      arrangement VARCHAR(16) NOT NULL,
+      leaf_type VARCHAR(16) NOT NULL,
+      shape VARCHAR(200) NOT NULL,
+      margin VARCHAR(200) NOT NULL,
+      key_features TEXT NOT NULL,
+      field_clues TEXT NOT NULL,
+      lookalikes TEXT NOT NULL,
+      sort INT NOT NULL DEFAULT 0,
+      updated_at BIGINT NULL,
+      updated_by VARCHAR(64) NULL
+    ) ${opts}`);
+  // Content of the extra quizzes. Filled from src/data/topics on start, then edited by admins.
+  // JSON columns are stored as TEXT so older MySQL/MariaDB versions work too.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS quiz_topic (
+      id VARCHAR(32) PRIMARY KEY,
+      title VARCHAR(80) NOT NULL,
+      short VARCHAR(40) NOT NULL,
+      blurb VARCHAR(300) NOT NULL,
+      question VARCHAR(120) NOT NULL,
+      noun VARCHAR(40) NOT NULL,
+      source VARCHAR(160) NOT NULL,
+      \`groups\` TEXT NOT NULL,
+      sort INT NOT NULL DEFAULT 0,
+      updated_at BIGINT NULL,
+      updated_by VARCHAR(64) NULL
+    ) ${opts}`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS quiz_item (
+      topic VARCHAR(32) NOT NULL,
+      id VARCHAR(48) NOT NULL,
+      name VARCHAR(80) NOT NULL,
+      aka VARCHAR(80) NULL,
+      note VARCHAR(80) NULL,
+      scientific VARCHAR(120) NULL,
+      grp VARCHAR(32) NOT NULL,
+      tips TEXT NOT NULL,
+      lookalikes TEXT NOT NULL,
+      images TEXT NOT NULL,
+      sort INT NOT NULL DEFAULT 0,
+      updated_at BIGINT NULL,
+      updated_by VARCHAR(64) NULL,
+      PRIMARY KEY (topic, id)
+    ) ${opts}`);
   await renameSpeciesIds();
 }

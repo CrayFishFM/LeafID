@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import { ActivityChart } from '@/components/admin/ActivityChart';
-import { SPECIES_BY_ID } from '@/data/species';
 import { globalConfusions, overview, speciesDifficulty } from '@/lib/admin';
 import { requireAdmin } from '@/lib/auth';
 import { mailEnabled } from '@/lib/mail';
 import { openReportCount } from '@/lib/reports';
+import { getLeaf } from '@/lib/leaf';
 
 const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : '—');
 
 export default async function AdminOverview() {
+  const leaf = await getLeaf();
   await requireAdmin();
   const o = await overview();
   const hardest = (await speciesDifficulty()).filter((s) => s.attempts >= 5).slice(0, 8);
@@ -51,7 +52,7 @@ export default async function AdminOverview() {
             <div className="mastery-list">
               {hardest.map((s) => (
                 <Link key={s.id} href={`/learn/${s.id}`} className="mastery-row">
-                  <span className="who"><strong>{SPECIES_BY_ID[s.id].code}</strong><span>{s.attempts} answers</span></span>
+                  <span className="who"><strong>{leaf.byId[s.id].code}</strong><span>{s.attempts} answers</span></span>
                   <span className="meter"><span style={{ width: `${Math.round((s.accuracy ?? 0) * 100)}%` }} /></span>
                   <span className="small">{Math.round((s.accuracy ?? 0) * 100)}%</span>
                 </Link>
@@ -70,8 +71,8 @@ export default async function AdminOverview() {
               {confusions.map((c) => (
                 <div key={`${c.species}-${c.chosen}`} className="tally-row">
                   <span>
-                    <span className="chip chip-code">{SPECIES_BY_ID[c.species]?.code}</span>{' '}
-                    <span className="muted small">picked as</span> <span className="chip">{SPECIES_BY_ID[c.chosen]?.code}</span>
+                    <span className="chip chip-code">{leaf.byId[c.species]?.code}</span>{' '}
+                    <span className="muted small">picked as</span> <span className="chip">{leaf.byId[c.chosen]?.code}</span>
                   </span>
                   <span className="muted">× {c.count}</span>
                 </div>

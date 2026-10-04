@@ -4,8 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { auth, requireAdmin } from '@/lib/auth';
 import { adminDeleteSubmission, deleteUserContent, getSubmission, moderate } from '@/lib/community';
+import { getLeaf, resetSpecies, updateLeafGroups, updateSpecies, type SpeciesEdit } from '@/lib/leaf';
 import { describeMailError, mailEnabled, sendEmail, testEmail } from '@/lib/mail';
 import { dismissReports, pullDownImage, restoreLibraryImage } from '@/lib/reports';
+import { getTopic, resetItem, updateItem, updateTopic, type ItemEdit, type TopicEdit } from '@/lib/topics';
 
 type Result = { ok: true; message?: string } | { ok: false; error: string };
 
@@ -114,4 +116,58 @@ export async function restoreHidden(imageKey: string) {
     await restoreLibraryImage(imageKey);
     return 'Photo restored';
   }, '/admin/reports');
+}
+
+export async function saveQuizTopic(topicId: string, edit: TopicEdit) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await updateTopic(topicId, edit, admin.id);
+    return 'Quiz details saved';
+  }, null);
+}
+
+export async function saveQuizItem(topicId: string, itemId: string, edit: ItemEdit) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await updateItem(topicId, itemId, edit, admin.id);
+    return 'Saved — the quiz and study guide use this now';
+  }, null);
+}
+
+/** Returns the restored item so the form can show it. */
+export async function resetQuizItem(topicId: string, itemId: string) {
+  const result = await run(async () => {
+    await requireAdmin();
+    await resetItem(topicId, itemId);
+    return 'Back to the original text';
+  }, null);
+  const item = result.ok ? (await getTopic(topicId))?.items.find((i) => i.id === itemId) ?? null : null;
+  return { ...result, item };
+}
+
+export async function saveLeafGroups(groups: Record<string, { label: string; blurb: string }>) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await updateLeafGroups(groups, admin.id);
+    return 'Groups saved';
+  }, null);
+}
+
+export async function saveSpecies(id: string, edit: SpeciesEdit) {
+  return run(async () => {
+    const admin = await requireAdmin();
+    await updateSpecies(id, edit, admin.id);
+    return 'Saved — the field guide and quiz use this now';
+  }, null);
+}
+
+/** Returns the restored species so the form can show it. */
+export async function resetSpeciesText(id: string) {
+  const result = await run(async () => {
+    await requireAdmin();
+    await resetSpecies(id);
+    return 'Back to the original text';
+  }, null);
+  const species = result.ok ? (await getLeaf()).byId[id] ?? null : null;
+  return { ...result, species };
 }

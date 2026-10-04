@@ -1,22 +1,24 @@
 /* eslint-disable @next/next/no-img-element -- static leaf photos are pre-sized */
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { GROUPS, SPECIES_BY_ID } from '@/data/species';
 import { PhotoCredit } from '@/components/PhotoCredit';
 import { ReportButton } from '@/components/ReportButton';
 import { getSession } from '@/lib/auth';
 import { communityPhotos, libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
+import { getLeaf } from '@/lib/leaf';
 
 export async function generateMetadata(props: PageProps<'/learn/[id]'>) {
+  const leaf = await getLeaf();
   const { id } = await props.params;
-  const s = SPECIES_BY_ID[id];
+  const s = leaf.byId[id];
   return { title: s ? s.common : 'Species' };
 }
 
 export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
+  const leaf = await getLeaf();
   const { id } = await props.params;
-  const s = SPECIES_BY_ID[id];
+  const s = leaf.byId[id];
   if (!s) notFound();
 
   const session = await getSession();
@@ -26,7 +28,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
   return (
     <div className="stack" style={{ gap: '1.75rem' }}>
       <div>
-        <Link href={`/learn?group=${s.group}`} className="small">← {GROUPS[s.group].label}</Link>
+        <Link href={`/learn?group=${s.group}`} className="small">← {leaf.groups[s.group].label}</Link>
         <div className="row" style={{ marginTop: '0.5rem' }}>
           <span className="chip chip-code">{s.code}</span>
           {stat && stat.attempts > 0 && (
@@ -61,7 +63,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
         <h2>Don&apos;t confuse it with…</h2>
         <div className="grid grid-2">
           {s.lookalikes.map((l) => {
-            const other = SPECIES_BY_ID[l.id];
+            const other = leaf.byId[l.id];
             return (
               <Link key={l.id} href={`/learn/${l.id}`} className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className="row" style={{ marginBottom: '0.4rem' }}>
@@ -98,7 +100,7 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
       </section>
 
       <div className="row">
-        <Link href={`/quiz?scope=${s.group}`} className="btn btn-primary">Practise {GROUPS[s.group].label.toLowerCase()}</Link>
+        <Link href={`/quiz?scope=${s.group}`} className="btn btn-primary">Practise {leaf.groups[s.group].label.toLowerCase()}</Link>
         <Link href="/learn" className="btn">All species</Link>
       </div>
     </div>

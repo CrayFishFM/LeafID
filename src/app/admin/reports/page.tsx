@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HiddenImageCard, ReportedImageCard } from '@/components/admin/ReportedImageCard';
 import { requireAdmin } from '@/lib/auth';
+import { getLeaf } from '@/lib/leaf';
 import { hiddenLibraryImages, openReports, speciesName } from '@/lib/reports';
 
 // Formatted on the server so the client renders the same text (no hydration mismatch).
@@ -8,7 +9,7 @@ const when = (ts: number) => new Date(ts).toLocaleDateString('en-CA', { month: '
 
 export default async function AdminReports() {
   await requireAdmin();
-  const [reported, hidden] = await Promise.all([openReports(), hiddenLibraryImages()]);
+  const [reported, hidden, leaf] = await Promise.all([openReports(), hiddenLibraryImages(), getLeaf()]);
 
   return (
     <div className="stack" style={{ gap: '2rem' }}>
@@ -28,7 +29,7 @@ export default async function AdminReports() {
                 item={{
                   imageKey: r.key,
                   url: r.url,
-                  speciesName: speciesName(r.species),
+                  speciesName: speciesName(leaf, r.species),
                   community: r.community,
                   count: r.count,
                   reports: r.reports.map((x) => ({ reason: x.reason, note: x.note, reporter: x.reporter, when: when(x.createdAt) })),
@@ -46,7 +47,7 @@ export default async function AdminReports() {
         ) : (
           <div className="gallery">
             {hidden.map((h) => (
-              <HiddenImageCard key={h.key} imageKey={h.key} url={h.url} speciesName={speciesName(h.species)} hiddenBy={h.hiddenBy} when={when(h.hiddenAt)} />
+              <HiddenImageCard key={h.key} imageKey={h.key} url={h.url} speciesName={speciesName(leaf, h.species)} hiddenBy={h.hiddenBy} when={when(h.hiddenAt)} />
             ))}
           </div>
         )}

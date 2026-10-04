@@ -1,6 +1,6 @@
 import credits from '@/data/image-credits.json';
-import { SPECIES_BY_ID } from '@/data/species';
 import { one, query } from './db';
+import { isSpecies } from './leaf';
 
 export interface Credit {
   file: string;
@@ -60,7 +60,7 @@ export async function allPhotos(): Promise<Photo[]> {
 export async function speciesForKey(key: string): Promise<string | null> {
   if (key.startsWith('lib:')) {
     const species = key.slice(4).split('/')[0];
-    return SPECIES_BY_ID[species] && LIBRARY.some((p) => p.key === key) ? species : null;
+    return (await isSpecies(species)) && LIBRARY.some((p) => p.key === key) ? species : null;
   }
   if (key.startsWith('sub:')) {
     const row = await one<{ consensus: string }>(`SELECT consensus FROM submission WHERE id = ? AND status = 'verified'`, [key.slice(4)]);

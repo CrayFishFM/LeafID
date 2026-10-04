@@ -38,6 +38,12 @@ export async function register() {
       }
     }
     await ensureSchema();
+    // Copy the fish / defect quiz content into the database (never overwrites admin edits).
+    const { seedTopics } = await import('./lib/topics');
+    await seedTopics();
+    // Same for the leaf species and groups.
+    const { seedLeaf } = await import('./lib/leaf');
+    await seedLeaf();
     // Photos used to be files in the app folder; move any that are left into the database.
     const { importLegacyImages } = await import('./lib/community');
     await importLegacyImages();

@@ -3,14 +3,16 @@
 
 import { useState, useTransition } from 'react';
 import { vote } from '@/app/actions';
-import { SPECIES_BY_ID, speciesLabel } from '@/data/species';
 import type { Submission } from '@/lib/community';
 import { ReportButton } from './ReportButton';
 import { SpeciesSelect } from './SpeciesSelect';
 import { StatusChip } from './StatusChip';
+import { useLeaf } from './LeafProvider';
+import { speciesLabel } from '@/lib/leaf-shared';
 
 /** Blind review: the voter commits to an ID before seeing the uploader's claim or the tally. */
 export function ReviewCard({ submission }: { submission: Submission }) {
+  const leaf = useLeaf();
   const [sub, setSub] = useState(submission);
   const [choice, setChoice] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -58,13 +60,13 @@ export function ReviewCard({ submission }: { submission: Submission }) {
             )}
           </div>
           <p className="small" style={{ margin: 0 }}>
-            Uploader said <strong>{speciesLabel(sub.claimed)}</strong>
-            {sub.myVote !== sub.claimed && <>; you said <strong>{speciesLabel(sub.myVote!)}</strong></>}.
+            Uploader said <strong>{speciesLabel(leaf, sub.claimed)}</strong>
+            {sub.myVote !== sub.claimed && <>; you said <strong>{speciesLabel(leaf, sub.myVote!)}</strong></>}.
           </p>
           <div className="tally">
             {sub.tally.map((t) => (
               <div key={t.species} className="tally-row">
-                <span>{SPECIES_BY_ID[t.species]?.common ?? t.species}</span>
+                <span>{leaf.byId[t.species]?.common ?? t.species}</span>
                 <span className="muted">{t.count} vote{t.count === 1 ? '' : 's'}</span>
               </div>
             ))}

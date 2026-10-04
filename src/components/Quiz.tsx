@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { getHint, getQuestion, submitAnswer } from '@/app/actions';
-import { SPECIES_BY_ID } from '@/data/species';
 import type { Question } from '@/lib/quiz';
 import { contrastTip } from '@/lib/suggestions';
 import { ReportButton } from './ReportButton';
+import { useLeaf } from './LeafProvider';
 
 const ROUND = 10;
 const MAX_HINTS = 3;
@@ -15,6 +15,7 @@ const MAX_HINTS = 3;
 interface Result { correct: boolean; species: string; chosen: string }
 
 export function Quiz({ scope, initial }: { scope: string; initial: Question | null }) {
+  const leaf = useLeaf();
   const [q, setQ] = useState<Question | null>(initial);
   const [result, setResult] = useState<Result | null>(null);
   const [hints, setHints] = useState<string[]>([]);
@@ -103,8 +104,8 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
   }
 
   const correctCount = round.filter((r) => r.correct).length;
-  const target = result ? SPECIES_BY_ID[result.species] : null;
-  const chosenSp = result && !result.correct ? SPECIES_BY_ID[result.chosen] : null;
+  const target = result ? leaf.byId[result.species] : null;
+  const chosenSp = result && !result.correct ? leaf.byId[result.chosen] : null;
 
   return (
     <div className="stack">
@@ -142,7 +143,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
 
           <div className="choices">
             {q.choices.map((id) => {
-              const s = SPECIES_BY_ID[id];
+              const s = leaf.byId[id];
               const cls = result ? (id === result.species ? 'correct' : id === result.chosen ? 'wrong' : '') : '';
               return (
                 <button key={id} className={`choice ${cls}`} disabled={!!result || pending} onClick={() => answer(id)}>
@@ -173,7 +174,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
                 <strong>{target.common}</strong> <span className="chip chip-code">{target.code}</span>
               </p>
               {chosenSp && (
-                <p className="small"><strong>How to tell them apart:</strong> {contrastTip(target.id, chosenSp.id)}</p>
+                <p className="small"><strong>How to tell them apart:</strong> {contrastTip(leaf, target.id, chosenSp.id)}</p>
               )}
               <p className="small muted" style={{ marginBottom: 0 }}>Key features of {target.common.toLowerCase()}:</p>
               <ul className="small">{target.keyFeatures.map((f) => <li key={f}>{f}</li>)}</ul>
@@ -192,7 +193,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
                   <p className="small muted">Worth reviewing:</p>
                   <div className="row">
                     {[...new Set(round.filter((r) => !r.correct).map((r) => r.species))].map((id) => (
-                      <Link key={id} href={`/learn/${id}`} className="chip">{SPECIES_BY_ID[id].code} · {SPECIES_BY_ID[id].common}</Link>
+                      <Link key={id} href={`/learn/${id}`} className="chip">{leaf.byId[id].code} · {leaf.byId[id].common}</Link>
                     ))}
                   </div>
                 </div>

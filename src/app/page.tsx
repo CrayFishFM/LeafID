@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- static leaf photos are pre-sized */
 import Link from 'next/link';
-import { SPECIES } from '@/data/species';
+import { listTopics } from '@/lib/topics';
 import { discordEnabled, getSession } from '@/lib/auth';
 import { verificationRule } from '@/lib/community';
 import { libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
 import { suggestionsFor } from '@/lib/suggestions';
+import { getLeaf } from '@/lib/leaf';
 
 // Hand-picked for colour: a green sugar maple, a red oak in fall and a golden aspen.
 const HERO = ['lib:Mh/8.jpg', 'lib:Or/7.jpg', 'lib:Pt/1.jpg'];
@@ -18,11 +19,12 @@ const STEPS = [
 ];
 
 export default async function Home(props: PageProps<'/'>) {
+  const leaf = await getLeaf();
   const { deleted } = await props.searchParams;
-  const session = await getSession();
+  const [session, topics] = await Promise.all([getSession(), listTopics()]);
   const heroPhotos = (await libraryPhotos()).filter((p) => HERO.includes(p.key));
   const progress = session ? await getProgress(session.user.id) : null;
-  const tip = progress ? suggestionsFor(progress)[0] : null;
+  const tip = progress ? suggestionsFor(leaf, progress)[0] : null;
 
   return (
     <div className="stack" style={{ gap: '2.5rem' }}>
@@ -32,7 +34,7 @@ export default async function Home(props: PageProps<'/'>) {
           <p className="eyebrow">Ontario tree identification</p>
           <h1>Learn to know a tree by its leaf.</h1>
           <p className="lead">
-            Practise the {SPECIES.length} species on the Ontario tree ID list — from Mh to Pd. LeafID adapts to what you
+            Practise the {leaf.species.length} species on the Ontario tree ID list — from Mh to Pd. LeafID adapts to what you
             get wrong, explains the difference every time, and shows you exactly what to study next.
           </p>
           <div className="row">
@@ -96,6 +98,22 @@ export default async function Home(props: PageProps<'/'>) {
             Upload your own leaf photos. When enough people agree on the ID, the photo joins everyone&apos;s practice set.
           </p>
           <Link href="/community">Visit the community →</Link>
+        </div>
+      </section>
+
+      <section className="card stack">
+        <div>
+          <p className="eyebrow">More quizzes</p>
+          <h3 style={{ margin: 0 }}>Fish and hardwood defects too</h3>
+          <p className="muted" style={{ margin: '0.25rem 0 0' }}>
+            Practise Ontario fish species and hardwood defects with the same adaptive quiz, plus a study guide for each.
+          </p>
+        </div>
+        <div className="row">
+          {topics.map((t) => (
+            <Link key={t.id} href={`/quizzes/${t.id}`} className="btn btn-sm">{t.title}</Link>
+          ))}
+          <Link href="/quizzes" className="btn btn-sm btn-ghost">All quizzes →</Link>
         </div>
       </section>
 

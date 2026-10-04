@@ -2,12 +2,14 @@
 import Link from 'next/link';
 import { DeleteSubmissionButton } from '@/components/DeleteSubmissionButton';
 import { StatusChip } from '@/components/StatusChip';
-import { speciesLabel } from '@/data/species';
 import { GuestGate } from '@/components/GuestGate';
 import { getUser } from '@/lib/auth';
 import { MIN_VOTES, userSubmissions } from '@/lib/community';
+import { getLeaf } from '@/lib/leaf';
+import { speciesLabel } from '@/lib/leaf-shared';
 
 export default async function MyUploadsPage(props: PageProps<'/community/mine'>) {
+  const leaf = await getLeaf();
   const user = await getUser();
   if (!user) return <GuestGate />;
   const { uploaded } = await props.searchParams;
@@ -34,9 +36,9 @@ export default async function MyUploadsPage(props: PageProps<'/community/mine'>)
                 <StatusChip status={s.status} />
                 <span className="small muted">{s.votes} vote{s.votes === 1 ? '' : 's'}</span>
               </div>
-              <p className="small" style={{ margin: 0 }}>You said <strong>{speciesLabel(s.claimed)}</strong></p>
+              <p className="small" style={{ margin: 0 }}>You said <strong>{speciesLabel(leaf, s.claimed)}</strong></p>
               {s.status === 'verified' && s.consensus !== s.claimed && (
-                <p className="small" style={{ margin: 0 }}>Crowd says <strong>{speciesLabel(s.consensus!)}</strong></p>
+                <p className="small" style={{ margin: 0 }}>Crowd says <strong>{speciesLabel(leaf, s.consensus!)}</strong></p>
               )}
               {s.status === 'pending' && (
                 <p className="small muted" style={{ margin: 0 }}>{s.votes < MIN_VOTES
@@ -46,7 +48,7 @@ export default async function MyUploadsPage(props: PageProps<'/community/mine'>)
               {s.tally.length > 0 && (
                 <div className="tally small">
                   {s.tally.map((t) => (
-                    <div key={t.species} className="tally-row"><span>{speciesLabel(t.species)}</span><span className="muted">{t.count}</span></div>
+                    <div key={t.species} className="tally-row"><span>{speciesLabel(leaf, t.species)}</span><span className="muted">{t.count}</span></div>
                   ))}
                 </div>
               )}

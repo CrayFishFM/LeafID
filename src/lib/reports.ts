@@ -1,7 +1,7 @@
-import { SPECIES_BY_ID } from '@/data/species';
 import { moderate } from './community';
 import { exec, one, query, transaction } from './db';
 import { libraryPhotoByKey } from './photos';
+import type { LeafData } from './leaf-shared';
 
 import type { ReportReason } from './report-reasons';
 
@@ -125,4 +125,4 @@ export async function moveReports(fromUserId: string, toUserId: string) {
   });
 }
 
-export const speciesName = (id: string | null) => (id && SPECIES_BY_ID[id] ? SPECIES_BY_ID[id].common : 'Unknown');
+export const speciesName = (leaf: LeafData, id: string | null) => (id && leaf.byId[id] ? leaf.byId[id].common : 'Unknown');

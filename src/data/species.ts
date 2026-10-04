@@ -1,7 +1,8 @@
 export type Arrangement = 'opposite' | 'alternate';
 export type LeafType = 'simple' | 'compound';
 
-export type GroupId = 'maples' | 'oaks' | 'birch-family' | 'compound' | 'poplars' | 'other-simple';
+/** Group ids are fixed (they appear in links and saved filters); labels are edited by admins. */
+export type GroupId = string;
 
 export interface Lookalike {
   id: string;
@@ -26,9 +27,22 @@ export interface Species {
   /** Non-leaf clues that help confirm the ID in the field. */
   fieldClues: string[];
   lookalikes: Lookalike[];
+  /** Set once an admin has edited the species. */
+  updatedAt?: number | null;
+  updatedBy?: string | null;
 }
 
-export const GROUPS: Record<GroupId, { label: string; blurb: string }> = {
+export interface LeafGroup {
+  label: string;
+  blurb: string;
+}
+
+/*
+ * Starting content only. On start, missing groups and species are copied into the database
+ * (leaf_group / leaf_species); from then on admins edit them there and this file never
+ * overwrites their changes. Read species with getLeaf() (server) or useLeaf() (browser).
+ */
+export const GROUP_SEED: Record<GroupId, LeafGroup> = {
   maples: { label: 'Maples', blurb: 'Opposite, palmately lobed (except Manitoba maple).' },
   oaks: { label: 'Oaks', blurb: 'Alternate, lobed; pointed vs. rounded lobes splits red and white oaks.' },
   'birch-family': { label: 'Birch family & look-alikes', blurb: 'Alternate, oval, toothed leaves that are easy to mix up.' },
@@ -37,7 +51,7 @@ export const GROUPS: Record<GroupId, { label: string; blurb: string }> = {
   'other-simple': { label: 'Beech, elm & basswood', blurb: 'Distinctive simple leaves worth learning together.' },
 };
 
-export const SPECIES: Species[] = [
+export const SPECIES_SEED: Species[] = [
   {
     id: 'Mh', code: 'Mh', common: 'Sugar maple (hard maple)', scientific: 'Acer saccharum', group: 'maples',
     arrangement: 'opposite', leafType: 'simple',
@@ -467,11 +481,3 @@ export const SPECIES: Species[] = [
     ],
   },
 ];
-
-export const SPECIES_BY_ID: Record<string, Species> = Object.fromEntries(SPECIES.map((s) => [s.id, s]));
-
-export function speciesLabel(id: string): string {
-  const s = SPECIES_BY_ID[id];
-  if (!s) return id;
-  return s.code === s.common ? s.common : `${s.code} · ${s.common}`;
-}

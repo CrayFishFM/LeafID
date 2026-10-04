@@ -1,4 +1,4 @@
-import { SPECIES } from '@/data/species';
+import { getLeaf } from './leaf';
 import { submissionCounts } from './community';
 import { one, query } from './db';
 
@@ -88,7 +88,7 @@ export async function speciesDifficulty() {
     `SELECT species, COUNT(*) AS attempts, SUM(correct) AS correct FROM attempt GROUP BY species`,
   );
   const by = new Map(rows.map((r) => [r.species, r]));
-  return SPECIES.map((s) => {
+  return (await getLeaf()).species.map((s) => {
     const r = by.get(s.id);
     return { id: s.id, attempts: r?.attempts ?? 0, accuracy: r ? r.correct / r.attempts : null };
   }).sort((a, b) => (a.accuracy ?? 2) - (b.accuracy ?? 2));

@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import { GROUPS, SPECIES_BY_ID } from '@/data/species';
 import { GuestGate } from '@/components/GuestGate';
 import { getUser } from '@/lib/auth';
 import { getProgress, type Level } from '@/lib/progress';
 import { contrastTip, suggestionsFor } from '@/lib/suggestions';
+import { getTopicProgress } from '@/lib/topic-quiz';
+import { listTopics } from '@/lib/topics';
+import { getLeaf } from '@/lib/leaf';
 
 export const metadata = { title: 'Progress' };
 
@@ -11,10 +13,14 @@ const LEVEL_CHIP: Record<Level, string> = { new: '', struggling: 'chip-bad', lea
 const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
 
 export default async function ProgressPage() {
+  const leaf = await getLeaf();
   const user = await getUser();
   if (!user) return <GuestGate />;
-  const p = await getProgress(user.id);
-  const suggestions = suggestionsFor(p);
+  const [p, topicStats] = await Promise.all([
+    getProgress(user.id),
+    listTopics().then((topics) => Promise.all(topics.map(async (topic) => ({ topic, progress: await getTopicProgress(user.id, topic) })))),
+  ]);
+  const suggestions = suggestionsFor(leaf, p);
   const counts = p.species.reduce<Record<Level, number>>(
     (acc, s) => ({ ...acc, [s.level]: acc[s.level] + 1 }),
     { new: 0, struggling: 0, learning: 0, mastered: 0 },
@@ -80,7 +86,7 @@ export default async function ProgressPage() {
           </p>
           <div className="mastery-list">
             {ordered.map((s) => {
-              const sp = SPECIES_BY_ID[s.id];
+              const sp = leaf.byId[s.id];
               return (
                 <Link key={s.id} href={`/learn/${s.id}`} className="mastery-row">
                   <span className="who"><strong>{sp.code}</strong>{sp.code !== sp.common && <span>{sp.common}</span>}</span>
@@ -100,7 +106,7 @@ export default async function ProgressPage() {
             <div className="mastery-list">
               {p.groups.map((g) => (
                 <Link key={g.id} href={`/quiz?scope=${g.id}`} className="mastery-row" style={{ gridTemplateColumns: '1fr 5rem auto' }}>
-                  <span>{GROUPS[g.id].label}</span>
+                  <span>{leaf.groups[g.id].label}</span>
                   <span className="meter"><span style={{ width: `${pct(g.correct, g.attempts)}%` }} /></span>
                   <span className="small muted">{g.attempts ? `${pct(g.correct, g.attempts)}%` : '—'}</span>
                 </Link>
@@ -117,12 +123,12 @@ export default async function ProgressPage() {
                 {p.confusions.slice(0, 5).map((c) => (
                   <div key={`${c.species}-${c.chosen}`}>
                     <div className="row" style={{ gap: '0.4rem' }}>
-                      <span className="chip chip-code">{SPECIES_BY_ID[c.species].code}</span>
+                      <span className="chip chip-code">{leaf.byId[c.species].code}</span>
                       <span className="small muted">answered as</span>
-                      <span className="chip">{SPECIES_BY_ID[c.chosen].code}</span>
+                      <span className="chip">{leaf.byId[c.chosen].code}</span>
                       <span className="small muted">× {c.count}</span>
                     </div>
-                    <p className="small" style={{ margin: '0.35rem 0 0' }}>{contrastTip(c.species, c.chosen)}</p>
+                    <p className="small" style={{ margin: '0.35rem 0 0' }}>{contrastTip(leaf, c.species, c.chosen)}</p>
                   </div>
                 ))}
               </div>
@@ -130,6 +136,30 @@ export default async function ProgressPage() {
           </section>
         </div>
       </div>
+
+      <section className="stack">
+        <h2 style={{ margin: 0 }}>Other quizzes</h2>
+        <div className="grid grid-2">
+          {topicStats.map(({ topic, progress }) => {
+            const mastered = progress.items.filter((i) => i.level === 'mastered').length;
+            const seen = progress.items.filter((i) => i.attempts > 0).length;
+            return (
+              <div key={topic.id} className="card stack" style={{ gap: '0.5rem' }}>
+                <h3 style={{ margin: 0 }}>{topic.title}</h3>
+                <p className="small muted" style={{ margin: 0 }}>
+                  {progress.total === 0
+                    ? 'Not started yet.'
+                    : `${pct(progress.correct, progress.total)}% correct over ${progress.total} answers · ${seen}/${topic.items.length} seen · ${mastered} mastered`}
+                </p>
+                <div className="row">
+                  <Link href={`/quizzes/${topic.id}`} className="btn btn-sm btn-primary">Practise</Link>
+                  <Link href={`/quizzes/${topic.id}/study`} className="btn btn-sm">Study guide</Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

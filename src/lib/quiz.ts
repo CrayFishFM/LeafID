@@ -1,4 +1,5 @@
-import { GROUPS, SPECIES, SPECIES_BY_ID, type GroupId } from '@/data/species';
+import type { LeafData } from './leaf-shared';
+import { getLeaf } from './leaf';
 import { allPhotos } from './photos';
 import { getProgress } from './progress';
 
@@ -10,10 +11,11 @@ export interface Question {
   choices: string[];
 }
 
-export type QuizScope = GroupId | 'all' | 'weak';
+/** 'all', 'weak' or a group id. */
+export type QuizScope = string;
 
-export function isScope(v: unknown): v is QuizScope {
-  return v === 'all' || v === 'weak' || (typeof v === 'string' && v in GROUPS);
+export function isScope(leaf: LeafData, v: unknown): v is QuizScope {
+  return v === 'all' || v === 'weak' || (typeof v === 'string' && v in leaf.groups);
 }
 
 const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
@@ -39,7 +41,8 @@ function weightedPick(items: { id: string; w: number }[]): string {
  * and wrong choices are drawn from look-alikes and the learner's own past mix-ups.
  */
 export async function nextQuestion(userId: string, scope: QuizScope, avoid: string[] = []): Promise<Question | null> {
-  const [progress, photos] = await Promise.all([getProgress(userId), allPhotos()]);
+  const [progress, photos, leaf] = await Promise.all([getProgress(userId), allPhotos(), getLeaf()]);
+  const SPECIES = leaf.species, SPECIES_BY_ID = leaf.byId;
   const withPhotos = new Set(photos.map((p) => p.species));
 
   let pool = SPECIES.filter((s) => withPhotos.has(s.id));
@@ -83,13 +86,13 @@ export async function nextQuestion(userId: string, scope: QuizScope, avoid: stri
 }
 
 /** Progressive hints that narrow the answer without giving it away. */
-export function hintFor(species: string, level: number): string | null {
-  const s = SPECIES_BY_ID[species];
+export async function hintFor(species: string, level: number): Promise<string | null> {
+  const s = (await getLeaf()).byId[species];
   if (!s) return null;
   const hints = [
     `Leaves are ${s.arrangement} and ${s.leafType}.`,
     `Shape: ${s.shape}. Margin: ${s.margin.toLowerCase()}.`,
-    `Look for this: ${s.keyFeatures[0].charAt(0).toLowerCase()}${s.keyFeatures[0].slice(1)}.`,
+    s.keyFeatures[0] && `Look for this: ${s.keyFeatures[0].charAt(0).toLowerCase()}${s.keyFeatures[0].slice(1)}.`,
   ];
   return hints[level] ?? null;
 }

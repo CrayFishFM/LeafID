@@ -3,12 +3,14 @@
 
 import { useState, useTransition } from 'react';
 import { deletePhoto, moderatePhoto } from '@/app/admin/actions';
-import { speciesLabel } from '@/data/species';
 import type { Submission } from '@/lib/community';
 import { SpeciesSelect } from '../SpeciesSelect';
 import { StatusChip } from '../StatusChip';
+import { useLeaf } from '../LeafProvider';
+import { speciesLabel } from '@/lib/leaf-shared';
 
 export function PhotoModeration({ sub: initial }: { sub: Submission }) {
+  const leaf = useLeaf();
   const [sub, setSub] = useState(initial);
   // Default the approve choice to the crowd's leader, else the uploader's claim.
   const [species, setSpecies] = useState(sub.consensus ?? sub.tally[0]?.species ?? sub.claimed);
@@ -44,13 +46,13 @@ export function PhotoModeration({ sub: initial }: { sub: Submission }) {
         {sub.note && <div>“{sub.note}”</div>}
       </div>
       <div className="small">
-        Uploader said <strong>{speciesLabel(sub.claimed)}</strong>
-        {sub.consensus && sub.consensus !== sub.claimed && <> · now <strong>{speciesLabel(sub.consensus)}</strong></>}
+        Uploader said <strong>{speciesLabel(leaf, sub.claimed)}</strong>
+        {sub.consensus && sub.consensus !== sub.claimed && <> · now <strong>{speciesLabel(leaf, sub.consensus)}</strong></>}
       </div>
       {sub.tally.length > 0 && (
         <div className="tally small">
           {sub.tally.map((t) => (
-            <div key={t.species} className="tally-row"><span>{speciesLabel(t.species)}</span><span className="muted">{t.count}</span></div>
+            <div key={t.species} className="tally-row"><span>{speciesLabel(leaf, t.species)}</span><span className="muted">{t.count}</span></div>
           ))}
         </div>
       )}

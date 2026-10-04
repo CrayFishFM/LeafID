@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element -- user-uploaded photos */
 import Link from 'next/link';
 import { ReviewCard } from '@/components/ReviewCard';
-import { SPECIES_BY_ID } from '@/data/species';
 import { GuestGate } from '@/components/GuestGate';
 import { getUser } from '@/lib/auth';
 import { recentlyVerified, reviewQueue } from '@/lib/community';
+import { getLeaf } from '@/lib/leaf';
 
 export default async function CommunityPage() {
+  const leaf = await getLeaf();
   const user = await getUser();
   if (!user) return <GuestGate />;
   const queue = await reviewQueue(user.id);
@@ -33,7 +34,7 @@ export default async function CommunityPage() {
           <h2>Recently verified</h2>
           <div className="grid grid-cards">
             {verified.map((s) => {
-              const sp = SPECIES_BY_ID[s.consensus!];
+              const sp = leaf.byId[s.consensus!];
               return (
                 <Link key={s.id} href={`/learn/${sp.id}`} className="species-card">
                   <div className="photo"><img src={`/api/photos/${s.id}`} alt={`${sp.common} leaf`} loading="lazy" /></div>

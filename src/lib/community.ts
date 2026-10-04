@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { SPECIES_BY_ID } from '@/data/species';
 import { exec, LEGACY_UPLOAD_DIR, one, query, transaction } from './db';
+import { isSpecies } from './leaf';
 
 export type SubmissionStatus = 'pending' | 'verified' | 'disputed' | 'rejected';
 
@@ -106,7 +106,7 @@ function sniff(buf: Buffer): string | null {
 
 /** `approve`: an admin uploading their own photo can verify it straight away (an admin decision). */
 export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null, approve = false) {
-  if (!SPECIES_BY_ID[claimed]) throw new Error('Unknown species');
+  if (!(await isSpecies(claimed))) throw new Error('Unknown species');
   if (file.length > MAX_UPLOAD_BYTES) throw new Error('Image is larger than 8 MB');
   const mime = sniff(file);
   if (!mime) throw new Error('Only JPEG, PNG or WebP images are allowed');
@@ -183,7 +183,7 @@ export async function recentlyVerified(limit = 12): Promise<Submission[]> {
 }
 
 export async function castVote(submissionId: string, userId: string, species: string): Promise<Submission> {
-  if (!SPECIES_BY_ID[species]) throw new Error('Unknown species');
+  if (!(await isSpecies(species))) throw new Error('Unknown species');
   const sub = await getSubmission(submissionId, userId);
   if (!sub) throw new Error('Photo not found');
   if (sub.userId === userId) throw new Error("You can't vote on your own photo");
@@ -259,7 +259,7 @@ export async function submissionCounts(): Promise<Record<SubmissionStatus, numbe
 export async function moderate(id: string, action: 'approve' | 'reject' | 'reopen', species?: string) {
   if (!(await one(`SELECT 1 FROM submission WHERE id = ?`, [id]))) throw new Error('Photo not found');
   if (action === 'approve') {
-    if (!species || !SPECIES_BY_ID[species]) throw new Error('Choose a species to approve as');
+    if (!species || !(await isSpecies(species))) throw new Error('Choose a species to approve as');
     await exec(`UPDATE submission SET status = 'verified', consensus = ?, moderated = 1 WHERE id = ?`, [species, id]);
   } else if (action === 'reject') {
     await exec(`UPDATE submission SET status = 'rejected', consensus = NULL, moderated = 1 WHERE id = ?`, [id]);
@@ -283,6 +283,7 @@ export async function deleteUserContent(userId: string) {
     await conn.execute(`DELETE FROM submission WHERE user_id = ?`, [userId]);
     await conn.execute(`DELETE FROM vote WHERE user_id = ?`, [userId]);
     await conn.execute(`DELETE FROM attempt WHERE user_id = ?`, [userId]);
+    await conn.execute(`DELETE FROM topic_attempt WHERE user_id = ?`, [userId]);
   });
   // Their votes are gone, so re-check photos they had voted on.
   for (const { id } of affected) {

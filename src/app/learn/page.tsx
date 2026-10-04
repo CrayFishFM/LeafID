@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- static leaf photos are pre-sized */
 import Link from 'next/link';
-import { GROUPS, SPECIES, type GroupId } from '@/data/species';
 import { libraryPhotos } from '@/lib/photos';
+import { getLeaf } from '@/lib/leaf';
 
 export const metadata = { title: 'Field guide' };
 
@@ -13,17 +13,18 @@ const STEPS = [
 ];
 
 export default async function LearnPage(props: PageProps<'/learn'>) {
+  const leaf = await getLeaf();
   const { group } = await props.searchParams;
-  const active = typeof group === 'string' && group in GROUPS ? (group as GroupId) : null;
-  const list = active ? SPECIES.filter((s) => s.group === active) : SPECIES;
+  const active = typeof group === 'string' && group in leaf.groups ? (group as string) : null;
+  const list = active ? leaf.species.filter((s) => s.group === active) : leaf.species;
   const photos = await libraryPhotos();
 
   return (
     <div className="stack" style={{ gap: '1.5rem' }}>
       <div>
         <p className="eyebrow">Field guide</p>
-        <h1>{active ? GROUPS[active].label : 'All species'}</h1>
-        <p className="muted">{active ? GROUPS[active].blurb : 'Tap a species to study its features and look-alikes.'}</p>
+        <h1>{active ? leaf.groups[active].label : 'All species'}</h1>
+        <p className="muted">{active ? leaf.groups[active].blurb : 'Tap a species to study its features and look-alikes.'}</p>
       </div>
 
       <details className="card">
@@ -40,8 +41,8 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
 
       <div className="segmented" role="tablist">
         <Link href="/learn" aria-current={!active}>All</Link>
-        {(Object.keys(GROUPS) as GroupId[]).map((g) => (
-          <Link key={g} href={`/learn?group=${g}`} aria-current={active === g}>{GROUPS[g].label}</Link>
+        {Object.keys(leaf.groups).map((g) => (
+          <Link key={g} href={`/learn?group=${g}`} aria-current={active === g}>{leaf.groups[g].label}</Link>
         ))}
       </div>
 
@@ -63,7 +64,7 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
 
       {active && (
         <Link href={`/quiz?scope=${active}`} className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-          Practise {GROUPS[active].label.toLowerCase()}
+          Practise {leaf.groups[active].label.toLowerCase()}
         </Link>
       )}
     </div>

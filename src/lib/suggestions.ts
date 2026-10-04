@@ -1,4 +1,4 @@
-import { GROUPS, SPECIES, SPECIES_BY_ID } from '@/data/species';
+import type { LeafData } from './leaf-shared';
 import type { Progress } from './progress';
 
 export interface Suggestion {
@@ -9,9 +9,9 @@ export interface Suggestion {
 }
 
 /** Explain how to separate two species, using curated tips where we have them. */
-export function contrastTip(actual: string, chosen: string): string {
-  const a = SPECIES_BY_ID[actual];
-  const c = SPECIES_BY_ID[chosen];
+export function contrastTip(leaf: LeafData, actual: string, chosen: string): string {
+  const a = leaf.byId[actual];
+  const c = leaf.byId[chosen];
   if (!a || !c) return '';
   const curated = a.lookalikes.find((l) => l.id === chosen)?.tip ?? c.lookalikes.find((l) => l.id === actual)?.tip;
   if (curated) return curated;
@@ -19,10 +19,11 @@ export function contrastTip(actual: string, chosen: string): string {
   if (a.arrangement !== c.arrangement) diffs.push(`${a.common} is ${a.arrangement}; ${c.common} is ${c.arrangement}`);
   if (a.leafType !== c.leafType) diffs.push(`${a.common} has ${a.leafType} leaves; ${c.common} has ${c.leafType} leaves`);
   if (diffs.length) return diffs.join('. ') + '.';
-  return `${a.common}: ${a.keyFeatures[0].toLowerCase()}. ${c.common}: ${c.keyFeatures[0].toLowerCase()}.`;
+  return `${a.common}: ${(a.keyFeatures[0] ?? a.shape).toLowerCase()}. ${c.common}: ${(c.keyFeatures[0] ?? c.shape).toLowerCase()}.`;
 }
 
-export function suggestionsFor(p: Progress): Suggestion[] {
+export function suggestionsFor(leaf: LeafData, p: Progress): Suggestion[] {
+  const SPECIES = leaf.species, SPECIES_BY_ID = leaf.byId, GROUPS = leaf.groups;
   const out: Suggestion[] = [];
   const seen = p.species.filter((s) => s.attempts > 0);
 
@@ -43,7 +44,7 @@ export function suggestionsFor(p: Progress): Suggestion[] {
     out.push({
       title: `Review ${weak.map((s) => SPECIES_BY_ID[s.id].code).join(', ')}`,
       body: weak
-        .map((s) => `${SPECIES_BY_ID[s.id].common}: ${SPECIES_BY_ID[s.id].keyFeatures[0].toLowerCase()}`)
+        .map((s) => `${SPECIES_BY_ID[s.id].common}: ${(SPECIES_BY_ID[s.id].keyFeatures[0] ?? SPECIES_BY_ID[s.id].shape).toLowerCase()}`)
         .join(' · '),
       href: `/learn/${weak[0].id}`,
       cta: 'Open in field guide',
@@ -53,7 +54,7 @@ export function suggestionsFor(p: Progress): Suggestion[] {
   for (const c of p.confusions.filter((c) => c.count >= 2).slice(0, 2)) {
     out.push({
       title: `You've mistaken ${SPECIES_BY_ID[c.species].code} for ${SPECIES_BY_ID[c.chosen].code} ${c.count} times`,
-      body: contrastTip(c.species, c.chosen),
+      body: contrastTip(leaf, c.species, c.chosen),
       href: `/learn/${c.species}`,
       cta: 'Compare them',
     });

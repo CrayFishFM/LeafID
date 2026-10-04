@@ -10,6 +10,7 @@ export async function mergeGuestInto(guestId: string, userId: string) {
   const voted = await query<{ id: string }>(`SELECT submission_id AS id FROM vote WHERE user_id = ?`, [guestId]);
   await transaction(async (conn) => {
     await conn.execute(`UPDATE attempt SET user_id = ? WHERE user_id = ?`, [userId, guestId]);
+    await conn.execute(`UPDATE topic_attempt SET user_id = ? WHERE user_id = ?`, [userId, guestId]);
     await conn.execute(`UPDATE submission SET user_id = ? WHERE user_id = ?`, [userId, guestId]);
     // If both the guest and the account voted on a photo, keep the account's vote.
     await conn.execute(`UPDATE IGNORE vote SET user_id = ? WHERE user_id = ?`, [userId, guestId]);
@@ -40,6 +41,7 @@ export async function cleanupGuests() {
   for (const { id } of stale) {
     await transaction(async (conn) => {
       await conn.execute(`DELETE FROM attempt WHERE user_id = ?`, [id]);
+      await conn.execute(`DELETE FROM topic_attempt WHERE user_id = ?`, [id]);
       await conn.execute('DELETE FROM session WHERE userId = ?', [id]);
       await conn.execute('DELETE FROM account WHERE userId = ?', [id]);
       await conn.execute('DELETE FROM `user` WHERE id = ?', [id]);

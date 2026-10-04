@@ -1,5 +1,5 @@
-import { GROUPS, SPECIES, SPECIES_BY_ID, type GroupId } from '@/data/species';
 import { exec, query } from './db';
+import { getLeaf } from './leaf';
 
 export type Level = 'new' | 'struggling' | 'learning' | 'mastered';
 
@@ -26,7 +26,7 @@ export interface Progress {
   last7: { total: number; correct: number };
   dayStreak: number;
   species: SpeciesStat[];
-  groups: { id: GroupId; attempts: number; correct: number }[];
+  groups: { id: string; attempts: number; correct: number }[];
   confusions: Confusion[];
 }
 
@@ -38,10 +38,10 @@ interface AttemptRow {
   created_at: number;
 }
 
-const ALPHA = 0.35;
+export const ALPHA = 0.35;
 const DAY = 86_400_000;
 
-function levelFor(attempts: number, mastery: number): Level {
+export function levelFor(attempts: number, mastery: number): Level {
   if (attempts === 0) return 'new';
   if (mastery >= 0.8 && attempts >= 4) return 'mastered';
   if (mastery >= 0.5) return 'learning';
@@ -49,13 +49,16 @@ function levelFor(attempts: number, mastery: number): Level {
 }
 
 export async function getProgress(userId: string): Promise<Progress> {
-  const rows = await query<AttemptRow>(
-    `SELECT species, chosen, correct, hints, created_at FROM attempt WHERE user_id = ? ORDER BY created_at, id`,
-    [userId],
-  );
+  const [rows, leaf] = await Promise.all([
+    query<AttemptRow>(
+      `SELECT species, chosen, correct, hints, created_at FROM attempt WHERE user_id = ? ORDER BY created_at, id`,
+      [userId],
+    ),
+    getLeaf(),
+  ]);
 
   const per = new Map<string, SpeciesStat>(
-    SPECIES.map((s) => [s.id, { id: s.id, attempts: 0, correct: 0, mastery: 0, level: 'new', lastSeen: null }]),
+    leaf.species.map((s) => [s.id, { id: s.id, attempts: 0, correct: 0, mastery: 0, level: 'new', lastSeen: null }]),
   );
   const confusions = new Map<string, Confusion>();
   const weekAgo = Date.now() - 7 * DAY;
@@ -89,8 +92,8 @@ export async function getProgress(userId: string): Promise<Progress> {
   let dayStreak = 0;
   for (let d = days.has(today) ? today : today - 1; days.has(d); d--) dayStreak++;
 
-  const groups = (Object.keys(GROUPS) as GroupId[]).map((id) => {
-    const list = [...per.values()].filter((s) => SPECIES_BY_ID[s.id].group === id);
+  const groups = Object.keys(leaf.groups).map((id) => {
+    const list = [...per.values()].filter((s) => leaf.byId[s.id].group === id);
     return { id, attempts: list.reduce((a, s) => a + s.attempts, 0), correct: list.reduce((a, s) => a + s.correct, 0) };
   });
 

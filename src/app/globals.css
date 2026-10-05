@@ -108,7 +108,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .topnav a:hover { color: var(--text); background: var(--surface-2); }
 .topnav a[aria-current='page'] { color: var(--text); background: var(--surface-2); }
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-.account-link { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; line-height: 34px; }
+/* inline-block (not flex) so the ellipsis works; fixed height keeps it the same size as the other .btn-sm links. */
+.account-link { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; height: 36px; padding-block: 0; line-height: 34px; }
 @media (min-width: 760px) { .topnav { display: flex; } }
 
 .bottomnav {
@@ -164,10 +165,16 @@ textarea.input { min-height: 90px; resize: vertical; }
 .error { color: var(--bad); background: var(--bad-bg); padding: 0.6rem 0.8rem; border-radius: 10px; font-size: 0.9rem; }
 .notice { background: var(--warn-bg); padding: 0.75rem 1rem; border-radius: 10px; }
 
-.segmented { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: none; }
-.segmented::-webkit-scrollbar { display: none; }
-.segmented a, .segmented button { flex: none; padding: 0.45rem 0.9rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.9rem; cursor: pointer; }
-.segmented [aria-current='true'] { background: var(--text); color: var(--bg); border-color: var(--text); }
+/* Pills wrap onto extra lines rather than scrolling sideways, so no option is ever clipped off-screen. */
+.segmented { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.segmented a, .segmented button {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0.35rem 0.9rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  text-decoration: none; font-weight: 500; font-size: 0.9rem; line-height: 1.2; white-space: nowrap; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.segmented a:hover, .segmented button:hover { color: var(--text); background: var(--surface-2); }
+.segmented [aria-current='true'], .segmented [aria-current='true']:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
 
 /* ---------- photos ---------- */
 .photo { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--surface-2); aspect-ratio: 4 / 3; }
@@ -324,7 +331,7 @@ textarea.input { min-height: 90px; resize: vertical; }
 .github-link:hover { color: var(--primary); text-decoration: underline; }
 
 /* Typed answers */
-.segmented-sm button { padding: 0.3rem 0.7rem; font-size: 0.82rem; }
+.segmented-sm button { min-height: 30px; padding: 0.3rem 0.7rem; font-size: 0.82rem; }
 .answer-box { position: relative; }
 .answer-box .input { font-size: 1.05rem; padding-block: 0.7rem; }
 .answer-box .input.is-correct { border-color: var(--ok); background: var(--ok-bg); }

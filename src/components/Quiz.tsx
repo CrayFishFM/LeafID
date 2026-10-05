@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- quiz photos come from mixed sources */
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
@@ -10,6 +9,7 @@ import { SKIPPED } from '@/lib/answers';
 import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
 import { ReportButton } from './ReportButton';
 import { useLeaf } from './LeafProvider';
+import { ZoomPhoto } from './ZoomPhoto';
 
 const ROUND = 10;
 const MAX_HINTS = 3;
@@ -101,6 +101,8 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
+      // Keys on the photo (or its enlarged view) belong to the photo.
+      if (e.target instanceof Element && e.target.closest('.zoom-btn, dialog[open]')) return;
       if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
       else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
       else if (!result && e.key.toLowerCase() === 'h') hint();
@@ -146,10 +148,9 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
 
       <div className="quiz">
         <div>
-          <div className="photo">
-            <img key={q.imageKey} src={q.imageUrl} alt="Leaf to identify" />
+          <ZoomPhoto key={q.imageKey} src={q.imageUrl} alt="Leaf to identify">
             {q.community && <span className="chip photo-tag">Community photo</span>}
-          </div>
+          </ZoomPhoto>
           <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
             {q.credit ? <p className="credit">Photo: {q.credit}</p> : <span />}
             {/* Keyed so a new question starts with a fresh, closed report form. */}

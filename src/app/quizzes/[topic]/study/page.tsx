@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element -- static quiz photos are pre-sized */
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ZoomPhoto } from '@/components/ZoomPhoto';
 import { itemLabel, topicImageUrl, topicItem } from '@/data/topics';
 import { getUser } from '@/lib/auth';
 import type { Level } from '@/lib/progress';
@@ -58,9 +58,7 @@ export default async function TopicStudyPage(props: PageProps<'/quizzes/[topic]/
               return (
                 <article key={i.id} id={i.id} className="card stack study-card">
                   {i.images.map((f) => (
-                    <a key={f} href={topicImageUrl(topic, f)} target="_blank" rel="noreferrer" className="photo photo-contain">
-                      <img src={topicImageUrl(topic, f)} alt={itemLabel(i)} loading="lazy" />
-                    </a>
+                    <ZoomPhoto key={f} className="photo photo-contain" src={topicImageUrl(topic, f)} alt={itemLabel(i)} loading="lazy" />
                   ))}
                   <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
                     <div>

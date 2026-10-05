@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- quiz photos are pre-sized */
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
@@ -8,6 +7,7 @@ import type { TopicItem } from '@/data/topics';
 import type { TopicQuestion } from '@/lib/topic-quiz';
 import { SKIPPED } from '@/lib/answers';
 import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
+import { ZoomPhoto } from './ZoomPhoto';
 
 const ROUND = 10;
 const MAX_HINTS = 2;
@@ -97,6 +97,8 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
+      // Keys on the photo (or its enlarged view) belong to the photo.
+      if (e.target instanceof Element && e.target.closest('.zoom-btn, dialog[open]')) return;
       if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
       else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
       else if (!result && e.key.toLowerCase() === 'h') hint();
@@ -128,9 +130,7 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       </div>
 
       <div className="quiz">
-        <div className="photo photo-contain">
-          <img key={q.imageKey} src={q.imageUrl} alt="Photo to identify" />
-        </div>
+        <ZoomPhoto key={q.imageKey} className="photo photo-contain" src={q.imageUrl} alt="Photo to identify" />
 
         <div className="stack">
           <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : result.chosen === SKIPPED ? "Here's the answer" : 'Not quite') : question}</h2>

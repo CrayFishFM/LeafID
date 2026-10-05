@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element -- static leaf photos are pre-sized */
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PhotoCredit } from '@/components/PhotoCredit';
 import { ReportButton } from '@/components/ReportButton';
+import { ZoomPhoto } from '@/components/ZoomPhoto';
 import { getSession } from '@/lib/auth';
 import { communityPhotos, libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
@@ -82,17 +82,16 @@ export default async function SpeciesPage(props: PageProps<'/learn/[id]'>) {
         <div className="gallery">
           {photos.map((p) => (
             <figure key={p.key} style={{ margin: 0 }}>
-              <div className="photo"><img src={p.url} alt={`${s.common} leaf`} loading="lazy" /></div>
+              <ZoomPhoto src={p.url} alt={`${s.common} leaf`} loading="lazy" />
               {p.credit && <PhotoCredit credit={p.credit} />}
               <ReportButton imageKey={p.key} />
             </figure>
           ))}
           {community.map((p) => (
             <figure key={p.key} style={{ margin: 0 }}>
-              <div className="photo">
-                <img src={p.url} alt={`${s.common} leaf (community photo)`} loading="lazy" />
+              <ZoomPhoto src={p.url} alt={`${s.common} leaf (community photo)`} loading="lazy">
                 <span className="chip photo-tag">Community verified</span>
-              </div>
+              </ZoomPhoto>
               <ReportButton imageKey={p.key} />
             </figure>
           ))}

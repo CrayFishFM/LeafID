@@ -19,6 +19,10 @@ export default async function MyUploadsPage(props: PageProps<'/community/mine'>)
     <div className="stack">
       {uploaded === 'approved' ? (
         <div className="notice">Photo approved — it&apos;s now part of the practice questions.</div>
+      ) : uploaded === 'auto' ? (
+        <div className="notice">
+          Pl@ntNet confidently agrees with your ID, so your photo was approved straight away. It&apos;s now part of the practice questions.
+        </div>
       ) : uploaded ? (
         <div className="notice">Thanks! Your photo is now in the review queue for other users.</div>
       ) : null}

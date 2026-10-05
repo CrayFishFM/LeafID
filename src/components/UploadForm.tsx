@@ -2,7 +2,10 @@
 /* eslint-disable @next/next/no-img-element -- local preview via object URL */
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { IdentifyResult } from '@/lib/plantnet';
+import { speciesLabel } from '@/lib/leaf-shared';
+import { useLeaf } from './LeafProvider';
 import { SpeciesSelect } from './SpeciesSelect';
 
 const MAX_SIDE = 1600;
@@ -30,15 +33,29 @@ async function prepare(file: File): Promise<Blob> {
   );
 }
 
-export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
+export function UploadForm({ isAdmin, canIdentify }: { isAdmin: boolean; canIdentify: boolean }) {
   const router = useRouter();
+  const leaf = useLeaf();
   const [file, setFile] = useState<File | null>(null);
+  const [suggest, setSuggest] = useState<IdentifyResult | null>(null);
+  const [identifying, setIdentifying] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [species, setSpecies] = useState('');
   const [note, setNote] = useState('');
   const [approve, setApprove] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Identify and submit send the same bytes, so the server can reuse its Pl@ntNet result.
+  const prepared = useRef<{ file: File; blob: Promise<Blob> } | null>(null);
+  function preparedBlob(f: File): Promise<Blob> {
+    if (prepared.current?.file !== f) {
+      const blob = prepare(f);
+      blob.catch(() => { prepared.current = null; });
+      prepared.current = { file: f, blob };
+    }
+    return prepared.current.blob;
+  }
 
   useEffect(() => {
     if (!file) return;
@@ -48,6 +65,24 @@ export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
+  async function identify() {
+    if (!file) return;
+    setIdentifying(true);
+    setError(null);
+    try {
+      const body = new FormData();
+      body.set('photo', await preparedBlob(file), 'leaf.jpg');
+      const res = await fetch('/api/identify', { method: 'POST', body });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Identification failed');
+      setSuggest(json);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIdentifying(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!file || !species) return;
@@ -55,14 +90,14 @@ export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
     setError(null);
     try {
       const body = new FormData();
-      body.set('photo', await prepare(file), 'leaf.jpg');
+      body.set('photo', await preparedBlob(file), 'leaf.jpg');
       body.set('species', species);
       body.set('note', note);
       if (approve) body.set('approve', '1');
       const res = await fetch('/api/submissions', { method: 'POST', body });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Upload failed');
-      router.push(`/community/mine?uploaded=${json.approved ? 'approved' : '1'}`);
+      router.push(`/community/mine?uploaded=${json.auto ? 'auto' : json.approved ? 'approved' : '1'}`);
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -83,7 +118,7 @@ export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
           // offer the photo library, the camera, or files. Any image type is accepted because
           // prepare() converts it to JPEG.
           id="photo" type="file" accept="image/*" className="input" required
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => { setFile(e.target.files?.[0] ?? null); setSuggest(null); }}
         />
         <span className="small muted">Take a new photo or choose one from your photo library.</span>
       </div>
@@ -92,6 +127,44 @@ export function UploadForm({ isAdmin }: { isAdmin: boolean }) {
         <label htmlFor="species">What do you think it is?</label>
         <SpeciesSelect id="species" value={species} onChange={(e) => setSpecies(e.target.value)} required />
       </div>
+      {canIdentify && file && !suggest && (
+        <button type="button" className="btn btn-sm" style={{ alignSelf: 'flex-start' }} disabled={identifying} onClick={identify}>
+          {identifying ? 'Identifying…' : 'Not sure? Suggest a species'}
+        </button>
+      )}
+      {suggest && (
+        <div className="notice stack small" style={{ gap: '0.5rem' }}>
+          {suggest.matches.length > 0 ? (
+            <>
+              <strong>Possible matches — tap one to choose it:</strong>
+              {suggest.matches[0].score < 0.15 && (
+                <span>Low confidence: a closer, sharper photo of a single leaf usually helps.</span>
+              )}
+              <div className="row" style={{ gap: '0.5rem' }}>
+                {suggest.matches.map((m) => (
+                  <button
+                    key={m.speciesId} type="button"
+                    className={`btn btn-sm${species === m.speciesId ? ' btn-primary' : ''}`}
+                    onClick={() => setSpecies(m.speciesId)}
+                  >
+                    {speciesLabel(leaf, m.speciesId)} · {m.score < 0.01 ? '<1' : Math.round(m.score * 100)}%
+                    {!m.exact && <span className="muted"> (closest: <em>{m.plantnetName}</em>)</span>}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <span>None of the species we teach matched this photo.</span>
+          )}
+          {suggest.outside && (
+            <span>
+              Pl@ntNet&apos;s top guess is <em>{suggest.outside.name}</em>
+              {suggest.outside.commonName && ` (${suggest.outside.commonName})`}, which isn&apos;t on our list.
+            </span>
+          )}
+          <span className="muted">Suggestions by Pl@ntNet. Check them against the leaf before submitting.</span>
+        </div>
+      )}
       <div className="field">
         <label htmlFor="note">Note (optional)</label>
         <textarea

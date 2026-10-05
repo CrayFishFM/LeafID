@@ -1,5 +1,7 @@
 import { getSession } from '@/lib/auth';
 import { createSubmission, MAX_UPLOAD_BYTES } from '@/lib/community';
+import { getLeaf } from '@/lib/leaf';
+import { autoApproveScore } from '@/lib/plantnet';
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -16,6 +18,8 @@ export async function POST(req: Request) {
 
   try {
     const approve = form.get('approve') === '1' && session.user.role === 'admin';
+    // Checked on the server against the uploaded bytes; nothing from the browser can claim a match.
+    const autoScore = approve ? null : await autoApproveScore(file, species, (await getLeaf()).species);
     const id = await createSubmission(
       session.user.id,
       species,
@@ -23,8 +27,9 @@ export async function POST(req: Request) {
       typeof note === 'string' ? note.trim() : null,
       // Only admins may skip the crowd; the role is checked here, not trusted from the form.
       approve,
+      autoScore,
     );
-    return Response.json({ id, approved: approve });
+    return Response.json({ id, approved: approve || autoScore !== null, auto: autoScore !== null });
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 400 });
   }

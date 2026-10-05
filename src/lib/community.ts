@@ -35,8 +35,10 @@ export interface Submission {
   votes: number;
   tally: { species: string; count: number }[];
   myVote: string | null;
-  /** Set by an admin; the crowd can no longer change the outcome. */
+  /** Set by an admin (or auto-approval); the crowd can no longer change the outcome. */
   moderated: boolean;
+  /** Pl@ntNet confidence when auto-approved, otherwise null. */
+  autoScore: number | null;
 }
 
 interface Row {
@@ -50,6 +52,7 @@ interface Row {
   consensus: string | null;
   created_at: number;
   moderated: number;
+  auto_score: number | null;
 }
 
 // Guests have random placeholder emails, so theirs is reported as null.
@@ -89,6 +92,7 @@ async function hydrate(rows: Row[], viewerId: string | null): Promise<Submission
       tally,
       myVote: mine.find((m) => m.submission_id === row.id)?.species ?? null,
       moderated: !!row.moderated,
+      autoScore: row.auto_score,
     };
   });
 }
@@ -104,8 +108,14 @@ function sniff(buf: Buffer): string | null {
   return null;
 }
 
-/** `approve`: an admin uploading their own photo can verify it straight away (an admin decision). */
-export async function createSubmission(userId: string, claimed: string, file: Buffer, note: string | null, approve = false) {
+/**
+ * `approve`: an admin uploading their own photo can verify it straight away (an admin decision).
+ * `autoScore`: Pl@ntNet agreed with `claimed` this confidently, so it's verified without a vote.
+ */
+export async function createSubmission(
+  userId: string, claimed: string, file: Buffer, note: string | null, approve = false, autoScore: number | null = null,
+) {
+  const verified = approve || autoScore !== null;
   if (!(await isSpecies(claimed))) throw new Error('Unknown species');
   if (file.length > MAX_UPLOAD_BYTES) throw new Error('Image is larger than 8 MB');
   const mime = sniff(file);
@@ -114,12 +124,14 @@ export async function createSubmission(userId: string, claimed: string, file: Bu
   // The photo row and its bytes are written together, so there's never one without the other.
   await transaction(async (conn) => {
     await conn.execute(
-      `INSERT INTO submission (id, user_id, claimed, file, note, status, consensus, moderated, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO submission (id, user_id, claimed, file, note, status, consensus, moderated, auto_score, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         // `file` is kept as a descriptive name; the bytes live in submission_image.
         id, userId, claimed, `${id}.${MIME_EXT[mime]}`, note?.slice(0, 500) || null,
-        approve ? 'verified' : 'pending', approve ? claimed : null, approve ? 1 : 0, Date.now(),
+        // Moderated so a later recount of (zero) votes can't drop it back to pending.
+        verified ? 'verified' : 'pending', verified ? claimed : null, verified ? 1 : 0,
+        approve ? null : autoScore, Date.now(),
       ],
     );
     await conn.execute(`INSERT INTO submission_image (submission_id, mime, data) VALUES (?, ?, ?)`, [id, mime, file]);
@@ -260,13 +272,13 @@ export async function moderate(id: string, action: 'approve' | 'reject' | 'reope
   if (!(await one(`SELECT 1 FROM submission WHERE id = ?`, [id]))) throw new Error('Photo not found');
   if (action === 'approve') {
     if (!species || !(await isSpecies(species))) throw new Error('Choose a species to approve as');
-    await exec(`UPDATE submission SET status = 'verified', consensus = ?, moderated = 1 WHERE id = ?`, [species, id]);
+    await exec(`UPDATE submission SET status = 'verified', consensus = ?, moderated = 1, auto_score = NULL WHERE id = ?`, [species, id]);
   } else if (action === 'reject') {
-    await exec(`UPDATE submission SET status = 'rejected', consensus = NULL, moderated = 1 WHERE id = ?`, [id]);
+    await exec(`UPDATE submission SET status = 'rejected', consensus = NULL, moderated = 1, auto_score = NULL WHERE id = ?`, [id]);
   } else {
     await transaction(async (conn) => {
       await conn.execute(`DELETE FROM vote WHERE submission_id = ?`, [id]);
-      await conn.execute(`UPDATE submission SET status = 'pending', consensus = NULL, moderated = 0 WHERE id = ?`, [id]);
+      await conn.execute(`UPDATE submission SET status = 'pending', consensus = NULL, moderated = 0, auto_score = NULL WHERE id = ?`, [id]);
     });
   }
 }

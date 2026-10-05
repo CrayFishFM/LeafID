@@ -81,6 +81,15 @@ async function renameSpeciesIds() {
   }
 }
 
+/** Adds a column to a table created by an older version (CREATE TABLE IF NOT EXISTS won't). */
+async function addColumn(table: string, column: string, definition: string) {
+  const [rows] = await pool.query(
+    'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+    [table, column],
+  );
+  if ((rows as unknown[]).length === 0) await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+}
+
 /** App tables (Better Auth creates its own). Safe to run on every start. */
 export async function ensureSchema() {
   // No explicit charset/collation: inherit the database default, like Better Auth's tables,
@@ -113,6 +122,8 @@ export async function ensureSchema() {
       INDEX submission_status (status, created_at),
       INDEX submission_user (user_id)
     ) ${opts}`);
+  // Pl@ntNet confidence (0–1) when a photo was auto-approved because it agreed with the uploader.
+  await addColumn('submission', 'auto_score', 'FLOAT NULL');
   await pool.query(`
     CREATE TABLE IF NOT EXISTS vote (
       submission_id CHAR(36) NOT NULL,

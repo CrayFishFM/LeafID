@@ -34,7 +34,9 @@ export function PhotoModeration({ sub: initial }: { sub: Submission }) {
       </a>
       <div className="row" style={{ gap: '0.35rem' }}>
         <StatusChip status={sub.status} />
-        {sub.moderated && <span className="chip">admin decision</span>}
+        {sub.autoScore !== null ? (
+          <span className="chip">auto-approved · Pl@ntNet {Math.round(sub.autoScore * 100)}%</span>
+        ) : sub.moderated && <span className="chip">admin decision</span>}
         <span className="small muted">{sub.votes} vote{sub.votes === 1 ? '' : 's'}</span>
       </div>
       <div className="small">

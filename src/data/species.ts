@@ -1,3 +1,5 @@
+import type { KeyTraits } from './leaf-key';
+
 export type Arrangement = 'opposite' | 'alternate';
 export type LeafType = 'simple' | 'compound';
 
@@ -27,6 +29,8 @@ export interface Species {
   /** Non-leaf clues that help confirm the ID in the field. */
   fieldClues: string[];
   lookalikes: Lookalike[];
+  /** Answers for the leaf key (lobes, margin, bark…); see src/data/leaf-key.ts. */
+  keyTraits: KeyTraits;
   /** Set once an admin has edited the species. */
   updatedAt?: number | null;
   updatedBy?: string | null;
@@ -51,7 +55,8 @@ export const GROUP_SEED: Record<GroupId, LeafGroup> = {
   'other-simple': { label: 'Beech, elm & basswood', blurb: 'Distinctive simple leaves worth learning together.' },
 };
 
-export const SPECIES_SEED: Species[] = [
+/** Key traits are seeded separately, from KEY_TRAITS_SEED in leaf-key.ts. */
+export const SPECIES_SEED: Omit<Species, 'keyTraits'>[] = [
   {
     id: 'Mh', code: 'Mh', common: 'Sugar maple (hard maple)', scientific: 'Acer saccharum', group: 'maples',
     arrangement: 'opposite', leafType: 'simple',

@@ -36,6 +36,14 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
         <p className="muted">{active ? leaf.groups[active].blurb : 'What to look for in each leaf. Tap a name for the full profile and more photos.'}</p>
       </div>
 
+      <Link href="/learn/key" className="card row" style={{ justifyContent: 'space-between', textDecoration: 'none', color: 'inherit' }}>
+        <div>
+          <strong>Got a leaf in hand? Use the leaf key</strong>
+          <div className="small muted">Answer a few questions about what you see and narrow it down to the species.</div>
+        </div>
+        <span className="btn btn-primary btn-sm">Start the key →</span>
+      </Link>
+
       <details className="card">
         <summary style={{ cursor: 'pointer', fontWeight: 600 }}>How to identify any leaf in four questions</summary>
         <div className="trait-grid" style={{ marginTop: '1rem' }}>

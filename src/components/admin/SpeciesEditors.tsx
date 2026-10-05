@@ -3,6 +3,7 @@
 
 import { useState, useTransition } from 'react';
 import { resetSpeciesText, saveLeafGroups, saveSpecies } from '@/app/admin/actions';
+import { KEY_QUESTIONS, type KeyQuestion, type KeyTraits, type TraitId } from '@/data/leaf-key';
 import type { LeafGroup, Lookalike, Species } from '@/lib/leaf-shared';
 
 type Msg = { ok: boolean; text: string } | null;
@@ -46,14 +47,53 @@ export function LeafGroupsEditor({ initial }: { initial: Record<string, LeafGrou
 
 interface Fields {
   code: string; common: string; scientific: string; group: string; arrangement: string; leafType: string;
-  shape: string; margin: string; keyFeatures: string; fieldClues: string; lookalikes: Lookalike[];
+  shape: string; margin: string; keyFeatures: string; fieldClues: string; lookalikes: Lookalike[]; keyTraits: KeyTraits;
 }
 
 const toFields = (s: Species): Fields => ({
   code: s.code, common: s.common, scientific: s.scientific, group: s.group, arrangement: s.arrangement, leafType: s.leafType,
   shape: s.shape, margin: s.margin, keyFeatures: s.keyFeatures.join('\n'), fieldClues: s.fieldClues.join('\n'),
-  lookalikes: s.lookalikes,
+  lookalikes: s.lookalikes, keyTraits: s.keyTraits,
 });
+
+const TRAIT_QUESTIONS = KEY_QUESTIONS.filter((q): q is KeyQuestion & { id: TraitId } => q.id !== 'arrangement' && q.id !== 'leafType');
+
+/** Tick boxes for the leaf key's answers. Flags questions the key will ask about this species but that have no answer. */
+function KeyTraitsPicker({ f, onChange }: { f: Fields; onChange: (traits: KeyTraits) => void }) {
+  const values = (id: KeyQuestion['id']) => (id === 'arrangement' ? [f.arrangement] : id === 'leafType' ? [f.leafType] : f.keyTraits[id] ?? []);
+  const toggle = (id: TraitId, value: string) => {
+    const now = values(id);
+    onChange({ ...f.keyTraits, [id]: now.includes(value) ? now.filter((v) => v !== value) : [...now, value] });
+  };
+  return (
+    <fieldset className="field lookalike-picker">
+      <legend>Leaf key <span className="muted small">(tick every answer that fits; tick more than one when it varies)</span></legend>
+      <div className="stack" style={{ gap: '0.6rem' }}>
+        {TRAIT_QUESTIONS.map((q) => {
+          const applies = !q.requires || values(q.requires.id).includes(q.requires.value);
+          const missing = applies && values(q.id).length === 0;
+          return (
+            <div key={q.id} className="key-trait-row" style={{ opacity: applies ? 1 : 0.55 }}>
+              <span className="small">
+                <strong>{q.short}</strong>
+                {missing && <> <span className="chip chip-warn">needs an answer</span></>}
+                {!applies && <span className="muted"> · not asked for this species</span>}
+              </span>
+              <div className="row" style={{ gap: '0.35rem' }}>
+                {q.options.map((o) => (
+                  <label key={o.value} className="chip key-trait-opt" title={o.hint}>
+                    <input type="checkbox" checked={values(q.id).includes(o.value)} onChange={() => toggle(q.id, o.value)} />
+                    {o.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
 
 export function SpeciesEditor({ species, photo, groups, others, edited, canReset }: {
   species: Species;
@@ -68,7 +108,7 @@ export function SpeciesEditor({ species, photo, groups, others, edited, canReset
   const [msg, setMsg] = useState<Msg>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [pending, start] = useTransition();
-  type TextKey = Exclude<keyof Fields, 'lookalikes'>;
+  type TextKey = Exclude<keyof Fields, 'lookalikes' | 'keyTraits'>;
   const set = (k: TextKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
   const id = (k: string) => `${species.id}-${k}`;
   const setLookalike = (n: number, patch: Partial<Lookalike>) =>
@@ -189,6 +229,7 @@ export function SpeciesEditor({ species, photo, groups, others, edited, canReset
             )}
           </div>
         </fieldset>
+        <KeyTraitsPicker f={f} onChange={(keyTraits) => setF({ ...f, keyTraits })} />
         <div className="row">
           <button className="btn btn-primary btn-sm" disabled={pending}>{pending ? 'Saving…' : 'Save'}</button>
           {canReset && (confirmReset ? (

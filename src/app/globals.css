@@ -227,6 +227,19 @@ textarea.input { min-height: 90px; resize: vertical; }
 .choice.wrong { border-color: var(--bad); background: var(--bad-bg); }
 .choice:disabled { cursor: default; }
 .choice:disabled:not(.correct):not(.wrong) { opacity: 0.55; }
+.key-options { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.key-option {
+  display: flex; align-items: center; gap: 0.75rem; text-align: left; color: var(--text); font: inherit;
+  padding: 0.75rem 0.9rem; border-radius: 12px; border: 2px solid var(--border); background: var(--surface);
+  cursor: pointer; transition: border-color 0.12s, background 0.12s;
+}
+.key-option:hover:not(:disabled) { border-color: var(--primary); background: var(--surface-2); }
+.key-option:disabled { opacity: 0.45; cursor: not-allowed; }
+.key-option .name { font-weight: 600; }
+.key-diagram { flex: none; width: 56px; height: 56px; color: var(--primary); }
+.key-trail { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.key-trail li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.25rem 0.75rem; padding: 0.4rem 0.8rem; border-radius: 10px; background: var(--surface-2); counter-increment: step; }
+.key-trail li > span:first-child::before { content: counter(step) '. '; font-weight: 600; }
 .feedback { border-left: 4px solid var(--ok); }
 .feedback.is-wrong { border-left-color: var(--bad); }
 .feedback ul { margin: 0.25rem 0 0.75rem; padding-left: 1.2rem; }
@@ -322,6 +335,10 @@ textarea.input { min-height: 90px; resize: vertical; }
 .quiz-item-photo img { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; }
 .lookalike-picker { border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.8rem; margin: 0; }
 .lookalike-picker legend { font-weight: 600; font-size: 0.9rem; padding: 0 0.3rem; }
+.key-trait-row { display: grid; gap: 0.3rem; }
+.key-trait-opt { cursor: pointer; }
+.key-trait-opt:has(input:checked) { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.key-trait-opt input { margin: 0; accent-color: var(--primary); }
 .lookalike-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); gap: 0.3rem 0.75rem; max-height: 220px; overflow-y: auto; }
 .lookalike-grid label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
 

@@ -213,10 +213,12 @@ export async function ensureSchema() {
       key_features TEXT NOT NULL,
       field_clues TEXT NOT NULL,
       lookalikes TEXT NOT NULL,
+      key_traits TEXT NULL,
       sort INT NOT NULL DEFAULT 0,
       updated_at BIGINT NULL,
       updated_by VARCHAR(64) NULL
     ) ${opts}`);
+  await addColumn('leaf_species', 'key_traits', 'TEXT NULL');
   // Content of the extra quizzes. Filled from src/data/topics on start, then edited by admins.
   // JSON columns are stored as TEXT so older MySQL/MariaDB versions work too.
   await pool.query(`

@@ -10,7 +10,7 @@ export function PhotoCredit({ credit }: { credit: Credit }) {
       ) : (
         credit.license
       )}
-      {' · Wikimedia Commons'}
+      {credit.source.includes('wikimedia.org') && ' · Wikimedia Commons'}
     </p>
   );
 }

@@ -1,5 +1,6 @@
 import { cache } from 'react';
-import { GROUP_SEED, SPECIES_SEED, type LeafGroup, type Lookalike, type Species } from '@/data/species';
+import { cleanKeyTraits, KEY_TRAITS_SEED, type KeyTraits } from '@/data/leaf-key';
+import { GROUP_SEED, SPECIES_SEED, type LeafGroup, type Lookalike } from '@/data/species';
 import { cleanLines, cleanText, parseJson } from './content-utils';
 import { exec, pool, query } from './db';
 import { makeLeaf, type LeafData } from './leaf-shared';
@@ -13,9 +14,11 @@ import { makeLeaf, type LeafData } from './leaf-shared';
 interface GroupRow { id: string; label: string; blurb: string }
 interface SpeciesRow {
   id: string; code: string; common: string; scientific: string; grp: string; arrangement: string; leaf_type: string;
-  shape: string; margin: string; key_features: string; field_clues: string; lookalikes: string;
+  shape: string; margin: string; key_features: string; field_clues: string; lookalikes: string; key_traits: string | null;
   updated_at: number | null; updated_by: string | null;
 }
+
+const seedTraits = (id: string) => JSON.stringify(KEY_TRAITS_SEED[id] ?? {});
 
 export async function seedLeaf() {
   for (const [n, [id, g]] of Object.entries(GROUP_SEED).entries()) {
@@ -23,11 +26,13 @@ export async function seedLeaf() {
   }
   for (const [n, s] of SPECIES_SEED.entries()) {
     await pool.execute(
-      `INSERT IGNORE INTO leaf_species (id, code, common, scientific, grp, arrangement, leaf_type, shape, margin, key_features, field_clues, lookalikes, sort)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT IGNORE INTO leaf_species (id, code, common, scientific, grp, arrangement, leaf_type, shape, margin, key_features, field_clues, lookalikes, key_traits, sort)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [s.id, s.code, s.common, s.scientific, s.group, s.arrangement, s.leafType, s.shape, s.margin,
-        JSON.stringify(s.keyFeatures), JSON.stringify(s.fieldClues), JSON.stringify(s.lookalikes), n],
+        JSON.stringify(s.keyFeatures), JSON.stringify(s.fieldClues), JSON.stringify(s.lookalikes), seedTraits(s.id), n],
     );
+    // Species added before the leaf key existed get its starting traits once.
+    await pool.execute('UPDATE leaf_species SET key_traits = ? WHERE id = ? AND key_traits IS NULL', [seedTraits(s.id), s.id]);
   }
 }
 
@@ -37,7 +42,7 @@ export const getLeaf = cache(async (): Promise<LeafData> => {
     query<GroupRow>('SELECT id, label, blurb FROM leaf_group ORDER BY sort, id'),
     query<SpeciesRow>(
       `SELECT s.id, s.code, s.common, s.scientific, s.grp, s.arrangement, s.leaf_type, s.shape, s.margin,
-              s.key_features, s.field_clues, s.lookalikes, s.updated_at, u.name AS updated_by
+              s.key_features, s.field_clues, s.lookalikes, s.key_traits, s.updated_at, u.name AS updated_by
          FROM leaf_species s LEFT JOIN \`user\` u ON u.id = s.updated_by ORDER BY s.sort, s.id`,
     ),
   ]);
@@ -50,6 +55,7 @@ export const getLeaf = cache(async (): Promise<LeafData> => {
       keyFeatures: parseJson<string[]>(s.key_features, []),
       fieldClues: parseJson<string[]>(s.field_clues, []),
       lookalikes: parseJson<Lookalike[]>(s.lookalikes, []),
+      keyTraits: cleanKeyTraits(parseJson<unknown>(s.key_traits ?? '{}', {})),
       updatedAt: s.updated_at, updatedBy: s.updated_by,
     })),
     Object.fromEntries(groups.map((g): [string, LeafGroup] => [g.id, { label: g.label, blurb: g.blurb }])),
@@ -60,7 +66,7 @@ export const getLeaf = cache(async (): Promise<LeafData> => {
 
 export interface SpeciesEdit {
   code: string; common: string; scientific: string; group: string; arrangement: string; leafType: string;
-  shape: string; margin: string; keyFeatures: string[]; fieldClues: string[]; lookalikes: Lookalike[];
+  shape: string; margin: string; keyFeatures: string[]; fieldClues: string[]; lookalikes: Lookalike[]; keyTraits: KeyTraits;
 }
 
 export async function updateSpecies(id: string, edit: SpeciesEdit, adminId: string) {
@@ -81,7 +87,7 @@ export async function updateSpecies(id: string, edit: SpeciesEdit, adminId: stri
 
   await exec(
     `UPDATE leaf_species SET code = ?, common = ?, scientific = ?, grp = ?, arrangement = ?, leaf_type = ?, shape = ?, margin = ?,
-            key_features = ?, field_clues = ?, lookalikes = ?, updated_at = ?, updated_by = ?
+            key_features = ?, field_clues = ?, lookalikes = ?, key_traits = ?, updated_at = ?, updated_by = ?
       WHERE id = ?`,
     [
       cleanText(edit.code, 'Code', 16), cleanText(edit.common, 'Common name', 80), cleanText(edit.scientific, 'Scientific name', 120),
@@ -89,21 +95,21 @@ export async function updateSpecies(id: string, edit: SpeciesEdit, adminId: stri
       cleanText(edit.shape, 'Shape', 200), cleanText(edit.margin, 'Margin', 200),
       JSON.stringify(cleanLines(edit.keyFeatures, 'Key feature')),
       JSON.stringify(cleanLines(edit.fieldClues, 'Field clue', { min: 0 })),
-      JSON.stringify(lookalikes), Date.now(), adminId, id,
+      JSON.stringify(lookalikes), JSON.stringify(cleanKeyTraits(edit.keyTraits)), Date.now(), adminId, id,
     ],
   );
 }
 
 /** Put a species back to the text it shipped with. */
 export async function resetSpecies(id: string) {
-  const s: Species | undefined = SPECIES_SEED.find((x) => x.id === id);
+  const s = SPECIES_SEED.find((x) => x.id === id);
   if (!s) throw new Error('This species has no original version to go back to');
   await exec(
     `UPDATE leaf_species SET code = ?, common = ?, scientific = ?, grp = ?, arrangement = ?, leaf_type = ?, shape = ?, margin = ?,
-            key_features = ?, field_clues = ?, lookalikes = ?, updated_at = NULL, updated_by = NULL
+            key_features = ?, field_clues = ?, lookalikes = ?, key_traits = ?, updated_at = NULL, updated_by = NULL
       WHERE id = ?`,
     [s.code, s.common, s.scientific, s.group, s.arrangement, s.leafType, s.shape, s.margin,
-      JSON.stringify(s.keyFeatures), JSON.stringify(s.fieldClues), JSON.stringify(s.lookalikes), id],
+      JSON.stringify(s.keyFeatures), JSON.stringify(s.fieldClues), JSON.stringify(s.lookalikes), seedTraits(id), id],
   );
 }
 

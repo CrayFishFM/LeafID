@@ -10,7 +10,7 @@ import type { Species } from './species';
 export type QuestionId =
   | 'arrangement' | 'leafType' | 'leaflets' | 'lobes' | 'lobeCount' | 'lobeDepth'
   | 'lobeTips' | 'widest' | 'shape' | 'petiole' | 'base' | 'margin'
-  | 'endLeaflet' | 'twig' | 'bark' | 'habit';
+  | 'endLeaflet' | 'twig' | 'youngBark' | 'bark' | 'habit';
 
 export interface KeyOption {
   value: string;
@@ -155,8 +155,20 @@ export const KEY_QUESTIONS: KeyQuestion[] = [
     ],
   },
   {
-    id: 'bark', short: 'Bark', title: 'What does the bark look like?', requires: { id: 'lobes', value: 'none' },
-    help: 'Look at the trunk or larger branches, not the twigs.',
+    id: 'youngBark', short: 'Bark (young)', title: 'What does the bark look like on young branches or saplings?', requires: { id: 'lobes', value: 'none' },
+    help: 'Check a sapling or a branch about as thick as your thumb. Young bark often looks nothing like the old trunk.',
+    options: [
+      { value: 'pale', label: 'Pale greenish-white', hint: 'Smooth, chalky cream to green-white, often with black scars' },
+      { value: 'green', label: 'Olive or greenish', hint: 'Smooth, olive-green, yellow-green or green-grey' },
+      { value: 'grey', label: 'Smooth grey', hint: 'Plain, smooth grey or grey-brown' },
+      { value: 'reddish', label: 'Shiny reddish-brown', hint: 'Glossy dark red-brown with pale horizontal lines (lenticels)' },
+      { value: 'bronze', label: 'Bronze, starting to curl', hint: 'Shiny golden to bronze, peeling in thin curls' },
+      { value: 'speckled', label: 'Speckled with dots', hint: 'Grey-brown, covered in pale or orange dots' },
+    ],
+  },
+  {
+    id: 'bark', short: 'Bark (mature)', title: 'What does the bark look like on a mature trunk?', requires: { id: 'lobes', value: 'none' },
+    help: 'Look at the main trunk of a full-grown tree, not the twigs.',
     options: [
       { value: 'papery', label: 'White and papery', hint: 'Chalky white, peels in sheets' },
       { value: 'curly', label: 'Bronze, curling strips', hint: 'Shiny golden to grey, peels in thin curls' },
@@ -186,17 +198,17 @@ export const KEY_TRAITS_SEED: Record<string, KeyTraits> = {
   Ow: { lobes: ['pinnate'], lobeTips: ['rounded'], widest: ['middle'], margin: ['smooth'], habit: ['tree'] },
   Ob: { lobes: ['pinnate'], lobeTips: ['rounded'], widest: ['tip'], margin: ['smooth'], habit: ['tree'] },
   // Simple, unlobed
-  Be: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['coarse'], bark: ['smooth'], habit: ['tree'] },
-  Iw: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double', 'fine'], bark: ['shaggy'], habit: ['tree'] },
-  Bw: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double'], bark: ['papery'], habit: ['tree'] },
-  By: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double'], bark: ['curly'], habit: ['tree'] },
-  Al: { lobes: ['none'], shape: ['oval', 'round'], petiole: ['round'], base: ['even'], margin: ['double'], bark: ['smooth'], habit: ['shrub'] },
-  Ew: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['lopsided'], margin: ['double', 'coarse'], bark: ['furrowed'], habit: ['tree'] },
-  Bd: { lobes: ['none'], shape: ['heart'], petiole: ['round'], base: ['lopsided', 'even'], margin: ['coarse'], bark: ['furrowed'], habit: ['tree'] },
-  Pl: { lobes: ['none'], shape: ['oval', 'round'], petiole: ['flat'], base: ['even'], margin: ['coarse'], bark: ['smooth'], habit: ['tree'] },
-  Pt: { lobes: ['none'], shape: ['round'], petiole: ['flat'], base: ['even'], margin: ['fine'], bark: ['smooth'], habit: ['tree'] },
-  Pb: { lobes: ['none'], shape: ['lance', 'oval'], petiole: ['round'], base: ['even'], margin: ['fine'], bark: ['furrowed', 'smooth'], habit: ['tree'] },
-  Pd: { lobes: ['none'], shape: ['triangle'], petiole: ['flat'], base: ['even'], margin: ['coarse'], bark: ['furrowed'], habit: ['tree'] },
+  Be: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['coarse'], youngBark: ['grey'], bark: ['smooth'], habit: ['tree'] },
+  Iw: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double', 'fine'], youngBark: ['reddish'], bark: ['shaggy'], habit: ['tree'] },
+  Bw: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double'], youngBark: ['reddish'], bark: ['papery'], habit: ['tree'] },
+  By: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double'], youngBark: ['bronze', 'reddish'], bark: ['curly'], habit: ['tree'] },
+  Al: { lobes: ['none'], shape: ['oval', 'round'], petiole: ['round'], base: ['even'], margin: ['double'], youngBark: ['speckled'], bark: ['smooth'], habit: ['shrub'] },
+  Ew: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['lopsided'], margin: ['double', 'coarse'], youngBark: ['grey'], bark: ['furrowed'], habit: ['tree'] },
+  Bd: { lobes: ['none'], shape: ['heart'], petiole: ['round'], base: ['lopsided', 'even'], margin: ['coarse'], youngBark: ['green', 'grey'], bark: ['furrowed'], habit: ['tree'] },
+  Pl: { lobes: ['none'], shape: ['oval', 'round'], petiole: ['flat'], base: ['even'], margin: ['coarse'], youngBark: ['green', 'pale'], bark: ['smooth'], habit: ['tree'] },
+  Pt: { lobes: ['none'], shape: ['round'], petiole: ['flat'], base: ['even'], margin: ['fine'], youngBark: ['pale'], bark: ['smooth'], habit: ['tree'] },
+  Pb: { lobes: ['none'], shape: ['lance', 'oval'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['green'], bark: ['furrowed', 'smooth'], habit: ['tree'] },
+  Pd: { lobes: ['none'], shape: ['triangle'], petiole: ['flat'], base: ['even'], margin: ['coarse'], youngBark: ['green'], bark: ['furrowed'], habit: ['tree'] },
   // Compound
   Mm: { leaflets: ['few'], margin: ['coarse'], endLeaflet: ['present'], twig: ['smooth'], habit: ['tree'] },
   Aw: { leaflets: ['few'], margin: ['smooth'], endLeaflet: ['present'], twig: ['smooth'], habit: ['tree'] },

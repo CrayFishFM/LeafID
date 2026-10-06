@@ -137,6 +137,31 @@ function Bark({ kind }: { kind: 'papery' | 'curly' | 'shaggy' | 'smooth' | 'furr
   return <>{body}{lines}</>;
 }
 
+/** A length of sapling stem in its real colour, with lenticels, curls or scars on it. */
+function YoungBark({ kind }: { kind: 'pale' | 'green' | 'grey' | 'reddish' | 'bronze' | 'speckled' }) {
+  const fill = { pale: '#e4e6d2', green: '#a3b27a', grey: '#a7a7a0', reddish: '#86473a', bronze: '#c99a4c', speckled: '#75695d' }[kind];
+  const marks: React.ReactNode[] = [];
+  if (kind === 'reddish') {
+    [10, 18, 27, 36, 45, 54].forEach((y, i) => marks.push(<line key={y} x1={i % 2 ? 28 : 31} y1={y} x2={i % 2 ? 35 : 38} y2={y} stroke="#f1e6d8" strokeWidth={1.4} strokeLinecap="round" />));
+  } else if (kind === 'speckled') {
+    [[28, 9], [35, 14], [30, 21], [37, 27], [27, 32], [33, 38], [29, 46], [36, 50], [31, 56]].forEach(([x, y]) =>
+      marks.push(<ellipse key={`${x}${y}`} cx={x} cy={y} rx={1.8} ry={1.1} fill="#f0b968" />));
+  } else if (kind === 'pale') {
+    marks.push(<path key="scar1" d="M27,20 L32,24 L37,20" fill="none" stroke="#2b2b2b" strokeWidth={1.6} strokeLinecap="round" />);
+    marks.push(<ellipse key="scar2" cx={33} cy={44} rx={3} ry={1.5} fill="#2b2b2b" />);
+  } else if (kind === 'bronze') {
+    [14, 30, 46].forEach((y) => marks.push(<path key={y} d={`M25,${y} C30,${y - 3} 36,${y - 3} 40,${y} c2,2 0,4 -2,3`} fill="none" stroke="#6b4a1c" strokeWidth={1.2} strokeLinecap="round" />));
+  }
+  return (
+    <>
+      <rect x={24} y={3} width={16} height={58} rx={8} fill={fill} stroke="currentColor" strokeWidth={1.6} />
+      <path d="M40,22 L52,12" stroke="currentColor" strokeWidth={4} strokeLinecap="round" />
+      <path d="M40,22 L52,12" stroke={fill} strokeWidth={2} strokeLinecap="round" />
+      {marks}
+    </>
+  );
+}
+
 const DIAGRAMS: Partial<Record<QuestionId, Record<string, () => React.ReactNode>>> = {
   arrangement: {
     opposite: () => (
@@ -228,6 +253,14 @@ const DIAGRAMS: Partial<Record<QuestionId, Record<string, () => React.ReactNode>
       </>
     ),
     smooth: () => <path {...LINE} strokeWidth={3} d="M22,62 L30,30 L24,8 M30,30 L44,12" />,
+  },
+  youngBark: {
+    pale: () => <YoungBark kind="pale" />,
+    green: () => <YoungBark kind="green" />,
+    grey: () => <YoungBark kind="grey" />,
+    reddish: () => <YoungBark kind="reddish" />,
+    bronze: () => <YoungBark kind="bronze" />,
+    speckled: () => <YoungBark kind="speckled" />,
   },
   bark: {
     papery: () => <Bark kind="papery" />,

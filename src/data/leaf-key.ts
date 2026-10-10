@@ -175,6 +175,7 @@ export const KEY_QUESTIONS: KeyQuestion[] = [
       { value: 'shaggy', label: 'Shaggy narrow strips', hint: 'Small strips loose at both ends' },
       { value: 'smooth', label: 'Smooth', hint: 'Smooth grey or greenish, may have lenticels' },
       { value: 'furrowed', label: 'Ridged and furrowed', hint: 'Deep grooves between ridges' },
+      { value: 'scaly', label: 'Dark, scaly plates', hint: 'Small, dark plates with curled edges, like burnt potato chips' },
     ],
   },
   {
@@ -193,6 +194,7 @@ export const KEY_TRAITS_SEED: Record<string, KeyTraits> = {
   Mr: { lobes: ['palmate'], lobeCount: ['3', '5'], lobeDepth: ['shallow'], margin: ['double', 'fine'], habit: ['tree'] },
   Ms: { lobes: ['palmate'], lobeCount: ['5'], lobeDepth: ['deep'], margin: ['coarse', 'double'], habit: ['tree'] },
   Mp: { lobes: ['palmate'], lobeCount: ['3'], lobeDepth: ['shallow'], margin: ['double', 'fine'], habit: ['shrub'] },
+  Mt: { lobes: ['palmate'], lobeCount: ['3'], lobeDepth: ['shallow'], margin: ['coarse'], habit: ['shrub'] },
   // Oaks
   Or: { lobes: ['pinnate'], lobeTips: ['pointed'], widest: ['middle'], margin: ['smooth'], habit: ['tree'] },
   Ow: { lobes: ['pinnate'], lobeTips: ['rounded'], widest: ['middle'], margin: ['smooth'], habit: ['tree'] },
@@ -209,6 +211,12 @@ export const KEY_TRAITS_SEED: Record<string, KeyTraits> = {
   Pt: { lobes: ['none'], shape: ['round'], petiole: ['flat'], base: ['even'], margin: ['fine'], youngBark: ['pale'], bark: ['smooth'], habit: ['tree'] },
   Pb: { lobes: ['none'], shape: ['lance', 'oval'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['green'], bark: ['furrowed', 'smooth'], habit: ['tree'] },
   Pd: { lobes: ['none'], shape: ['triangle'], petiole: ['flat'], base: ['even'], margin: ['coarse'], youngBark: ['green'], bark: ['furrowed'], habit: ['tree'] },
+  Hazel: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['double'], youngBark: ['grey'], bark: ['smooth'], habit: ['shrub'] },
+  Hobblebush: { lobes: ['none'], shape: ['round', 'heart'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['grey'], bark: ['smooth'], habit: ['shrub'] },
+  Wi: { lobes: ['none'], shape: ['lance'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['green', 'reddish'], bark: ['furrowed', 'smooth'], habit: ['shrub', 'tree'] },
+  Cb: { lobes: ['none'], shape: ['lance', 'oval'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['reddish'], bark: ['scaly'], habit: ['tree'] },
+  Cc: { lobes: ['none'], shape: ['oval'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['grey'], bark: ['smooth'], habit: ['shrub'] },
+  Cp: { lobes: ['none'], shape: ['lance'], petiole: ['round'], base: ['even'], margin: ['fine'], youngBark: ['reddish'], bark: ['smooth'], habit: ['shrub', 'tree'] },
   // Compound
   Mm: { leaflets: ['few'], margin: ['coarse'], endLeaflet: ['present'], twig: ['smooth'], habit: ['tree'] },
   Aw: { leaflets: ['few'], margin: ['smooth'], endLeaflet: ['present'], twig: ['smooth'], habit: ['tree'] },

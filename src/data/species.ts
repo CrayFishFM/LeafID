@@ -53,6 +53,7 @@ export const GROUP_SEED: Record<GroupId, LeafGroup> = {
   compound: { label: 'Compound leaves', blurb: 'Ashes, walnuts, elderberry, mountain-ash and sumac.' },
   poplars: { label: 'Poplars & aspens', blurb: 'Alternate, broad leaves; check the teeth and petiole.' },
   'other-simple': { label: 'Beech, elm & basswood', blurb: 'Distinctive simple leaves worth learning together.' },
+  cherries: { label: 'Cherries & willows', blurb: 'Alternate, narrow to oval, finely toothed leaves; check the teeth, tip and bark.' },
 };
 
 /** Key traits are seeded separately, from KEY_TRAITS_SEED in leaf-key.ts. */
@@ -363,7 +364,7 @@ export const SPECIES_SEED: Omit<Species, 'keyTraits'>[] = [
       'Leaflets all about the same size',
     ],
     fieldClues: [
-      'Photos show American mountain-ash (Sorbus americana); planted European mountain-ash (Ema) has blunter leaflets, hairy underneath',
+      'Photos show American (Sorbus americana) and showy mountain-ash (S. decora); planted European mountain-ash (Ema) has blunter leaflets, hairy underneath',
       'Clusters of bright orange-red berries',
       'Gummy, dark red buds',
       'Not a true ash (it is in the rose family)',
@@ -483,6 +484,125 @@ export const SPECIES_SEED: Omit<Species, 'keyTraits'>[] = [
     lookalikes: [
       { id: 'Pb', tip: 'Balsam poplar is narrower with a round petiole and rusty underside; cottonwood is triangular with a flat petiole.' },
       { id: 'Pl', tip: 'Largetooth aspen is oval with a rounded base; cottonwood is triangular with a flat base.' },
+    ],
+  },
+  {
+    id: 'Mt', code: 'Mt', common: 'Mountain maple', scientific: 'Acer spicatum', group: 'maples',
+    arrangement: 'opposite', leafType: 'simple',
+    shape: 'Palmate, 3 main lobes (sometimes 2 small extra lobes), 6–12 cm',
+    margin: 'Coarse, irregular, rounded teeth',
+    keyFeatures: [
+      'Three shallow lobes with coarse, uneven teeth',
+      'Veins sunken into the upper surface, giving a wrinkled look',
+      'Underside pale and softly hairy',
+    ],
+    fieldClues: ['Shrub or small understory tree, often in clumps', 'Twig tips velvety grey', 'Upright spikes of small flowers and fruit'],
+    lookalikes: [
+      { id: 'Mp', tip: 'Striped maple is much larger with fine, even teeth, lobes all at the tip, and green-and-white striped bark; mountain maple has coarse teeth.' },
+      { id: 'Mr', tip: 'Red maple has fine teeth and a smooth, whitish underside; mountain maple has coarse teeth, a wrinkled surface and a hairy underside.' },
+    ],
+  },
+  {
+    id: 'Wi', code: 'Wi', common: 'Willow', scientific: 'Salix spp.', group: 'cherries',
+    arrangement: 'alternate', leafType: 'simple',
+    shape: 'Long and narrow (lance-shaped), tapering to a fine point, 5–15 cm',
+    margin: 'Finely toothed (a few willows are smooth-edged)',
+    keyFeatures: [
+      'Much longer than wide, tapering to a long point',
+      'Fine, even teeth along the edge',
+      'Often pale or whitish underneath',
+    ],
+    fieldClues: [
+      'Many species in Ontario; this is a group code, so learn the leaf form rather than each willow',
+      'Buds covered by a single cap-like scale',
+      'Wet ground: shores, ditches and swamps',
+      'Fuzzy catkins ("pussy willows") in early spring',
+    ],
+    lookalikes: [
+      { id: 'Cp', tip: 'Pin cherry buds have several scales and its bark is shiny red with orange lenticels; willow buds have one cap-like scale.' },
+      { id: 'Cb', tip: 'Black cherry leaves are thicker and glossier with rusty hairs along the midrib underneath; willow leaves are thinner and narrower.' },
+      { id: 'Pb', tip: 'Balsam poplar is broader with large sticky, fragrant buds; willow leaves are narrower with small, single-scaled buds.' },
+    ],
+  },
+  {
+    id: 'Cb', code: 'Cb', common: 'Black cherry', scientific: 'Prunus serotina', group: 'cherries',
+    arrangement: 'alternate', leafType: 'simple',
+    shape: 'Narrowly oval to lance-shaped, pointed tip, 5–12 cm',
+    margin: 'Fine, blunt teeth that curve inward',
+    keyFeatures: [
+      'Fringe of orange-brown hairs along the midrib underneath, near the base',
+      'Thick, glossy, dark green leaf',
+      'Fine, incurved teeth',
+    ],
+    fieldClues: ['Mature bark in dark, scaly plates like burnt potato chips', 'Young bark smooth reddish with horizontal lenticels', 'Twigs smell bitter-almond when scratched', 'Hanging clusters of dark purple-black cherries'],
+    lookalikes: [
+      { id: 'Cc', tip: 'Choke cherry leaves are broader above the middle with sharp, spreading teeth and no rusty midrib hairs.' },
+      { id: 'Cp', tip: 'Pin cherry leaves are thinner and narrower with no rusty hairs, and its bark stays shiny red.' },
+      { id: 'Wi', tip: 'Willow leaves are thinner and narrower with no rusty hairs; black cherry leaves are thick and glossy.' },
+    ],
+  },
+  {
+    id: 'Cc', code: 'Cc', common: 'Choke cherry', scientific: 'Prunus virginiana', group: 'cherries',
+    arrangement: 'alternate', leafType: 'simple',
+    shape: 'Broadly oval, widest above the middle, short abrupt tip, 5–10 cm',
+    margin: 'Sharp, fine teeth that point outward',
+    keyFeatures: [
+      'Broader than the other cherries, widest above the middle',
+      'Sharp, spreading teeth (not curved in)',
+      'No rusty hairs along the midrib',
+    ],
+    fieldClues: ['Shrub or small tree, often in thickets', 'Bark stays smooth and grey-brown', 'Crushed twigs have a strong, unpleasant smell', 'Clusters of dark red to black, very sour cherries'],
+    lookalikes: [
+      { id: 'Cb', tip: 'Black cherry leaves are narrower and glossier with incurved teeth and rusty hairs along the midrib.' },
+      { id: 'Cp', tip: 'Pin cherry leaves are long and narrow with a tapering tip; choke cherry leaves are broad with an abrupt tip.' },
+    ],
+  },
+  {
+    id: 'Cp', code: 'Cp', common: 'Pin cherry', scientific: 'Prunus pensylvanica', group: 'cherries',
+    arrangement: 'alternate', leafType: 'simple',
+    shape: 'Long and narrow (lance-shaped), long tapering tip, 5–12 cm',
+    margin: 'Fine, uneven, incurved teeth',
+    keyFeatures: [
+      'Narrow leaf with a long, tapering tip',
+      'Shiny on both sides and often curled lengthwise',
+      'No rusty hairs along the midrib',
+    ],
+    fieldClues: ['Shiny reddish bark with orange horizontal lenticels', 'Buds clustered at the twig tips', 'Small bright red cherries on long stalks', 'Comes in quickly after fire or cutting'],
+    lookalikes: [
+      { id: 'Cb', tip: 'Black cherry leaves are thicker with rusty hairs along the midrib and its bark becomes dark and scaly.' },
+      { id: 'Wi', tip: 'Willow buds have a single cap-like scale and lack the orange lenticels of pin cherry bark.' },
+    ],
+  },
+  {
+    id: 'Hobblebush', code: 'Hobblebush', common: 'Hobblebush', scientific: 'Viburnum lantanoides', group: 'other-simple',
+    arrangement: 'opposite', leafType: 'simple',
+    shape: 'Large, nearly round to heart-shaped, 10–20 cm',
+    margin: 'Finely and irregularly toothed',
+    keyFeatures: [
+      'Big round to heart-shaped leaves in opposite pairs',
+      'Deep, ladder-like veins that make the leaf look quilted',
+      'Leaf stalks and veins covered in rusty, scurfy hairs',
+    ],
+    fieldClues: ['Naked, fuzzy rust-coloured buds with no scales', 'Arching branches root where they touch the ground (they "hobble" walkers)', 'Flat white flower clusters ringed by large sterile flowers', 'Shrub of moist, shady forests'],
+    lookalikes: [
+      { id: 'Bd', tip: 'Basswood leaves are alternate with a lopsided base; hobblebush leaves are opposite and rounder.' },
+      { id: 'Hazel', tip: 'Beaked hazel is alternate with double teeth; hobblebush is opposite with a rounder, quilted leaf.' },
+    ],
+  },
+  {
+    id: 'Hazel', code: 'Beaked hazel', common: 'Beaked hazel', scientific: 'Corylus cornuta', group: 'birch-family',
+    arrangement: 'alternate', leafType: 'simple',
+    shape: 'Oval, often slightly heart-shaped base, pointed tip, 5–10 cm',
+    margin: 'Sharply double-toothed',
+    keyFeatures: [
+      'Coarse double teeth, sometimes with small lobe-like points near the tip',
+      'Rounded to slightly heart-shaped base',
+      'Soft, slightly hairy leaf',
+    ],
+    fieldClues: ['Nut wrapped in a bristly husk drawn out into a long "beak"', 'Multi-stemmed shrub with smooth grey-brown bark', 'Catkins hang on the twigs all winter'],
+    lookalikes: [
+      { id: 'Al', tip: 'Alder leaves are broader with sunken, ladder-like veins and woody cones stay on the shrub; hazel has bristly beaked nuts.' },
+      { id: 'Iw', tip: 'Ironwood is a tree with shaggy strip bark and a narrower leaf; beaked hazel is a shrub with a rounder base.' },
     ],
   },
 ];

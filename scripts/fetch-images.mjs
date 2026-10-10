@@ -25,7 +25,9 @@ const SPECIES = {
   El: ['Sambucus canadensis', 'Sambucus nigra subsp. canadensis'], Am: ['Sorbus americana'],
   Bn: ['Juglans cinerea'], Wb: ['Juglans nigra'], Sumac: ['Rhus typhina'],
   Pl: ['Populus grandidentata'], Pt: ['Populus tremuloides'], Pb: ['Populus balsamifera'],
-  Pd: ['Populus deltoides'],
+  Pd: ['Populus deltoides'], Mt: ['Acer spicatum'], Wi: ['Salix'], Cb: ['Prunus serotina'],
+  Cc: ['Prunus virginiana'], Cp: ['Prunus pensylvanica'], Hobblebush: ['Viburnum lantanoides'],
+  Hazel: ['Corylus cornuta'],
 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

@@ -118,8 +118,8 @@ function Margin({ kind }: { kind: 'smooth' | 'fine' | 'coarse' | 'double' }) {
   return <path {...LEAF} d={poly([...edge, [60, 58], [4, 58]])} />;
 }
 
-function Bark({ kind }: { kind: 'papery' | 'curly' | 'shaggy' | 'smooth' | 'furrowed' }) {
-  const body = <rect x={14} y={4} width={36} height={56} rx={3} fill="currentColor" fillOpacity={kind === 'papery' ? 0.04 : 0.16} stroke="currentColor" strokeWidth={1.6} />;
+function Bark({ kind }: { kind: 'papery' | 'curly' | 'shaggy' | 'smooth' | 'furrowed' | 'scaly' }) {
+  const body = <rect x={14} y={4} width={36} height={56} rx={3} fill="currentColor" fillOpacity={kind === 'papery' ? 0.04 : kind === 'scaly' ? 0.32 : 0.16} stroke="currentColor" strokeWidth={1.6} />;
   const lines: React.ReactNode[] = [];
   if (kind === 'papery' || kind === 'smooth') {
     // Horizontal lenticels; papery bark also gets a peeling sheet.
@@ -130,6 +130,10 @@ function Bark({ kind }: { kind: 'papery' | 'curly' | 'shaggy' | 'smooth' | 'furr
   } else if (kind === 'shaggy') {
     [[19, 8], [25, 18], [31, 6], [37, 20], [43, 10], [21, 34], [29, 30], [35, 40], [42, 34], [24, 46], [39, 48]].forEach(([x, y]) =>
       lines.push(<path key={`${x}${y}`} {...LINE} strokeWidth={1.3} d={`M${x - 1.5},${y} L${x},${y + 3} L${x},${y + 9} L${x + 1.5},${y + 12}`} />));
+  } else if (kind === 'scaly') {
+    // Small staggered plates, each with a lifted, curled edge.
+    [[17, 7], [32, 9], [22, 19], [37, 21], [17, 31], [31, 33], [23, 44], [37, 46]].forEach(([x, y]) =>
+      lines.push(<path key={`${x}${y}`} {...LINE} strokeWidth={1.3} d={`M${x},${y + 9} L${x},${y} L${x + 11},${y} L${x + 11},${y + 7} c-2,3 -6,3 -8,2`} />));
   } else {
     // Furrowed: wavy vertical ridges that merge into a diamond pattern.
     [20, 28, 36, 44].forEach((x, i) => lines.push(<path key={x} {...LINE} d={`M${x},4 C${x + (i % 2 ? -4 : 4)},18 ${x + (i % 2 ? 4 : -4)},30 ${x},34 C${x + (i % 2 ? -4 : 4)},42 ${x + (i % 2 ? 4 : -4)},52 ${x},60`} />));
@@ -268,6 +272,7 @@ const DIAGRAMS: Partial<Record<QuestionId, Record<string, () => React.ReactNode>
     shaggy: () => <Bark kind="shaggy" />,
     smooth: () => <Bark kind="smooth" />,
     furrowed: () => <Bark kind="furrowed" />,
+    scaly: () => <Bark kind="scaly" />,
   },
   habit: {
     shrub: () => (

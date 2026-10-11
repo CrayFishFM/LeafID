@@ -30,6 +30,13 @@ function deliver(email: Parameters<typeof sendEmail>[0]) {
   sendEmail(email).catch((err) => console.error(`[mail] failed to send "${email.subject}" to ${email.to}: ${describeMailError(err)}`));
 }
 
+/**
+ * Parent domain for the session cookie (e.g. ".jchenier.com"). When set, the session is shared with
+ * other sites on the same parent domain that use the same database and BETTER_AUTH_SECRET (typetest),
+ * so signing in on one signs you in on all of them. Leave unset to keep the cookie on this host only.
+ */
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
+
 const envList = (v: string | undefined) => (v ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 
 /**
@@ -52,6 +59,7 @@ export const auth = betterAuth({
       ipAddressHeaders: IP_ADDRESS_HEADERS,
       ...(TRUSTED_PROXIES.length ? { trustedProxies: TRUSTED_PROXIES } : {}),
     },
+    ...(COOKIE_DOMAIN && { crossSubDomainCookies: { enabled: true, domain: COOKIE_DOMAIN } }),
   },
   emailAndPassword: {
     enabled: true,

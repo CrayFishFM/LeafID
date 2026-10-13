@@ -9,6 +9,7 @@ import {
   ProfileSection,
   SessionsSection,
 } from '@/components/account/AccountSections';
+import { isAPIError } from 'better-auth/api';
 import { auth, discordEnabled, getSession } from '@/lib/auth';
 import { mailEnabled } from '@/lib/mail';
 
@@ -65,12 +66,16 @@ export default async function AccountPage(props: PageProps<'/account'>) {
   const h = await headers();
   const [accounts, sessions] = await Promise.all([
     auth.api.listUserAccounts({ headers: h }),
-    auth.api.listSessions({ headers: h }),
+    // Better Auth only lists devices for a recent sign-in (session.freshAge); older sessions get null.
+    auth.api.listSessions({ headers: h }).catch((e) => {
+      if (isAPIError(e) && e.status === 'FORBIDDEN') return null;
+      throw e;
+    }),
   ]);
   const linked = accounts.map((a) => ({ id: a.id, providerId: a.providerId }));
   const hasPassword = linked.some((a) => a.providerId === 'credential');
   const sessionRows = sessions
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    ?.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .map((s) => ({
       token: s.token,
       device: describeDevice(s.userAgent),
@@ -109,7 +114,7 @@ export default async function AccountPage(props: PageProps<'/account'>) {
 
       <section className="card stack">
         <h2 style={{ margin: 0 }}>Devices</h2>
-        <SessionsSection sessions={sessionRows} />
+        <SessionsSection sessions={sessionRows ?? null} />
       </section>
 
       <section className="card stack" style={{ borderColor: 'color-mix(in srgb, var(--bad) 35%, var(--border))' }}>

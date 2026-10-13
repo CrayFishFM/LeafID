@@ -20,12 +20,11 @@ export function GuestGate() {
 
   useEffect(() => {
     starting ??= startGuest();
-    starting.then((res) => {
-      if (res.error) {
-        starting = null;
-        setFailed(true);
-      } else router.refresh();
-    });
+    const fail = () => {
+      starting = null;
+      setFailed(true);
+    };
+    starting.then((res) => (res.error ? fail() : router.refresh()), fail);
   }, [router]);
 
   return (

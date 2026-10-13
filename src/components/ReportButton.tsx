@@ -20,16 +20,22 @@ export function ReportButton({ imageKey }: { imageKey: string }) {
     if (!reason) return;
     setState('sending');
     setError(null);
-    // Pages like the field guide work without a session; reporting needs one (a guest is fine).
-    const { data } = await authClient.getSession();
-    if (!data) {
-      const res = await authClient.signIn.anonymous();
-      if (res.error) {
-        setError('Could not send the report. Try again.');
-        return setState('open');
+    const fail = () => {
+      setError('Could not send the report. Try again.');
+      setState('open');
+    };
+    try {
+      // Pages like the field guide work without a session; reporting needs one (a guest is fine).
+      const { data } = await authClient.getSession();
+      if (!data) {
+        const res = await authClient.signIn.anonymous();
+        if (res.error) return fail();
       }
+    } catch {
+      return fail();
     }
-    const res = await report(imageKey, reason, note);
+    const res = await report(imageKey, reason, note).catch(() => null);
+    if (!res) return fail();
     if (!res.ok) {
       setError(res.error);
       return setState('open');

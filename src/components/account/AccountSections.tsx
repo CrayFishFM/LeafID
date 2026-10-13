@@ -16,7 +16,8 @@ function useRunner() {
   async function run(fn: () => Promise<AuthResult>, success: string, refresh = true) {
     setBusy(true);
     setMsg(null);
-    const res = await fn();
+    // A network failure throws instead of returning an error; show it the same way.
+    const res = await fn().catch((e: unknown): AuthResult => ({ error: { message: e instanceof Error ? e.message : undefined } }));
     setBusy(false);
     if (res.error) {
       setMsg({ ok: false, text: res.error.message ?? 'Something went wrong' });
@@ -208,12 +209,14 @@ export interface SessionRow {
   current: boolean;
 }
 
-export function SessionsSection({ sessions }: { sessions: SessionRow[] }) {
+/** `sessions` is null when the sign-in is too old to list devices. */
+export function SessionsSection({ sessions }: { sessions: SessionRow[] | null }) {
   const router = useRouter();
   const { busy, msg, run } = useRunner();
-  const others = sessions.filter((s) => !s.current).length;
+  const others = sessions?.filter((s) => !s.current).length ?? 0;
   return (
     <div className="stack" style={{ gap: '0.6rem' }}>
+      {sessions ? (
       <div className="tally">
         {sessions.map((s) => (
           <div key={s.token} className="tally-row" style={{ alignItems: 'center' }}>
@@ -229,6 +232,12 @@ export function SessionsSection({ sessions }: { sessions: SessionRow[] }) {
           </div>
         ))}
       </div>
+      ) : (
+        <p className="small muted" style={{ margin: 0 }}>
+          For your security, devices are only listed for 24 hours after you sign in. Sign out and back in to see and
+          manage them.
+        </p>
+      )}
       <div className="row">
         {others > 0 && (
           <button className="btn btn-sm" disabled={busy} onClick={() => run(() => authClient.revokeOtherSessions(), 'Signed out of all other devices')}>

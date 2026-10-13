@@ -364,7 +364,7 @@ export const SPECIES_SEED: Omit<Species, 'keyTraits'>[] = [
       'Leaflets all about the same size',
     ],
     fieldClues: [
-      'Photos show American (Sorbus americana) and showy mountain-ash (S. decora); planted European mountain-ash (Ema) has blunter leaflets, hairy underneath',
+      'Photos show showy mountain-ash (Sorbus decora); planted European mountain-ash (Ema) has blunter leaflets, hairy underneath',
       'Clusters of bright orange-red berries',
       'Gummy, dark red buds',
       'Not a true ash (it is in the rose family)',

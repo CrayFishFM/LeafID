@@ -22,7 +22,7 @@ const SPECIES = {
   Be: ['Fagus grandifolia'], Iw: ['Ostrya virginiana'], Bw: ['Betula papyrifera'],
   By: ['Betula alleghaniensis'], Al: ['Alnus incana', 'Alnus rugosa'], Ew: ['Ulmus americana'],
   Bd: ['Tilia americana'], Aw: ['Fraxinus americana'], Ab: ['Fraxinus nigra'],
-  El: ['Sambucus canadensis', 'Sambucus nigra subsp. canadensis'], Am: ['Sorbus americana'],
+  El: ['Sambucus canadensis', 'Sambucus nigra subsp. canadensis'], Am: ['Sorbus decora'],
   Bn: ['Juglans cinerea'], Wb: ['Juglans nigra'], Sumac: ['Rhus typhina'],
   Pl: ['Populus grandidentata'], Pt: ['Populus tremuloides'], Pb: ['Populus balsamifera'],
   Pd: ['Populus deltoides'], Mt: ['Acer spicatum'], Wi: ['Salix'], Cb: ['Prunus serotina'],

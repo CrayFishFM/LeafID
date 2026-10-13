@@ -1584,74 +1584,74 @@
   ],
   "Am": [
     {
-      "file": "1.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_2-eheep_(5097480237).jpg",
-      "artist": "Superior National Forest",
-      "license": "CC BY 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
-    },
-    {
-      "file": "2.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_1-eheep_(5098077762).jpg",
-      "artist": "Superior National Forest",
-      "license": "CC BY 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
-    },
-    {
-      "file": "5.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-03.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "8.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-06.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "9.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana.jpg",
-      "artist": "Bruce Marlin",
-      "license": "CC BY-SA 2.5",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
-    },
-    {
-      "file": "10.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-07.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "11.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-08.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "12.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-09.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-      "file": "13.jpg",
-      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_americana_15-p.bot-sorbu.amer-11.jpg",
-      "artist": "Ayotte, Gilles, 1948-",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
       "file": "14.jpg",
       "source": "https://www.ontario.ca/environment-and-energy/tree-atlas",
       "artist": "FOR7311 Dendrology slides",
       "license": "Course material",
       "licenseUrl": null
+    },
+    {
+      "file": "15.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_kz01.jpg",
+      "artist": "Krzysztof Ziarnek, Kenraiz",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "16.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Showy_Mountain-Ash_(Sorbus_decora)_-_St._John%27s,_Newfoundland_2019-08-08.jpg",
+      "artist": "Ryan Hodnett",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "17.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Showy_Mountain-Ash_(Sorbus_decora)_-_Algonquin_Provincial_Park_2019-09-21_(01).jpg",
+      "artist": "Ryan Hodnett",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "18.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Showy_Mountain-Ash_(Sorbus_decora)_-_Algonquin_Provincial_Park_2019-09-21_(02).jpg",
+      "artist": "Ryan Hodnett",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "19.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_15-p.bot-sorbu.deco-03.jpg",
+      "artist": "Ayotte, Gilles, 1948-",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "20.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_15-p.bot-sorbu.deco-04.jpg",
+      "artist": "Ayotte, Gilles, 1948-",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "21.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_15-p.bot-sorbu.deco-06.jpg",
+      "artist": "Ayotte, Gilles, 1948-",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "22.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_15-p.bot-sorbu.deco-11.jpg",
+      "artist": "Ayotte, Gilles, 1948-",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "file": "23.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sorbus_decora_15-p.bot-sorbu.deco-12.jpg",
+      "artist": "Ayotte, Gilles, 1948-",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
     }
   ],
   "Bn": [

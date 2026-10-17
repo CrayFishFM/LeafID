@@ -2,7 +2,7 @@
  * Ecology midterm review (FOR7312), from the midterm review lecture, the Tree Physiology and
  * Forest Succession lectures, and the Ecology notes. Shade tolerance follows the lecture's table.
  */
-import type { RankDrill, SortDrill, StudyCard, StudyGuide, TestQuestion } from './types';
+import { mc, multi, order, tf, typed, type RankDrill, type SortDrill, type StudyCard, type StudyGuide } from './types';
 
 const REGIONS = 'Forest regions';
 const SHADE = 'Shade tolerance & silviculture';
@@ -27,10 +27,17 @@ const CARDS: StudyCard[] = [
   {
     section: REGIONS, q: 'Define a forest region.',
     a: ['A geographic zone, or belt, whose vegetation cover is characterized by a fairly uniform dominant species and stand type.'],
+    test: [
+      mc('A forest region is a geographic zone whose vegetation has…', ['A fairly uniform dominant species and stand type', 'The same soil everywhere', 'One kind of wildlife', 'The same rainfall'], 0, 'A zone or belt with a fairly uniform dominant species and stand type.'),
+    ],
   },
   {
     section: REGIONS, q: 'Name Canada’s forest regions.',
     a: ['Boreal', 'Subalpine', 'Montane', 'Coast', 'Columbian', 'Deciduous (Carolinian)', 'Great Lakes–St. Lawrence', 'Acadian', 'Grasslands', 'Tundra'],
+    test: [
+      typed('How many forest regions does Canada have?', ['10'], 'Boreal, Subalpine, Montane, Coast, Columbian, Deciduous, GLSL, Acadian, Grasslands, Tundra.'),
+      multi('Select the forest regions of Canada.', ['Boreal', 'Acadian', 'Columbian', 'Subalpine', 'Mediterranean', 'Tropical'], [0, 1, 2, 3], 'Mediterranean and tropical are not Canadian forest regions.'),
+    ],
   },
   {
     section: REGIONS, q: 'Name the forest regions of Ontario. Which one is Pembroke in?',
@@ -41,6 +48,10 @@ const CARDS: StudyCard[] = [
       'Deciduous (Carolinian): about 3%, the southernmost.',
       'Most of Ontario’s population lives in the GLSL and Deciduous regions.',
     ],
+    test: [
+      mc('Which forest region is Pembroke in?', ['Boreal', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], 1, 'Pembroke and Renfrew County are in the GLSL region.'),
+      order('Put Ontario’s forest regions in order of area, largest first.', ['Boreal', 'Hudson Bay Lowlands', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)'], 'About 50%, 26%, 20% and 3%.'),
+    ],
   },
   {
     section: REGIONS, q: 'Describe Ontario’s Boreal forest region and its dominant species.',
@@ -50,6 +61,10 @@ const CARDS: StudyCard[] = [
       'Hardwoods: Bw (white birch), Pb (balsam poplar), Pt (trembling aspen), willow.',
       'Wildlife: black bears, wolves, lynx, moose, caribou, great grey owl, pine marten.',
     ],
+    test: [
+      multi('Select the dominant Boreal species.', ['Jack pine (Pj)', 'Black spruce (Sb)', 'Balsam fir (Bf)', 'Sugar maple (Mh)', 'Red oak (Or)', 'Trembling aspen (Pt)'], [0, 1, 2, 5], 'Boreal conifers: Bf, La, Pj, Sb, Sw. Hardwoods: Bw, Pb, Pt, willow.'),
+      tf('Boreal forests are heavily influenced by natural disturbances.', true, 'Conifer and mixedwood forests shaped by fire, insects and wind.'),
+    ],
   },
   {
     section: REGIONS, q: 'Describe Ontario’s Great Lakes–St. Lawrence forest region and its dominant species.',
@@ -57,6 +72,10 @@ const CARDS: StudyCard[] = [
       'Conifers: Pw (white pine), Pr (red pine), He (hemlock), white cedar, Sw (white spruce).',
       'Hardwoods: Mh (sugar maple), By (yellow birch), Be (beech), Mr (red maple), Bd (basswood), Or (red oak).',
       'Wildlife: black bear, wolves, white-tailed deer, moose, beaver, muskrat, otters, migratory birds.',
+    ],
+    test: [
+      multi('Select the dominant GLSL hardwoods.', ['Sugar maple (Mh)', 'Yellow birch (By)', 'Beech (Be)', 'Balsam poplar (Pb)', 'Red oak (Or)', 'Basswood (Bd)'], [0, 1, 2, 4, 5], 'GLSL hardwoods: Mh, By, Be, Mr, Bd, Or. Balsam poplar is Boreal.'),
+      mc('Which conifer is a dominant GLSL species?', ['Jack pine', 'Hemlock', 'Black spruce', 'Larch'], 1, 'GLSL conifers: Pw, Pr, He, white cedar, Sw.'),
     ],
   },
   {
@@ -67,6 +86,10 @@ const CARDS: StudyCard[] = [
       'Much the same hardwoods as the GLSL, plus Bn (butternut), Wb (black walnut), Ow (white oak) and hickory.',
       'Rare species such as the southern flying squirrel, red-bellied woodpecker and Massasauga rattlesnake.',
     ],
+    test: [
+      mc('Which region has the most tree species but the least forest?', ['Boreal', 'GLSL', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], 2, 'It is mostly cleared for farms and cities.'),
+      multi('Which species are found in the Deciduous region but not the dominant GLSL list?', ['Butternut (Bn)', 'Black walnut (Wb)', 'White oak (Ow)', 'Hickory', 'Black spruce (Sb)'], [0, 1, 2, 3], 'Bn, Wb, Ow and hickory.'),
+    ],
   },
 
   // ---- Shade tolerance & silviculture ----
@@ -76,17 +99,38 @@ const CARDS: StudyCard[] = [
       'The capacity of a tree to develop and grow in the shade of, and in competition with, other trees.',
       'Shade tolerance determines the choice of silvicultural system.',
     ],
+    test: [
+      mc('Shade tolerance determines…', ['A tree’s height', 'The choice of silvicultural system', 'The forest region', 'Seed viability'], 1, 'Tolerance → selection, shelterwood or clearcut.'),
+      tf('Shade tolerance is a tree’s capacity to develop and grow in the shade of, and in competition with, other trees.', true, 'That is the definition.'),
+    ],
   },
   {
     section: SHADE, q: 'What are the shade tolerance classes, and how much sun does each need?',
     a: SHADE_TABLE.map((r) => `${r.level}: ${r.sun}`),
+    test: [
+      order('Put the shade tolerance classes in order, needing the MOST sun first.', ['Very intolerant', 'Intolerant', 'Intermediate', 'Tolerant', 'Very tolerant'], '60–100%, 30–60%, 10–30%, 3–10%, 1–3% sun.'),
+      mc('Very tolerant trees need about…', ['60–100% sun', '30–60% sun', '10–30% sun', '1–3% sun'], 3, '1–3% of full sunlight.'),
+    ],
   },
-  { section: SHADE, q: 'Name the shade-intolerant species (intolerant and very intolerant).', a: speciesIn('Very intolerant', 'Intolerant') },
-  { section: SHADE, q: 'Name the intermediate (mid-tolerant) species.', a: speciesIn('Intermediate') },
-  { section: SHADE, q: 'Name the shade-tolerant species (tolerant and very tolerant).', a: speciesIn('Tolerant', 'Very tolerant') },
+  { section: SHADE, q: 'Name the shade-intolerant species (intolerant and very intolerant).', a: speciesIn('Very intolerant', 'Intolerant'), test: [
+      multi('Select the shade-INTOLERANT species.', ['Jack pine', 'Trembling aspen', 'White birch', 'Sugar maple', 'Red pine', 'Hemlock'], [0, 1, 2, 4], 'Sugar maple and hemlock are very tolerant.'),
+      mc('Tamarack (larch) is…', ['Very intolerant', 'Intermediate', 'Tolerant', 'Very tolerant'], 0, 'Very intolerant (60–100% sun).'),
+    ] },
+  { section: SHADE, q: 'Name the intermediate (mid-tolerant) species.', a: speciesIn('Intermediate'), test: [
+      multi('Select the INTERMEDIATE species.', ['Red oak', 'White pine', 'Yellow birch', 'Beech', 'Jack pine', 'Basswood'], [0, 1, 2, 5], 'Beech is very tolerant; jack pine very intolerant.'),
+    ] },
+  { section: SHADE, q: 'Name the shade-tolerant species (tolerant and very tolerant).', a: speciesIn('Tolerant', 'Very tolerant'), test: [
+      multi('Select the shade-TOLERANT species.', ['Sugar maple', 'Beech', 'Hemlock', 'Balsam fir', 'Tamarack', 'Red maple'], [0, 1, 2, 3, 5], 'Tamarack is very intolerant.'),
+      tf('In the lecture table, black spruce is shade tolerant.', true, 'Tolerant (3–10% sun), with white cedar, red maple, red and white spruce.'),
+    ] },
   {
     section: SHADE, q: 'What are the 3 silvicultural systems, and which shade tolerance goes with each?',
     a: ['Clearcut: intolerant and very intolerant species.', 'Shelterwood: intermediate species.', 'Selection: tolerant and very tolerant species.'],
+    test: [
+      mc('Which silvicultural system suits INTOLERANT species?', ['Selection', 'Shelterwood', 'Clearcut', 'Group selection'], 2, 'Intolerant → clearcut.'),
+      mc('Which system suits INTERMEDIATE species?', ['Selection', 'Shelterwood', 'Clearcut', 'No harvest'], 1, 'Intermediate → shelterwood.'),
+      mc('Which system suits TOLERANT species?', ['Selection', 'Shelterwood', 'Clearcut', 'Seed tree'], 0, 'Tolerant → selection.'),
+    ],
   },
   {
     section: SHADE, q: 'Describe the clearcut system (CC).',
@@ -97,6 +141,10 @@ const CARDS: StudyCard[] = [
       'Modified clearcut / clearcut with conditions: e.g. seed trees left for extra seed or site protection (shallow soils).',
       'Renewal: natural for poplar and birch; planted for red pine, jack pine and spruce.',
     ],
+    test: [
+      mc('In a clearcut, regeneration establishes in…', ['> 70% sunlight', '30–70% sunlight', 'About 30% sunlight', '1–3% sunlight'], 0, 'More than 70% sunlight.'),
+      tf('After a clearcut, red pine, jack pine and spruce are usually renewed by planting.', true, 'Poplar and birch renew naturally.'),
+    ],
   },
   {
     section: SHADE, q: 'Describe the shelterwood system (SH).',
@@ -105,6 +153,10 @@ const CARDS: StudyCard[] = [
       'Even-aged. Regeneration establishes in 30–70% sunlight (leave 40–60% crown closure).',
       'For mid-tolerant species such as white pine and red oak. Red oak (OrUS) only needs 1 final removal cut.',
       'Must be tree marked (except final removals); protect regeneration in the first and final removals.',
+    ],
+    test: [
+      mc('In the shelterwood system, regeneration establishes in…', ['> 70% sunlight', '30–70% sunlight', 'About 30% sunlight', 'Full shade'], 1, '30–70% sunlight, leaving 40–60% crown closure.'),
+      mc('A red oak shelterwood (OrUS) needs how many removal cuts?', ['1 final removal', '2', '3', 'None'], 0, 'OrUS only requires 1 (final) removal cut.'),
     ],
   },
   {
@@ -115,12 +167,20 @@ const CARDS: StudyCard[] = [
       'For tolerant hardwoods (maples, beech, ash, yellow birch) and hemlock. Must be marked by a certified tree marker.',
       'Group openings (less than 2 tree heights across) are used for red oak, yellow birch, cedar and black cherry.',
     ],
+    test: [
+      mc('The selection system keeps…', ['An even-aged stand', 'An uneven-aged stand with mature cover forever', 'A clearcut', 'A plantation'], 1, 'Uneven-aged, mature forest cover maintained in perpetuity.'),
+      typed('Group openings in the selection system are less than how many tree heights across?', ['2'], 'Less than 2 tree heights, used for Or, By, cedar and black cherry.'),
+    ],
   },
   {
     section: SHADE, q: 'What is the difference between even-aged and uneven-aged stands?',
     a: [
       'Uneven-aged: three or more age classes, often a diversity of species. E.g. a tolerant hardwood stand (sugar maple, beech, yellow birch).',
       'Even-aged: small age differences between trees, often one species. E.g. an intolerant poplar, jack pine or black spruce stand.',
+    ],
+    test: [
+      typed('An uneven-aged stand has at least how many age classes?', ['3'], 'Three or more age classes.'),
+      mc('Which is an example of an even-aged stand?', ['A tolerant hardwood stand', 'A jack pine stand', 'A sugar maple / beech stand', 'A hemlock selection stand'], 1, 'Even-aged: intolerant poplar, jack pine or black spruce stands.'),
     ],
   },
   {
@@ -129,6 +189,10 @@ const CARDS: StudyCard[] = [
       'Release (response to release): a tree’s ability to respond to a sudden change from shade to full or high sunlight, e.g. when a tree falls and opens a gap.',
       'Elastic: a tree that responds well to release (e.g. maples). Black cherry shows little response.',
       'Gap phase: species that establish under the canopy and wait, shade-tolerant enough to survive, until a local disturbance opens a gap they can grow into.',
+    ],
+    test: [
+      mc('A tree that responds well to release is called…', ['Serotinous', 'Elastic', 'Dioecious', 'Climax'], 1, 'Elastic, e.g. maples.'),
+      tf('Black cherry responds very well to sudden release.', false, 'Black cherry shows little response; maples respond very well.'),
     ],
   },
   {
@@ -140,10 +204,18 @@ const CARDS: StudyCard[] = [
       '4. Adult: boltwood (< 25 cm DBH) and mature (> 25 cm DBH).',
       '5. Old / over mature: flat-topped crown, internal rot, crown breaking up, deeply furrowed bark.',
     ],
+    test: [
+      order('Put the age / size phases in order, youngest first.', ['Seedling / germinant', 'Regeneration', 'Sapling', 'Polewood', 'Boltwood', 'Mature', 'Old / over mature'], 'Seedling < 1 m; regeneration < 3 cm DBH; sapling < 5 m; polewood < 10 cm; boltwood < 25 cm; mature > 25 cm.'),
+      mc('A sapling is less than…', ['1 m high', '2 m high', '5 m high', '10 cm DBH'], 2, 'Less than 5 m high.'),
+      typed('Mature trees are greater than how many cm DBH?', ['25'], 'Boltwood < 25 cm DBH; mature > 25 cm.'),
+    ],
   },
   {
     section: SHADE, extra: true, q: 'Why is it hard to guess a shade-tolerant tree’s age from its size?',
     a: ['Tolerant trees can live for many years suppressed in the shade, growing slowly, so a small tree can be old.'],
+    test: [
+      tf('A small shade-tolerant tree can be very old.', true, 'Tolerant trees can live for years suppressed, growing slowly.'),
+    ],
   },
 
   // ---- Tree physiology ----
@@ -155,10 +227,19 @@ const CARDS: StudyCard[] = [
       'Exception: ginkgo has broad, deciduous leaves but is a gymnosperm (its ovules are naked on stalks).',
       'All conifers except larch keep their green needles over winter.',
     ],
+    test: [
+      mc('Gymnosperms have…', ['Enclosed seeds', 'Naked seeds', 'No seeds', 'Perfect flowers'], 1, 'Gymno = naked; angio = enclosed.'),
+      tf('Ginkgo is an angiosperm because its leaves are broad.', false, 'Ginkgo is a gymnosperm: its ovules are naked on stalks.'),
+      mc('Which conifer loses its needles in winter?', ['Balsam fir', 'Larch', 'White pine', 'Hemlock'], 1, 'All conifers except larch keep their needles over winter.'),
+    ],
   },
   {
     section: PHYS, q: 'What are the main parts of a tree?',
     a: ['Roots: root hair zone, radicle, lateral roots, taproot.', 'Bole / trunk.', 'Crown: branches (limbs), top and foliage.'],
+    test: [
+      multi('Which are parts of the crown?', ['Branches (limbs)', 'Foliage', 'Top', 'Taproot', 'Bole'], [0, 1, 2], 'The taproot is a root; the bole is the trunk.'),
+      mc('The radicle is part of the…', ['Crown', 'Bole', 'Roots', 'Bark'], 2, 'Roots: root hair zone, radicle, lateral roots, taproot.'),
+    ],
   },
   {
     section: PHYS, q: 'Define xylem, phloem and cambium.',
@@ -166,6 +247,11 @@ const CARDS: StudyCard[] = [
       'Xylem: carries water and dissolved minerals FROM the roots TO the leaves/needles, and gives physical support. The wood (sapwood and heartwood).',
       'Phloem: carries food (sugars) FROM the leaves/needles TO the roots and the places where new wood is being made. Part of the inner bark.',
       'Vascular cambium: the layer between them that makes new xylem toward the inside and new phloem toward the outside, adding a new ring each year.',
+    ],
+    test: [
+      mc('Xylem carries…', ['Sugars from the leaves to the roots', 'Water and minerals from the roots to the leaves', 'Only air', 'Seeds'], 1, 'Xylem: water up. Phloem: food from the leaves to the roots and growing areas.'),
+      mc('Phloem carries…', ['Water up from the roots', 'Food from the leaves to the roots and growing areas', 'Nothing; it is dead', 'Pollen'], 1, 'Phloem is part of the inner bark.'),
+      mc('Which layer makes new xylem and phloem?', ['Pith', 'Heartwood', 'Vascular cambium', 'Outer bark'], 2, 'The vascular cambium: xylem inward, phloem outward.'),
     ],
   },
   {
@@ -178,6 +264,11 @@ const CARDS: StudyCard[] = [
       'Heartwood: older, darker central rings; no longer stores or moves anything.',
       'Pith: the very centre of the stem. Rays run from the centre outward and store and move nutrients sideways.',
     ],
+    test: [
+      order('Put the trunk layers in order, from the outside in.', ['Outer bark', 'Inner bark (phloem)', 'Vascular cambium', 'Sapwood', 'Heartwood', 'Pith'], 'The cambium sits between the phloem and the sapwood.'),
+      tf('The outer bark is living tissue.', false, 'The outer bark is dead tissue: the first line of defence.'),
+      mc('Which layer moves water from roots to leaves and stores food?', ['Heartwood', 'Sapwood', 'Pith', 'Outer bark'], 1, 'Sapwood. Heartwood no longer stores or moves anything.'),
+    ],
   },
   {
     section: PHYS, q: 'How do growth rings form?',
@@ -186,6 +277,10 @@ const CARDS: StudyCard[] = [
       'Earlywood: grown quickly in spring; light coloured, low density.',
       'Latewood: grown in summer; dense, dark, thick-walled cells.',
       'One earlywood + latewood band = one growth ring = one year.',
+    ],
+    test: [
+      mc('Latewood is…', ['Light and low density', 'Dense, dark and thick-walled', 'Formed in early spring', 'The pith'], 1, 'Earlywood (spring) is light; latewood (summer) is dense and dark.'),
+      tf('A tree forms one growth ring per year.', true, 'One earlywood + latewood band = one year.'),
     ],
   },
   {
@@ -196,14 +291,24 @@ const CARDS: StudyCard[] = [
       'Reaction wood: avalanches, landslides, windthrow.',
       'Abnormal rings: drought, frost, false rings, missing rings.',
     ],
+    test: [
+      multi('Which can be dated from growth rings?', ['Fire scars', 'Insect defoliation', 'Release after cutting', 'Drought (abnormal rings)', 'The tree’s species'], [0, 1, 2, 3], 'Wounds, growth rate changes, reaction wood and abnormal rings.'),
+    ],
   },
   {
     section: PHYS, q: 'What problems can come up when aging a tree from its rings (dendrochronology)?',
     a: ['1. A double pith', '2. Hitting branch stubs', '3. Extensive scarring', '4. Centre rot', 'Also false and missing rings, which make the count wrong.'],
+    test: [
+      multi('Which are problems when aging a tree from its rings?', ['A double pith', 'Hitting branch stubs', 'Extensive scarring', 'Centre rot', 'Earlywood'], [0, 1, 2, 3], 'Also false and missing rings.'),
+    ],
   },
   {
     section: PHYS, q: 'What is reaction wood?',
     a: ['Wood a tree forms to support itself after it is pushed or leaning (e.g. after something falls on it, or wind).', 'Tension wood in hardwoods; compression wood in conifers.'],
+    test: [
+      mc('Reaction wood in hardwoods is called…', ['Tension wood', 'Compression wood', 'Heartwood', 'Latewood'], 0, 'Tension wood in hardwoods; compression wood in conifers.'),
+      mc('Reaction wood in conifers is called…', ['Tension wood', 'Compression wood', 'Sapwood', 'Earlywood'], 1, 'Compression wood.'),
+    ],
   },
   {
     section: PHYS, q: 'Where and how do buds form on a branch?',
@@ -213,10 +318,17 @@ const CARDS: StudyCard[] = [
       'Vegetative buds grow into leaves and branch growth; reproductive buds grow into flowers or cones.',
       'A bud can develop into a seed cone, a vegetative shoot or a pollen cone, or stay latent or abort.',
     ],
+    test: [
+      mc('A bud at the end of a twig is a…', ['Lateral bud', 'Terminal bud', 'Latent bud', 'Root bud'], 1, 'Terminal = end; lateral = off the side.'),
+      mc('Reproductive buds grow into…', ['Leaves and branch growth', 'Flowers or cones', 'Roots', 'Bark'], 1, 'Vegetative buds make leaves and branches; reproductive buds make flowers or cones.'),
+    ],
   },
   {
     section: PHYS, extra: true, q: 'What is transpiration?',
     a: ['Water moves from the roots up through the tree to small pores under the leaves, where it evaporates into the air.', 'Trees and plants release about 10% of the moisture in the atmosphere.'],
+    test: [
+      mc('About how much of the moisture in the atmosphere comes from transpiration?', ['1%', '10%', '50%', '90%'], 1, 'About 10%.'),
+    ],
   },
 
   // ---- Reproduction ----
@@ -228,10 +340,19 @@ const CARDS: StudyCard[] = [
       'Germination: the plant embryo resumes growth after seed dispersal. Depends on temperature, soil moisture and oxygen.',
       'Viability: the capacity of a seed to germinate.',
     ],
+    test: [
+      mc('Viability is…', ['The transfer of pollen', 'The capacity of a seed to germinate', 'Storing seeds to overcome dormancy', 'Seed spread by wind'], 1, 'Viability = capacity to germinate.'),
+      mc('Seed stratification is…', ['Spreading seeds by wind', 'Storing seeds under set conditions to overcome dormancy', 'The capacity of a seed to germinate', 'Transfer of pollen'], 1, 'Set temperature, moisture, gas exchange and medium for a set time.'),
+      multi('Germination depends on…', ['Temperature', 'Soil moisture', 'Oxygen', 'Moonlight'], [0, 1, 2], 'Temperature, soil moisture and oxygen.'),
+    ],
   },
   {
     section: REPRO, q: 'How is pollen moved between trees?',
     a: ['Wind: carries pollen to another tree.', 'Insects and birds: flowers often have nectaries (sugary nectar) and strong, sweet odours to attract them.'],
+    test: [
+      multi('How is pollen moved between trees?', ['Wind', 'Insects', 'Birds', 'Gravity'], [0, 1, 2], 'Wind, insects and birds. Gravity is a seed dispersal method.'),
+      tf('Nectaries make a sugary liquid that attracts insects and birds.', true, 'Nectar, plus strong sweet odours.'),
+    ],
   },
   {
     section: REPRO, q: 'How are seeds dispersed?',
@@ -241,10 +362,18 @@ const CARDS: StudyCard[] = [
       'Streams and snowmelt.',
       'Birds and animals: eat nuts or fleshy fruit and spread the seeds through digestion (e.g. red oak), or seeds stick to fur and drop off.',
     ],
+    test: [
+      multi('Select the seed dispersal methods.', ['Wind', 'Gravity', 'Streams and snowmelt', 'Birds and animals', 'Photosynthesis'], [0, 1, 2, 3], 'Wind, gravity, water, and animals (digestion or fur).'),
+      mc('Red oak acorns are mainly dispersed by…', ['Wind', 'Animals and birds', 'Snowmelt', 'Fire'], 1, 'Animals eat and move the nuts.'),
+    ],
   },
   {
     section: REPRO, q: 'What factors influence flowering / cone production?',
     a: ['Age (not too young or too old)', 'Plant hormones', 'Lack of nutrients: nitrogen (photosynthesis) and potassium (growth)', 'Temperature', 'Soil moisture', 'Light quality and intensity: as close to full sunlight as possible (canopy placement)'],
+    test: [
+      multi('Which factors influence flowering?', ['Age', 'Plant hormones', 'Nutrients (N and K)', 'Temperature', 'Soil moisture', 'Light quality and intensity', 'Moon phase'], [0, 1, 2, 3, 4, 5], 'Everything except moon phase.'),
+      mc('In flowering, nitrogen is important for ___ and potassium for ___.', ['Growth; photosynthesis', 'Photosynthesis; growth', 'Roots; bark', 'Seeds; leaves'], 1, 'Nitrogen (photosynthesis), potassium (growth).'),
+    ],
   },
   {
     section: REPRO, q: 'Define dioecious and monoecious, with examples.',
@@ -254,6 +383,11 @@ const CARDS: StudyCard[] = [
       'Separately on the same tree (female at the top, male at the bottom): spruces, pines, beech, red oak.',
       'Together in the same flower (a perfect flower): elm, basswood, black cherry.',
     ],
+    test: [
+      typed('Male and female organs on SEPARATE trees is called…', ['dioecious'], 'Dioecious: poplars, ash, willows.'),
+      mc('Which tree is dioecious?', ['Red oak', 'Basswood', 'Poplar', 'White pine'], 2, 'Poplars, ash and willows.'),
+      mc('Elm, basswood and black cherry have…', ['Separate male and female trees', 'Perfect flowers', 'Serotinous cones', 'No flowers'], 1, 'Monoecious, with both organs in the same (perfect) flower.'),
+    ],
   },
   {
     section: REPRO, q: 'Where are male and female cones on a conifer, and why?',
@@ -262,14 +396,25 @@ const CARDS: StudyCard[] = [
       'Female (ovulate / seed) cones: higher up in the crown.',
       'Why: the top is closer to full sunlight, giving energy for flowers and seeds, and it helps prevent inbreeding (self-pollination).',
     ],
+    test: [
+      mc('Female (seed) cones are usually found…', ['Low in the crown', 'High in the crown', 'On the roots', 'Only on dead branches'], 1, 'Higher up; male pollen cones are lower.'),
+      multi('Why are female cones high in the crown?', ['Closer to full sunlight for energy', 'Helps prevent inbreeding', 'Easier for squirrels to reach'], [0, 1], 'Sunlight and preventing self-pollination.'),
+    ],
   },
   {
     section: REPRO, q: 'How do young and mature cones differ?',
     a: ['Conelet (immature cone): small and upright.', 'Mature cone: drooping (hangs down).'],
+    test: [
+      mc('A conelet (immature cone) is…', ['Small and upright', 'Large and drooping', 'Woody and open', 'On the roots'], 0, 'Conelets are small and upright; mature cones droop.'),
+    ],
   },
   {
     section: REPRO, q: 'What are serotinous cones?',
     a: ['Cones that only open to release seed when exposed to intense heat (fire) of 50 °C or more.', 'E.g. jack pine; black spruce cones are semi-serotinous.'],
+    test: [
+      typed('Serotinous cones open at temperatures of at least how many °C?', ['50'], '≥ 50 °C, from fire.'),
+      mc('Which species has serotinous cones?', ['Jack pine', 'White pine', 'Hemlock', 'Balsam fir'], 0, 'Jack pine (black spruce is semi-serotinous).'),
+    ],
   },
   {
     section: REPRO, q: 'What are the other (vegetative) forms of reproduction, and which species use them?',
@@ -279,6 +424,11 @@ const CARDS: StudyCard[] = [
       'Stump sprouts (coppice growth): regeneration from the stump. E.g. red oak, basswood, red maple.',
       'Root sprouts (suckering): regeneration from the roots. E.g. poplar, white elm.',
     ],
+    test: [
+      mc('Root suckering is typical of…', ['Poplar and white elm', 'Cedar and black spruce', 'Red pine', 'Balsam fir'], 0, 'Root sprouts: poplar, white elm.'),
+      mc('Layering is typical of…', ['Red oak', 'Cedar and black spruce', 'Poplar', 'Basswood'], 1, 'A branch on the ground roots: cedar, black spruce.'),
+      mc('Stump sprouting (coppice growth) is typical of…', ['Jack pine', 'Red oak, basswood and red maple', 'White spruce', 'Tamarack'], 1, 'Red oak, basswood, red maple.'),
+    ],
   },
   {
     section: REPRO, extra: true, q: 'What are the parts of a flower?',
@@ -286,18 +436,29 @@ const CARDS: StudyCard[] = [
       'Pistil (female) in the centre, surrounded by stamens (male; the anthers make pollen), then petals (the corolla) and sepals (the calyx).',
       'A complete flower has all four; a perfect flower has both pistils and stamens.',
     ],
+    test: [
+      mc('The female part of a flower is the…', ['Stamen', 'Pistil', 'Anther', 'Sepal'], 1, 'Pistil (female); stamens with anthers (male).'),
+      mc('A flower with both pistils and stamens is…', ['Perfect', 'Dioecious', 'Serotinous', 'Incomplete'], 0, 'Perfect (bisexual).'),
+    ],
   },
 
   // ---- Succession ----
   {
     section: SUCC, q: 'What is forest succession?',
     a: ['The dynamic changes in the forest by which one community succeeds (replaces) another through time.'],
+    test: [
+      mc('Forest succession is…', ['One community replacing another through time', 'Harvesting in rows', 'Seed dispersal by wind', 'Ring formation'], 0, 'The dynamic changes by which one community succeeds another.'),
+    ],
   },
   {
     section: SUCC, q: 'What is the difference between primary and secondary succession?',
     a: [
       'Primary: the disturbance removes the soil and organisms, leaving bare rock, gravel, silt or sand. E.g. volcano, landslide, glaciers, flooding.',
       'Secondary: the disturbance leaves the soil intact, and usually seeds, spores and roots too. E.g. fire, wind, insects, disease, humans (harvesting, abandoned farm fields).',
+    ],
+    test: [
+      mc('Which starts PRIMARY succession?', ['Forest fire', 'Abandoned farm field', 'Glacier', 'Harvest'], 2, 'Primary = soil removed (glacier, volcano, landslide, flooding).'),
+      tf('In secondary succession the soil is left intact.', true, 'Seeds, spores and roots usually remain too.'),
     ],
   },
   {
@@ -307,47 +468,27 @@ const CARDS: StudyCard[] = [
       'Intermediate (gap phase): establish under the canopy and wait for a gap. E.g. ash, oak, red maple, yellow birch, basswood, white spruce, white pine.',
       'Climax: establish in the shaded understory and persist, filling the canopy as old trees die. E.g. sugar maple, beech, hemlock, ironwood (GLSL); black spruce and balsam fir (Boreal).',
     ],
+    test: [
+      order('Put the stages of succession in order.', ['Pioneer', 'Intermediate (gap phase)', 'Climax'], 'Pioneer → intermediate → climax.'),
+      mc('Which is a pioneer species?', ['Sugar maple', 'Hemlock', 'White birch', 'Ironwood'], 2, 'Poplar, white birch, larch, jack pine, black spruce.'),
+      mc('Which is a GLSL climax species?', ['Trembling aspen', 'Beech', 'Jack pine', 'Larch'], 1, 'Sugar maple, beech, hemlock, ironwood.'),
+      multi('Which are Boreal climax species?', ['Black spruce', 'Balsam fir', 'Trembling aspen', 'Jack pine'], [0, 1], 'Black spruce and balsam fir.'),
+    ],
   },
   {
     section: SUCC, q: 'What are the major disturbances that restart succession?',
     a: ['Fire', 'Disease / insect epidemic', 'Flooding', 'Glacier', 'Landslide', 'Human activity', 'Wind'],
+    test: [
+      multi('Select the major disturbances.', ['Fire', 'Disease / insect epidemic', 'Flooding', 'Wind', 'Human activity', 'Shade'], [0, 1, 2, 3, 4], 'Also glaciers and landslides.'),
+    ],
   },
   {
     section: SUCC, extra: true, q: 'How does harvesting fit into the succession cycle?',
     a: ['1. Harvest', '2. Competition control and establishment of regeneration', '3. Stand thinning / tending', '4. Harvest again'],
+    test: [
+      order('Put the harvest cycle in order.', ['Harvest', 'Competition control and regeneration', 'Stand thinning / tending', 'Harvest again'], 'Harvest → regen → tending → harvest.'),
+    ],
   },
-];
-
-const TEST: TestQuestion[] = [
-  { q: 'Which forest region is Pembroke in?', choices: ['Boreal', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], answer: 1, why: 'Pembroke and Renfrew County are in the GLSL region.' },
-  { q: 'What is the largest forest region in Ontario?', choices: ['Boreal', 'Great Lakes–St. Lawrence', 'Deciduous', 'Acadian'], answer: 0, why: 'Boreal: about 50% of Ontario, and the largest in Canada.' },
-  { q: 'Which region has the most tree species but the least forest?', choices: ['Boreal', 'GLSL', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], answer: 2, why: 'The Deciduous region is mostly cleared for farms and cities.' },
-  { q: 'Which is a dominant GLSL hardwood?', choices: ['Trembling aspen', 'Sugar maple', 'Black walnut', 'Balsam poplar'], answer: 1, why: 'GLSL hardwoods: Mh, By, Be, Mr, Bd, Or.' },
-  { q: 'Shade tolerance determines…', choices: ['A tree’s height', 'The choice of silvicultural system', 'The forest region', 'Seed viability'], answer: 1, why: 'Tolerance → selection, shelterwood or clearcut.' },
-  { q: 'Which species is very shade tolerant?', choices: ['Jack pine', 'Red oak', 'Sugar maple', 'White birch'], answer: 2, why: 'Very tolerant: beech, balsam fir, hemlock, ironwood, sugar maple.' },
-  { q: 'Red oak is…', choices: ['Very intolerant', 'Intolerant', 'Intermediate', 'Very tolerant'], answer: 2, why: 'Red oak is intermediate, which is why it is managed with shelterwood.' },
-  { q: 'Which silvicultural system suits intolerant species?', choices: ['Selection', 'Shelterwood', 'Clearcut', 'Group selection only'], answer: 2, why: 'Intolerant → clearcut; intermediate → shelterwood; tolerant → selection.' },
-  { q: 'In the shelterwood system, regeneration establishes in…', choices: ['> 70% sunlight', '30–70% sunlight', 'About 30% sunlight', '1–3% sunlight'], answer: 1, why: 'Clearcut > 70%; shelterwood 30–70%; selection about 30% (≥ 70% crown closure).' },
-  { q: 'The selection system creates…', choices: ['Even-aged stands', 'Uneven-aged stands', 'Single-species stands', 'Pioneer stands'], answer: 1, why: 'Selection keeps an uneven-aged stand with mature cover forever.' },
-  { q: 'An uneven-aged stand has at least…', choices: ['2 age classes', '3 age classes', '5 age classes', '10 age classes'], answer: 1, why: 'Three or more age classes.' },
-  { q: 'A tree that responds well to release is called…', choices: ['Serotinous', 'Elastic', 'Dioecious', 'Climax'], answer: 1, why: 'Elastic trees, like maples, respond well to sudden light.' },
-  { q: 'Which age phase is less than 1 m high?', choices: ['Sapling', 'Polewood', 'Seedling / germinant', 'Boltwood'], answer: 2, why: 'Seedling < 1 m; regeneration < 3 cm DBH / < 2 m; sapling < 5 m; polewood < 10 cm DBH.' },
-  { q: 'Mature trees are greater than…', choices: ['10 cm DBH', '15 cm DBH', '25 cm DBH', '40 cm DBH'], answer: 2, why: 'Boltwood < 25 cm DBH; mature > 25 cm DBH.' },
-  { q: 'Xylem carries…', choices: ['Sugars from the leaves to the roots', 'Water and minerals from the roots to the leaves', 'Only air', 'Seeds'], answer: 1, why: 'Xylem: water up. Phloem: food from the leaves to the roots and growing areas.' },
-  { q: 'Which layer makes new xylem and phloem?', choices: ['Pith', 'Heartwood', 'Vascular cambium', 'Outer bark'], answer: 2, why: 'The vascular cambium: xylem inward, phloem outward.' },
-  { q: 'Latewood is…', choices: ['Light and low density', 'Dense and dark', 'Found only in conifers', 'The pith'], answer: 1, why: 'Earlywood (spring) is light; latewood (summer) is dense and dark.' },
-  { q: 'Which is a problem when aging a tree from its rings?', choices: ['Earlywood', 'A double pith', 'Rays', 'Sapwood'], answer: 1, why: 'Double pith, branch stubs, extensive scarring, centre rot.' },
-  { q: 'Gymnosperms have…', choices: ['Enclosed seeds', 'Naked seeds', 'No seeds', 'Perfect flowers'], answer: 1, why: 'Gymno = naked; angio = enclosed.' },
-  { q: 'Which tree is dioecious?', choices: ['Red oak', 'Basswood', 'Poplar', 'White pine'], answer: 2, why: 'Dioecious (separate male and female trees): poplars, ash, willows.' },
-  { q: 'Elm, basswood and black cherry have…', choices: ['Separate male and female trees', 'Perfect flowers', 'Serotinous cones', 'No flowers'], answer: 1, why: 'Monoecious with both organs in the same (perfect) flower.' },
-  { q: 'Female cones are usually found…', choices: ['Low in the crown', 'High in the crown', 'On the roots', 'Only on dead branches'], answer: 1, why: 'Higher up, closer to full sunlight, which also helps prevent inbreeding.' },
-  { q: 'Serotinous cones open at temperatures of at least…', choices: ['20 °C', '35 °C', '50 °C', '100 °C'], answer: 2, why: '≥ 50 °C, e.g. jack pine (black spruce is semi-serotinous).' },
-  { q: 'Root suckering is typical of…', choices: ['Poplar and white elm', 'Cedar and black spruce', 'Red pine', 'Balsam fir'], answer: 0, why: 'Root sprouts: poplar, white elm. Layering: cedar, black spruce.' },
-  { q: 'Stump sprouting (coppice growth) is typical of…', choices: ['Jack pine', 'Red oak, basswood and red maple', 'White spruce', 'Tamarack'], answer: 1, why: 'Stump sprouts: red oak, basswood, red maple.' },
-  { q: 'Seed stratification is…', choices: ['Spreading seeds by wind', 'Storing seeds under set conditions to overcome dormancy', 'The capacity of a seed to germinate', 'Transfer of pollen'], answer: 1, why: 'Viability is the capacity to germinate; pollination is pollen transfer.' },
-  { q: 'Which is an example of primary succession?', choices: ['After a forest fire', 'On an abandoned farm field', 'After a glacier retreats', 'After a harvest'], answer: 2, why: 'Primary = soil removed (glacier, volcano, landslide). Fire and harvest are secondary.' },
-  { q: 'Which is a pioneer species?', choices: ['Sugar maple', 'Hemlock', 'White birch', 'Ironwood'], answer: 2, why: 'Pioneers: poplar, white birch, larch, jack pine, black spruce.' },
-  { q: 'Which is a GLSL climax species?', choices: ['Trembling aspen', 'Beech', 'Jack pine', 'Larch'], answer: 1, why: 'GLSL climax: sugar maple, beech, hemlock, ironwood.' },
 ];
 
 const SORTS: SortDrill[] = [
@@ -432,5 +573,5 @@ const RANKS: RankDrill[] = [
 
 export const ECOLOGY: StudyGuide = {
   id: 'ecology', sections: [REGIONS, SHADE, PHYS, REPRO, SUCC], allLabel: 'All topics',
-  cards: CARDS, test: TEST, sorts: SORTS, ranks: RANKS,
+  cards: CARDS, sorts: SORTS, ranks: RANKS,
 };

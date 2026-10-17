@@ -2,14 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { StudyCard } from '@/data/study/types';
-
-function loadKnown(store: string): Set<string> {
-  try {
-    return new Set(JSON.parse(localStorage.getItem(store) ?? '[]') as string[]);
-  } catch {
-    return new Set();
-  }
-}
+import { loadKnown, saveKnown } from '@/lib/study-storage';
 
 function shuffle<T>(xs: T[]): T[] {
   const a = [...xs];
@@ -34,8 +27,6 @@ export function Answer({ card }: { card: StudyCard }) {
 
 /** Flip cards for every review question; the ones you know are remembered in this browser. */
 export function Flashcards({ guideId, cards, sections, allLabel }: { guideId: string; cards: StudyCard[]; sections: string[]; allLabel: string }) {
-  // Known cards are remembered by their question, so adding or reordering cards keeps them.
-  const store = `study:${guideId}:known-cards`;
   const [week, setWeek] = useState('all');
   const [view, setView] = useState<'cards' | 'list'>('cards');
   const [onlyLearning, setOnlyLearning] = useState(false);
@@ -46,8 +37,8 @@ export function Flashcards({ guideId, cards, sections, allLabel }: { guideId: st
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- restore saved progress after hydration
-    setKnown(loadKnown(store));
-  }, [store]);
+    setKnown(loadKnown(guideId));
+  }, [guideId]);
 
   const deck = useMemo(
     () => order.filter((i) => (week === 'all' || cards[i].section === week) && (!onlyLearning || !known.has(cards[i].q))),
@@ -63,7 +54,8 @@ export function Flashcards({ guideId, cards, sections, allLabel }: { guideId: st
     const next = new Set(known);
     if (isKnown) next.add(cards[idx].q); else next.delete(cards[idx].q);
     setKnown(next);
-    try { localStorage.setItem(store, JSON.stringify([...next])); } catch { /* storage blocked: keep it for this visit */ }
+    // Remembered by question, so adding or reordering cards keeps them.
+    saveKnown(guideId, next);
     go(1);
   }
 

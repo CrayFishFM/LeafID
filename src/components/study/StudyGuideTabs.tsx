@@ -44,7 +44,7 @@ export function StudyGuideTabs({ guide, extra = [] }: { guide: StudyGuide; extra
       </div>
       <div role="tabpanel">
         {tab === 'cards' && <Flashcards guideId={guide.id} cards={guide.cards} sections={guide.sections} allLabel={guide.allLabel} />}
-        {tab === 'test' && <PracticeTest bank={guide.test} />}
+        {tab === 'test' && <PracticeTest guideId={guide.id} bank={guide.test} />}
         {extra.map((x) => tab === x.id && <div key={x.id}>{x.content}</div>)}
         {tab === 'sort' && <SortDrills drills={guide.sorts} ranks={guide.ranks} />}
       </div>

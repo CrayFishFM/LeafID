@@ -41,11 +41,12 @@ function Sorter({ drill }: { drill: SortDrill }) {
             <li key={it.label} className={state}>
               <span className="sort-label">
                 {it.label}
-                {checked && placed[i] !== it.bin && <span className="small"> → {it.bin}</span>}
+                {checked && placed[i] !== it.bin && <span className="sort-answer"> Answer: {it.bin}</span>}
               </span>
-              <span className="segmented segmented-sm">
+              <span className="bin-group" style={{ gridTemplateColumns: `repeat(${drill.bins.length}, 1fr)` }}>
                 {drill.bins.map((b) => (
-                  <button key={b} aria-current={placed[i] === b} disabled={checked} onClick={() => setPlaced((p) => ({ ...p, [i]: b }))}>{b}</button>
+                  <button key={b} type="button" aria-pressed={placed[i] === b} disabled={checked}
+                    className={checked && b === it.bin ? 'is-answer' : ''} onClick={() => setPlaced((p) => ({ ...p, [i]: b }))}>{b}</button>
                 ))}
               </span>
             </li>
@@ -96,7 +97,7 @@ function Ranker({ drill }: { drill: RankDrill }) {
         {list.map((c, i) => (
           <li key={c} className={!checked ? '' : answer[i] === c ? 'is-right' : 'is-wrong'}>
             <span className="sort-label">{i + 1}. {c}{checked && answer[i] !== c && <span className="small"> (should be #{answer.indexOf(c) + 1})</span>}</span>
-            <span className="row" style={{ gap: '0.25rem' }}>
+            <span className="rank-arrows">
               <button className="btn btn-sm icon-btn" aria-label={`Move ${c} up`} disabled={checked || i === 0} onClick={() => move(i, -1)}>↑</button>
               <button className="btn btn-sm icon-btn" aria-label={`Move ${c} down`} disabled={checked || i === list.length - 1} onClick={() => move(i, 1)}>↓</button>
             </span>
@@ -119,7 +120,7 @@ function Ranker({ drill }: { drill: RankDrill }) {
 
 export function SortDrills({ drills, ranks }: { drills: SortDrill[]; ranks: RankDrill[] }) {
   return (
-    <div className="grid grid-2" style={{ alignItems: 'start' }}>
+    <div className="sort-grid">
       {drills.map((d) => <Sorter key={d.id} drill={d} />)}
       {ranks.map((r) => <Ranker key={r.id} drill={r} />)}
     </div>

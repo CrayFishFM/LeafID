@@ -401,11 +401,29 @@ textarea.input { min-height: 90px; resize: vertical; }
 .utm-place:focus-visible { outline: none; }
 .utm-place:focus-visible circle { stroke: var(--primary); stroke-width: 3; }
 
-.sort-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
-.sort-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 0.75rem; padding: 0.45rem 0.6rem; border-radius: 10px; background: var(--surface-2); border: 1px solid transparent; }
+.sort-grid { display: grid; gap: 1rem; align-items: start; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+.sort-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.sort-list li {
+  display: grid; gap: 0.5rem; padding: 0.6rem 0.7rem; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid transparent;
+}
 .sort-list li.is-right { background: var(--ok-bg); border-color: var(--ok); }
 .sort-list li.is-wrong { background: var(--bad-bg); border-color: var(--bad); }
-.sort-label { font-weight: 500; }
+.sort-label { font-weight: 500; line-height: 1.3; }
+.sort-answer { font-size: 0.85rem; font-weight: 600; color: var(--bad); }
+.bin-group { display: grid; gap: 0.35rem; }
+.bin-group button {
+  min-height: 36px; padding: 0.3rem 0.5rem; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 0.85rem; font-weight: 500; line-height: 1.2; cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.bin-group button:hover:not(:disabled) { border-color: var(--primary); }
+.bin-group button[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 600; }
+.bin-group button:disabled { cursor: default; }
+.bin-group button:disabled:not([aria-pressed='true']):not(.is-answer) { opacity: 0.5; }
+.bin-group button.is-answer:not([aria-pressed='true']) { border: 2px dashed var(--ok); color: var(--ok); font-weight: 600; }
+.rank-list li { grid-template-columns: 1fr auto; align-items: center; }
+.rank-arrows { display: flex; gap: 0.25rem; }
 .rank-list .icon-btn { width: 36px; height: 36px; min-height: 36px; }
 
 .cross-section { width: 100%; max-width: 340px; height: auto; justify-self: center; }

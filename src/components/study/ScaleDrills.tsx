@@ -14,7 +14,20 @@ interface Problem { text: string; unit: string; answer: number; steps: string[] 
 
 function makeProblem(): Problem {
   const scale = pick(SCALES);
-  const kind = pick(['photo-to-ground', 'ground-to-photo', 'find-scale'] as const);
+  const kind = pick(['photo-to-ground', 'ground-to-photo', 'find-scale', 'chains'] as const);
+  if (kind === 'chains') {
+    // From the Week 3 scale exercise: 1 chain = 66 ft = 20.12 m.
+    const mapScale = pick([10000, 20000, 40000, 50000]);
+    const cm = Math.round(rand(2, 15));
+    const m = (cm * mapScale) / 100;
+    const chains = m / 20.12;
+    return {
+      text: `On a 1:${fmt(mapScale)} map, a cruise line measures ${cm} cm. How many chains is that on the ground? (1 chain = 20.12 m)`,
+      unit: 'chains',
+      answer: chains,
+      steps: [`${cm} cm × ${fmt(mapScale)} = ${fmt(cm * mapScale)} cm`, `${fmt(cm * mapScale)} cm ÷ 100 = ${fmt(m)} m`, `${fmt(m)} m ÷ 20.12 = ${fmt(chains, 1)} chains`],
+    };
+  }
   if (kind === 'photo-to-ground') {
     const cm = Math.round(rand(1, 12) * 10) / 10;
     const ground = (cm * scale) / 100;
@@ -78,7 +91,7 @@ export function ScaleDrill() {
       <div>
         <h3 style={{ margin: 0 }}>Scale &amp; distance</h3>
         <p className="small muted" style={{ margin: 0 }}>
-          Photo distance × scale = ground distance (in the same unit). 100 cm = 1 m, 1,000 m = 1 km.
+          Photo distance × scale = ground distance (in the same unit). 100 cm = 1 m, 1,000 m = 1 km, 1 chain = 20.12 m.
           {score.total > 0 && <> · <strong>{score.right} / {score.total}</strong> right</>}
         </p>
       </div>

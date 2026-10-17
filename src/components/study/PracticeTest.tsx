@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { TestQuestion } from '@/data/study/types';
+import { saveTest } from '@/lib/study-storage';
 
 const LENGTH = 12;
 
@@ -20,7 +21,7 @@ const build = (bank: TestQuestion[]): Asked[] =>
   shuffle(bank).slice(0, LENGTH).map((q) => ({ q, order: shuffle(q.choices.map((_, i) => i)) }));
 
 /** A short multiple-choice test drawn from the bank, with the reason after every answer. */
-export function PracticeTest({ bank }: { bank: TestQuestion[] }) {
+export function PracticeTest({ guideId, bank }: { guideId: string; bank: TestQuestion[] }) {
   // Built on first click so the server and browser render the same (unshuffled) page.
   const [test, setTest] = useState<Asked[] | null>(null);
   const [pos, setPos] = useState(0);
@@ -37,6 +38,17 @@ export function PracticeTest({ bank }: { bank: TestQuestion[] }) {
   }
 
   const done = picks[test.length - 1] !== undefined;
+
+  function answer(ci: number) {
+    if (!test) return;
+    const next = [...picks];
+    next[pos] = ci;
+    setPicks(next);
+    // Last question: keep the score for the Progress page.
+    if (pos === test.length - 1) {
+      saveTest(guideId, next.filter((p, i) => p === test[i].q.answer).length, test.length);
+    }
+  }
   const score = picks.filter((p, i) => p === test[i].q.answer).length;
   const cur = test[pos];
   const picked = picks[pos];
@@ -54,7 +66,7 @@ export function PracticeTest({ bank }: { bank: TestQuestion[] }) {
             const cls = picked === undefined ? '' : ci === cur.q.answer ? 'correct' : ci === picked ? 'wrong' : '';
             return (
               <button key={ci} className={`choice ${cls}`} disabled={picked !== undefined}
-                onClick={() => setPicks((ps) => { const n = [...ps]; n[pos] = ci; return n; })}>
+                onClick={() => answer(ci)}>
                 <span className="name">{cur.q.choices[ci]}</span>
               </button>
             );

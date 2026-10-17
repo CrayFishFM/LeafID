@@ -36,14 +36,14 @@ export const COURSES: Course[] = [
   {
     id: 'forest-health',
     title: 'Forest Health',
-    subject: 'Hardwood defects',
+    subject: 'Midterm review & hardwood defects',
     blurb: 'Name the defect from a photo and rate it (minor, moderate or major; AGS or UGS), plus a midterm review: fungi, other defects, tree marking, cavity and mast trees.',
     topics: ['defects'],
     links: [
-      { label: 'Identify & rate', href: '/quizzes/defects' },
+      { label: 'Midterm review', href: '/courses/forest-health' },
+      { label: 'Identify & rate defects', href: '/quizzes/defects' },
       { label: 'Rate only', href: '/quizzes/defects/grade' },
       { label: 'Defect guide', href: '/quizzes/defects/study' },
-      { label: 'Midterm review', href: '/courses/forest-health' },
     ],
   },
   {

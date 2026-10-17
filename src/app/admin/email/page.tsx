@@ -7,7 +7,7 @@ export default async function AdminEmail() {
   const rows = [
     ['HOSTINGER_MAIL_TOKEN', mailEnabled ? 'Set' : 'Not set'],
     ['HOSTINGER_MAILBOX_ID', process.env.HOSTINGER_MAILBOX_ID ? 'Set' : 'Not set — first mailbox on the token is used'],
-    ['MAIL_FROM_NAME', process.env.MAIL_FROM_NAME ?? 'LeafID (default)'],
+    ['MAIL_FROM_NAME', process.env.MAIL_FROM_NAME ?? "Forester's Field Kit (default)"],
     ['BETTER_AUTH_URL (used in email links)', process.env.BETTER_AUTH_URL ?? 'Not set'],
   ];
   return (

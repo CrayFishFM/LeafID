@@ -114,7 +114,7 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      // Lets a signed-in user link a Discord account whose email differs from their LeafID email.
+      // Lets a signed-in user link a Discord account whose email differs from their account email.
       // Only applies to explicit linking from the account page, which needs both logins.
       allowDifferentEmails: true,
     },

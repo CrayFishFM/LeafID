@@ -18,7 +18,7 @@ export const metadata = { title: 'Account' };
 const BANNERS: Record<string, { ok: boolean; text: string }> = {
   linked: { ok: true, text: 'Discord is now linked — you can sign in with it.' },
   email: { ok: true, text: 'Your email address has been updated.' },
-  link: { ok: false, text: "Discord linking didn't complete. That Discord account may already belong to another LeafID account." },
+  link: { ok: false, text: "Discord linking didn't complete. That Discord account may already belong to another Forester's Field Kit account." },
 };
 
 /** "Chrome on Windows" from a user-agent string; good enough to recognise your own devices. */
@@ -46,7 +46,7 @@ export default async function AccountPage(props: PageProps<'/account'>) {
       <div className="stack" style={{ maxWidth: 640 }}>
         <div>
           <p className="eyebrow">Account</p>
-          <h1>You&apos;re using LeafID as a guest</h1>
+          <h1>You&apos;re using Forester&apos;s Field Kit as a guest</h1>
         </div>
         <div className="card stack">
           <p className="muted" style={{ margin: 0 }}>

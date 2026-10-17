@@ -66,6 +66,8 @@ export const listTopics = cache(async (): Promise<Topic[]> => {
       tips: parseJson<string[]>(i.tips, []),
       lookalikes: parseJson<string[]>(i.lookalikes, []),
       images: parseJson<string[]>(i.images, []),
+      // Severity / AGS-UGS ratings are not stored in the database; they come from the seed.
+      ratings: TOPIC_SEED.find((st) => st.id === t.id)?.items.find((si) => si.id === i.id)?.ratings,
       updatedAt: i.updated_at, updatedBy: i.updated_by,
     })),
   }));

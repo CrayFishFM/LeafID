@@ -31,9 +31,12 @@ export default async function LearnPage(props: PageProps<'/learn'>) {
   return (
     <div className="stack" style={{ gap: '1.5rem' }}>
       <div>
-        <p className="eyebrow">Field guide</p>
+        <p className="eyebrow">Tree ID · Field guide</p>
         <h1>{active ? leaf.groups[active].label : 'All species'}</h1>
         <p className="muted">{active ? leaf.groups[active].blurb : 'What to look for in each leaf. Tap a name for the full profile and more photos.'}</p>
+        <Link href={active ? `/quiz?scope=${active}` : '/quiz'} className="btn btn-primary">
+          Practise {active ? leaf.groups[active].label.toLowerCase() : 'leaf ID'}
+        </Link>
       </div>
 
       <Link href="/learn/key" className="card row" style={{ justifyContent: 'space-between', textDecoration: 'none', color: 'inherit' }}>

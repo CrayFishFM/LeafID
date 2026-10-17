@@ -8,6 +8,13 @@ const base = (props: SVGProps<SVGSVGElement>) => ({
 export const LeafIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15Z" /><path d="M5 19 13 11" /></svg>
 );
+export const HomeIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M3 11 12 4l9 7" /><path d="M5.5 9.5V20h13V9.5" /><path d="M10 20v-5.5h4V20" /></svg>
+);
+/** A conifer: the Forester's Field Kit mark. */
+export const PineIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M12 2.5 7 9h3l-4.5 6H9l-4 5h14l-4-5h3.5L14 9h3Z" /><path d="M12 20v2" /></svg>
+);
 export const BookIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z" /><path d="M4 19a2 2 0 0 1 2-2h13" /></svg>
 );

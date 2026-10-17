@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter } from 'next/font/google';
 import Link from 'next/link';
-import { GitHubIcon, LeafIcon } from '@/components/icons';
+import { GitHubIcon, PineIcon } from '@/components/icons';
 import { BottomNav, TopNav } from '@/components/Nav';
 import { themeInitScript, ThemeToggle } from '@/components/ThemeToggle';
 import { LeafProvider } from '@/components/LeafProvider';
@@ -13,8 +13,9 @@ const display = Fraunces({ subsets: ['latin'], variable: '--font-display' });
 const body = Inter({ subsets: ['latin'], variable: '--font-body' });
 
 export const metadata: Metadata = {
-  title: { default: 'LeafID — Ontario tree leaf identification', template: '%s · LeafID' },
-  description: 'Learn to identify Ontario tree species by their leaves, with adaptive practice and crowd-verified photos.',
+  title: { default: "Forester's Field Kit — forestry study tools", template: "%s · Forester's Field Kit" },
+  description:
+    'Study tools for forestry students: tree ID by leaf, hardwood defects with AGS/UGS grading, fish ID and remote sensing review, with adaptive practice.',
 };
 
 const REPO_URL = 'https://github.com/CrayFishFM/LeafID';
@@ -42,7 +43,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="topbar">
           <div className="topbar-inner">
             <Link href="/" className="brand">
-              <LeafIcon /> LeafID
+              <PineIcon />
+              <span className="brand-full">{"Forester's Field Kit"}</span>
+              <span className="brand-short">Field Kit</span>
             </Link>
             <TopNav />
             <div className="topbar-right">
@@ -63,7 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main className="container">
           <LeafProvider species={species} groups={leaf.groups}>{children}</LeafProvider>
           <footer className="site-footer">
-            <span>LeafID is free and open source.</span>
+            <span>{"Forester's Field Kit"} is free and open source.</span>
             <a href={REPO_URL} target="_blank" rel="noreferrer" className="github-link">
               <GitHubIcon width={18} height={18} /> View the code on GitHub
             </a>

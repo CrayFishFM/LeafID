@@ -1,7 +1,7 @@
 import { AccountApi, Configuration, SendApi, type V1SendRequest } from '@hostinger/mail-sdk';
 
 const token = process.env.HOSTINGER_MAIL_TOKEN;
-const fromName = process.env.MAIL_FROM_NAME ?? 'LeafID';
+const fromName = process.env.MAIL_FROM_NAME ?? "Forester's Field Kit";
 
 /** True when Hostinger Mail is configured; without it emails are only logged (dev). */
 export const mailEnabled = !!token;
@@ -55,7 +55,7 @@ function layout(heading: string, intro: string, cta: { label: string; url: strin
   const html = `<!doctype html><html><body style="margin:0;background:#f4f5ef;font-family:Arial,sans-serif;color:#1b261d">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
 <table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:14px;padding:28px">
-<tr><td style="font-size:20px;font-weight:bold;color:#2d6a3a;padding-bottom:12px">🍃 LeafID</td></tr>
+<tr><td style="font-size:20px;font-weight:bold;color:#2d6a3a;padding-bottom:12px">🌲 Forester's Field Kit</td></tr>
 <tr><td style="font-size:18px;font-weight:bold;padding-bottom:8px">${escape(heading)}</td></tr>
 <tr><td style="font-size:15px;line-height:1.5;padding-bottom:20px">${escape(intro)}</td></tr>
 <tr><td style="padding-bottom:20px"><a href="${escape(cta.url)}" style="display:inline-block;background:#2d6a3a;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:999px">${escape(cta.label)}</a></td></tr>
@@ -67,10 +67,10 @@ function layout(heading: string, intro: string, cta: { label: string; url: strin
 
 export function verificationEmail(name: string, url: string) {
   return {
-    subject: 'Confirm your LeafID email',
+    subject: 'Confirm your Field Kit email',
     ...layout(
       `Welcome, ${name}!`,
-      'Confirm your email address to finish setting up your LeafID account.',
+      'Confirm your email address to finish setting up your Field Kit account.',
       { label: 'Confirm email', url },
       "This link expires in 1 hour. If you didn't create an account, you can ignore this email.",
     ),
@@ -79,10 +79,10 @@ export function verificationEmail(name: string, url: string) {
 
 export function resetPasswordEmail(name: string, url: string) {
   return {
-    subject: 'Reset your LeafID password',
+    subject: 'Reset your Field Kit password',
     ...layout(
       `Hi ${name},`,
-      'Someone asked to reset the password for your LeafID account. Click below to choose a new one.',
+      'Someone asked to reset the password for your Field Kit account. Click below to choose a new one.',
       { label: 'Reset password', url },
       "This link expires in 1 hour. If you didn't ask for this, you can ignore this email — your password won't change.",
     ),
@@ -91,10 +91,10 @@ export function resetPasswordEmail(name: string, url: string) {
 
 export function changeEmailConfirmationEmail(name: string, newEmail: string, url: string) {
   return {
-    subject: 'Approve your LeafID email change',
+    subject: 'Approve your Field Kit email change',
     ...layout(
       `Hi ${name},`,
-      `Someone asked to change the email on your LeafID account to ${newEmail}. If that was you, approve it below — we'll then send a link to the new address to finish.`,
+      `Someone asked to change the email on your Field Kit account to ${newEmail}. If that was you, approve it below — we'll then send a link to the new address to finish.`,
       { label: 'Approve change', url },
       "If you didn't ask for this, ignore this email and your address stays the same. Consider changing your password.",
     ),
@@ -103,10 +103,10 @@ export function changeEmailConfirmationEmail(name: string, newEmail: string, url
 
 export function deleteAccountEmail(name: string, url: string) {
   return {
-    subject: 'Confirm deleting your LeafID account',
+    subject: 'Confirm deleting your Field Kit account',
     ...layout(
       `Hi ${name},`,
-      'You asked to delete your LeafID account. This permanently removes your progress, uploads and votes.',
+      'You asked to delete your Field Kit account. This permanently removes your progress, uploads and votes.',
       { label: 'Delete my account', url },
       "This link expires in 24 hours. If you didn't ask for this, ignore this email — nothing will be deleted.",
     ),
@@ -115,11 +115,11 @@ export function deleteAccountEmail(name: string, url: string) {
 
 export function testEmail(appUrl: string) {
   return {
-    subject: 'LeafID test email',
+    subject: 'Field Kit test email',
     ...layout(
       'Email is working',
-      'This is a test email sent from the LeafID admin dashboard through Hostinger Mail.',
-      { label: 'Open LeafID', url: appUrl },
+      'This is a test email sent from the Field Kit admin dashboard through Hostinger Mail.',
+      { label: "Open Forester's Field Kit", url: appUrl },
       'No action is needed.',
     ),
   };

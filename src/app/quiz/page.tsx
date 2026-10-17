@@ -18,7 +18,7 @@ export default async function QuizPage(props: PageProps<'/quiz'>) {
   return (
     <div className="stack" style={{ gap: '1.25rem' }}>
       <div>
-        <p className="eyebrow">Practice</p>
+        <p className="eyebrow">Tree ID · Practice · <Link href="/learn">Field guide</Link></p>
         <h1>{scope === 'all' ? 'All species' : scope === 'weak' ? 'My weak spots' : leaf.groups[scope].label}</h1>
       </div>
       <div className="segmented">

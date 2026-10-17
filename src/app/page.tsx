@@ -1,126 +1,96 @@
-/* eslint-disable @next/next/no-img-element -- static leaf photos are pre-sized */
+/* eslint-disable @next/next/no-img-element -- static photos are pre-sized */
 import Link from 'next/link';
-import { listTopics } from '@/lib/topics';
+import { CourseCard } from '@/components/CourseCard';
 import { discordEnabled, getSession } from '@/lib/auth';
 import { verificationRule } from '@/lib/community';
+import { courseCards } from '@/lib/courses';
+import { getLeaf } from '@/lib/leaf';
 import { libraryPhotos } from '@/lib/photos';
 import { getProgress } from '@/lib/progress';
 import { suggestionsFor } from '@/lib/suggestions';
-import { getLeaf } from '@/lib/leaf';
 
-// Hand-picked for colour: a green sugar maple, a red oak in fall and a golden aspen.
-const HERO = ['lib:Mh/8.jpg', 'lib:Or/7.jpg', 'lib:Pt/1.jpg'];
+// One photo per course: a red oak in fall, an artist's conk and a pumpkinseed.
+const HERO = [
+  { key: 'lib:Or/7.jpg', label: 'Tree ID' },
+  { src: '/quizzes/defects/31.webp', label: 'Defects', className: 'hero-defect' },
+  { src: '/quizzes/fish/03.webp', label: 'Fish', className: 'hero-fish' },
+];
 
 const STEPS = [
-  { title: 'Study the field guide', body: 'Every species has its key leaf features, field clues and look-alikes. Start with a group, like the maples or oaks.' },
-  { title: 'Answer photo questions', body: 'Pick the tree from four options. Stuck? Up to three hints narrow it down, from leaf arrangement to the most telling feature.' },
-  { title: 'Learn from every answer', body: "Right or wrong, you see why — and if you mixed two trees up, exactly how to tell them apart next time." },
-  { title: 'Let it adapt', body: 'Trees you miss come back more often, wrong options are drawn from your own past mix-ups, and Progress tells you what to study next.' },
+  { title: 'Pick a course', body: 'Dendrology, Forest Health, Wildlife or Remote Sensing. Each one is built from the course material.' },
+  { title: 'Study the guide', body: 'Field guides, defect tables, flashcards and worked examples — the things you need to know for the test.' },
+  { title: 'Practise until it sticks', body: 'Quizzes put what you miss in front of you more often, and every answer explains why.' },
+  { title: 'See what to work on', body: 'Progress shows your accuracy, your most common mix-ups and what to study next.' },
 ];
 
 export default async function Home(props: PageProps<'/'>) {
-  const leaf = await getLeaf();
   const { deleted } = await props.searchParams;
-  const [session, topics] = await Promise.all([getSession(), listTopics()]);
-  const heroPhotos = (await libraryPhotos()).filter((p) => HERO.includes(p.key));
-  const progress = session ? await getProgress(session.user.id) : null;
-  const tip = progress ? suggestionsFor(leaf, progress)[0] : null;
+  const session = await getSession();
+  const [leaf, photos, courses, progress] = await Promise.all([
+    getLeaf(),
+    libraryPhotos(),
+    courseCards(session?.user.id),
+    session ? getProgress(session.user.id) : null,
+  ]);
+  const tip = progress && progress.total > 0 ? suggestionsFor(leaf, progress)[0] : null;
+  const hero = HERO.map((h) => ({ ...h, src: h.key ? photos.find((p) => p.key === h.key)?.url : h.src })).filter((h) => h.src);
 
   return (
     <div className="stack" style={{ gap: '2.5rem' }}>
       {deleted && <div className="notice">Your account and all its data have been deleted.</div>}
       <section className="hero">
         <div className="stack">
-          <p className="eyebrow">Ontario tree identification</p>
-          <h1>Learn to know a tree by its leaf.</h1>
+          <p className="eyebrow">Study tools for forestry students</p>
+          <h1>Your field kit for forestry school.</h1>
           <p className="lead">
-            Practise the {leaf.species.length} species on the Ontario tree ID list — from Mh to Pd. LeafID adapts to what you
-            get wrong, explains the difference every time, and shows you exactly what to study next.
+            Tree ID, hardwood defects and AGS/UGS grading, fish ID and remote sensing review, all in one place. The
+            quizzes adapt to what you get wrong and explain every answer.
           </p>
           <div className="row">
+            <Link href="/courses" className="btn btn-primary">Browse courses</Link>
             {session ? (
-              <>
-                <Link href="/quiz" className="btn btn-primary">Continue practising</Link>
-                <Link href="/progress" className="btn">See my progress</Link>
-              </>
+              <Link href="/progress" className="btn">See my progress</Link>
             ) : (
-              <>
-                <Link href="/quiz" className="btn btn-primary">Start practising — no account needed</Link>
-                <Link href="/learn" className="btn">Browse the field guide</Link>
-              </>
+              <Link href="/quiz" className="btn">Start with tree ID — no account needed</Link>
             )}
           </div>
         </div>
         <div className="hero-photos" aria-hidden>
-          {heroPhotos.map((p) => (
-            <div className="photo" key={p.key}>
-              <img src={p.url} alt="" />
-            </div>
+          {hero.map((h) => (
+            <figure className="hero-tile" key={h.label}>
+              <div className={`photo ${h.className ?? ''}`}><img src={h.src} alt="" /></div>
+              <figcaption>{h.label}</figcaption>
+            </figure>
           ))}
         </div>
       </section>
 
       {session && tip && (
         <section className="card suggestion">
-          <p className="eyebrow">{session.user.isAnonymous ? 'Your next step' : `Your next step, ${session.user.name}`}</p>
+          <p className="eyebrow">{session.user.isAnonymous ? 'Tree ID: your next step' : `Tree ID: your next step, ${session.user.name}`}</p>
           <h3>{tip.title}</h3>
           <p className="muted">{tip.body}</p>
           {tip.href && <Link href={tip.href} className="btn btn-sm">{tip.cta}</Link>}
         </section>
       )}
 
-      <section className="grid grid-4">
-        <div className="card">
-          <h3>Study</h3>
-          <p className="muted">
-            A field guide for every species: key features, field clues, and how to tell it from its look-alikes.
-          </p>
-          <Link href="/learn">Open the field guide →</Link>
+      <section className="stack">
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div>
+            <p className="eyebrow">Courses</p>
+            <h2 style={{ margin: 0 }}>What&apos;s in the kit</h2>
+          </div>
+          <Link href="/courses" className="btn btn-sm btn-ghost">All courses →</Link>
         </div>
-        <div className="card">
-          <h3>Practise</h3>
-          <p className="muted">
-            Photo questions that focus on the species you struggle with. Use hints when you&apos;re stuck and read why
-            after every answer.
-          </p>
-          <Link href="/quiz">Start a practice round →</Link>
-        </div>
-        <div className="card">
-          <h3>Track</h3>
-          <p className="muted">
-            See mastery per species, the pairs you mix up most, and personalised suggestions for what to work on.
-          </p>
-          <Link href="/progress">View progress →</Link>
-        </div>
-        <div className="card">
-          <h3>Contribute</h3>
-          <p className="muted">
-            Upload your own leaf photos. When enough people agree on the ID, the photo joins everyone&apos;s practice set.
-          </p>
-          <Link href="/community">Visit the community →</Link>
-        </div>
-      </section>
-
-      <section className="card stack">
-        <div>
-          <p className="eyebrow">More quizzes</p>
-          <h3 style={{ margin: 0 }}>Fish and hardwood defects too</h3>
-          <p className="muted" style={{ margin: '0.25rem 0 0' }}>
-            Practise Ontario fish species and hardwood defects with the same adaptive quiz, plus a study guide for each.
-          </p>
-        </div>
-        <div className="row">
-          {topics.map((t) => (
-            <Link key={t.id} href={`/quizzes/${t.id}`} className="btn btn-sm">{t.title}</Link>
-          ))}
-          <Link href="/quizzes" className="btn btn-sm btn-ghost">All quizzes →</Link>
+        <div className="grid grid-2">
+          {courses.map((c) => <CourseCard key={c.id} course={c} />)}
         </div>
       </section>
 
       <section className="stack">
         <div>
           <p className="eyebrow">How it works</p>
-          <h2>From first leaf to knowing them all</h2>
+          <h2>From the lecture notes to knowing it cold</h2>
         </div>
         <ol className="steps">
           {STEPS.map((step) => (
@@ -131,8 +101,9 @@ export default async function Home(props: PageProps<'/'>) {
           ))}
         </ol>
         <p className="small muted" style={{ margin: 0 }}>
-          <strong>Community photos:</strong> anyone can upload a leaf photo with their best guess. Other people identify it
-          without seeing that guess. The photo is verified {verificationRule()}, then joins everyone&apos;s practice questions.
+          <strong>Community photos:</strong> anyone can <Link href="/community">upload a leaf photo</Link> with their best
+          guess. Other people identify it without seeing that guess. The photo is verified {verificationRule()}, then joins
+          everyone&apos;s tree ID questions.
         </p>
       </section>
 
@@ -151,7 +122,7 @@ export default async function Home(props: PageProps<'/'>) {
               <tr><th scope="col"><span className="sr-only">Feature</span></th><th scope="col">As a guest</th><th scope="col">With an account</th></tr>
             </thead>
             <tbody>
-              <tr><th scope="row">Field guide &amp; practice</th><td>Everything</td><td>Everything</td></tr>
+              <tr><th scope="row">Study guides &amp; quizzes</th><td>Everything</td><td>Everything</td></tr>
               <tr><th scope="row">Progress &amp; suggestions</th><td>Saved in this browser only</td><td>Saved to your account, on every device</td></tr>
               <tr><th scope="row">Upload &amp; vote on photos</th><td>Yes, shown as &ldquo;Guest&rdquo;</td><td>Yes, shown with your name</td></tr>
               <tr>
@@ -177,7 +148,7 @@ export default async function Home(props: PageProps<'/'>) {
           <div className="row">
             <Link href="/sign-up" className="btn btn-primary">Create a free account</Link>
             <Link href="/sign-in" className="btn">Sign in</Link>
-            {!session && <Link href="/quiz" className="btn btn-ghost">Or just start practising →</Link>}
+            {!session && <Link href="/courses" className="btn btn-ghost">Or just start studying →</Link>}
           </div>
         )}
       </section>

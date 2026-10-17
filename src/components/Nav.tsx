@@ -2,27 +2,29 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookIcon, ChartIcon, GridIcon, TargetIcon, UsersIcon } from './icons';
+import { ChartIcon, GridIcon, HomeIcon, LeafIcon, UsersIcon } from './icons';
 
 const LINKS = [
-  { href: '/learn', label: 'Learn', Icon: BookIcon },
-  { href: '/quiz', label: 'Practice', Icon: TargetIcon },
-  { href: '/quizzes', label: 'Quizzes', Icon: GridIcon },
-  { href: '/progress', label: 'Progress', Icon: ChartIcon },
-  { href: '/community', label: 'Community', Icon: UsersIcon },
+  // The brand links home on wide screens, so Home is only in the phone tab bar.
+  { href: '/', label: 'Home', Icon: HomeIcon, mobileOnly: true, also: [] },
+  { href: '/courses', label: 'Courses', Icon: GridIcon, also: ['/quizzes'] },
+  { href: '/learn', label: 'Tree ID', Icon: LeafIcon, also: ['/quiz'] },
+  { href: '/progress', label: 'Progress', Icon: ChartIcon, also: [] },
+  { href: '/community', label: 'Community', Icon: UsersIcon, also: [] },
 ];
 
 function useActive() {
   const path = usePathname();
-  return (href: string) => (path === href || path.startsWith(href + '/') ? 'page' : undefined);
+  const on = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+  return (l: (typeof LINKS)[number]) => (on(l.href) || l.also.some(on) ? 'page' : undefined);
 }
 
 export function TopNav() {
   const active = useActive();
   return (
     <nav className="topnav" aria-label="Main">
-      {LINKS.map((l) => (
-        <Link key={l.href} href={l.href} aria-current={active(l.href)}>{l.label}</Link>
+      {LINKS.filter((l) => !l.mobileOnly).map((l) => (
+        <Link key={l.href} href={l.href} aria-current={active(l)}>{l.label}</Link>
       ))}
     </nav>
   );
@@ -32,10 +34,10 @@ export function BottomNav() {
   const active = useActive();
   return (
     <nav className="bottomnav" aria-label="Main">
-      {LINKS.map(({ href, label, Icon }) => (
-        <Link key={href} href={href} aria-current={active(href)}>
-          <Icon />
-          {label}
+      {LINKS.map((l) => (
+        <Link key={l.href} href={l.href} aria-current={active(l)}>
+          <l.Icon />
+          {l.label}
         </Link>
       ))}
     </nav>

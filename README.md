@@ -1,6 +1,13 @@
-# LeafID
+# Forester's Field Kit
 
-A web app for learning to identify Ontario tree species by their leaves. It covers the 26 species on the Ontario tree ID list (Mh, Mr, Ms, Mm, Mp, Or, Ow, Ob, Be, Iw, Bw, By, Al, Ew, Bd, Aw, Ab, Elderberry, Am, Bn, Wb, Staghorn sumac, Pl, Pt, Pb, Pd).
+Study tools for forestry students, organised by course (formerly LeafID):
+
+- **Dendrology** – tree ID by leaf for the 26 species on the Ontario tree ID list (Mh, Mr, Ms, Mm, Mp, Or, Ow, Ob, Be, Iw, Bw, By, Al, Ew, Bd, Aw, Ab, Elderberry, Am, Bn, Wb, Staghorn sumac, Pl, Pt, Pb, Pd): field guide, leaf key and adaptive photo quiz (details below).
+- **Forest Health** – hardwood defect photo quiz. After naming a defect you rate it: minor / moderate / major and AGS / UGS (some ratings depend on a condition, e.g. a dark face scar over 900 cm²). A "rate only" mode (`/quizzes/defects/grade`) names the defect and asks just the rating. Ratings live in `src/data/topics/defects.ts` (code only, not admin-editable); grading answers are stored in `topic_attempt` under the topic id `defects:grade`.
+- **Wildlife** – Ontario fish ID photo quiz.
+- **Remote Sensing** – midterm review (`/courses/remote-sensing`): flashcards for every review question, a practice test, scale and cruise-line drills, a UTM zone explorer and sorting drills. Content is in `src/data/study/remote-sensing.ts`.
+
+Courses are listed in `src/data/courses.ts`; `/courses` shows them (the old `/quizzes` list redirects there).
 
 - **Learn** – field guide per species: key leaf features, field clues, look-alikes with "how to tell them apart" tips, and photos.
 - **Practice** – photo quiz in 10-question rounds. Species you get wrong (or haven't seen) come up more often, wrong options are drawn from look-alikes and your own past mix-ups, and every answer is explained. Up to three progressive hints per question.

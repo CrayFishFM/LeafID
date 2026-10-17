@@ -294,7 +294,7 @@ export function DeleteAccountSection({ hasPassword, mailEnabled }: { hasPassword
   return (
     <form className="stack" style={{ gap: '0.6rem' }} onSubmit={onDelete}>
       <p className="small" style={{ margin: 0 }}>
-        This permanently deletes your account and everything you&apos;ve done on LeafID. It can&apos;t be undone.
+        This permanently deletes your account and everything you&apos;ve done on Forester&apos;s Field Kit. It can&apos;t be undone.
         {mailEnabled && ' We’ll email you a link to confirm.'}
       </p>
       {hasPassword && (

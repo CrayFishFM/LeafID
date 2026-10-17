@@ -2,20 +2,22 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
-import { getTopicHint, getTopicQuestion, submitTopicAnswer } from '@/app/quizzes/actions';
+import { getTopicHint, getTopicQuestion, submitGrade, submitTopicAnswer } from '@/app/quizzes/actions';
 import type { TopicItem } from '@/data/topics';
-import type { TopicQuestion } from '@/lib/topic-quiz';
+import type { Severity, Stock } from '@/data/topics/types';
+import type { GradeCase, TopicQuestion } from '@/lib/topic-quiz';
 import { SKIPPED } from '@/lib/answers';
 import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
+import { GradePicker, type GradeOutcome } from './GradePicker';
 import { ZoomPhoto } from './ZoomPhoto';
 
 const ROUND = 10;
 const MAX_HINTS = 2;
 
-/** An item as sent to the browser: no photo list, so the answer can't be read from the page. */
-export type ClientItem = Omit<TopicItem, 'images'>;
+/** An item as sent to the browser: no photo list or ratings, so answers can't be read from the page. */
+export type ClientItem = Omit<TopicItem, 'images' | 'ratings'>;
 
-interface Result { correct: boolean; item: string; chosen: string }
+interface Result { correct: boolean; item: string; chosen: string; grade: GradeCase | null }
 
 export function TopicQuiz({ topicId, question, scope, items, initial }: {
   topicId: string;
@@ -41,10 +43,14 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
   const [hints, setHints] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [round, setRound] = useState<Result[]>([]);
+  // Graded topics: severity + AGS/UGS asked after each ID answer.
+  const [grade, setGrade] = useState<GradeOutcome | null>(null);
+  const [gradedRight, setGradedRight] = useState(0);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const roundDone = round.length >= ROUND && result !== null;
+  const awaitingGrade = !!result?.grade && !grade;
+  const roundDone = round.length >= ROUND && result !== null && !awaitingGrade;
 
   const answer = useCallback(
     (chosen: string) => {
@@ -68,9 +74,10 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
     start(async () => {
       try {
         const nq = await getTopicQuestion(topicId, scope, recent);
-        if (roundDone) setRound([]);
+        if (roundDone) { setRound([]); setGradedRight(0); }
         setQ(nq);
         setResult(null);
+        setGrade(null);
         setHints([]);
         setError(null);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -79,6 +86,20 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       }
     });
   }, [topicId, scope, recent, roundDone]);
+
+  function rate(severity: Severity, stock: Stock) {
+    if (!q || !result?.grade || grade || pending) return;
+    const index = result.grade.index;
+    start(async () => {
+      try {
+        const g = await submitGrade(topicId, q.imageKey, index, severity, stock);
+        setGrade(g);
+        if (g.severityOk && g.stockOk) setGradedRight((n) => n + 1);
+      } catch {
+        setError('Could not save your rating. Check your connection and try again.');
+      }
+    });
+  }
 
   function hint() {
     if (!q || result || hints.length >= MAX_HINTS) return;
@@ -100,7 +121,7 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       // Keys on the photo (or its enlarged view) belong to the photo.
       if (e.target instanceof Element && e.target.closest('.zoom-btn, dialog[open]')) return;
       if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
-      else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
+      else if (result && !awaitingGrade && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
       else if (!result && e.key.toLowerCase() === 'h') hint();
     }
     window.addEventListener('keydown', onKey);
@@ -125,6 +146,7 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       <div className="scorebar">
         <span>Question <strong>{Math.min(round.length + (result ? 0 : 1), ROUND)}</strong> / {ROUND}</span>
         <span>Correct <strong>{correctCount}</strong></span>
+        {round.some((r) => r.grade) && <span>Rated right <strong>{gradedRight}</strong></span>}
         <span style={{ marginLeft: 'auto' }} />
         <AnswerModeToggle mode={mode} onChange={setMode} />
       </div>
@@ -189,13 +211,27 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
               {chosen && (
                 <p className="small"><strong>{chosen.name}</strong> instead: {chosen.tips[0]}</p>
               )}
-              {!roundDone && <button className="btn btn-primary" onClick={next} disabled={pending} autoFocus>Next question</button>}
+              {!roundDone && !awaitingGrade && !result.grade && (
+                <button className="btn btn-primary" onClick={next} disabled={pending} autoFocus>Next question</button>
+              )}
+            </div>
+          )}
+
+          {result?.grade && target && (
+            <div className="card stack">
+              <div>
+                <h3 style={{ margin: 0 }}>Now rate this {target.name.toLowerCase()}</h3>
+                <p className="small muted" style={{ margin: 0 }}>Is it a minor, moderate or major defect, and is the tree AGS or UGS?</p>
+              </div>
+              <GradePicker key={q.imageKey} when={result.grade.when} onSubmit={rate} outcome={grade} pending={pending} />
+              {grade && !roundDone && <button className="btn btn-primary" style={{ alignSelf: 'flex-start' }} onClick={next} disabled={pending} autoFocus>Next question</button>}
             </div>
           )}
 
           {roundDone && (
             <div className="card stack">
               <h3 style={{ margin: 0 }}>Round complete: {correctCount} / {ROUND}</h3>
+              {round.some((r) => r.grade) && <p className="small muted" style={{ margin: 0 }}>Severity and AGS/UGS rated right: {gradedRight} / {round.filter((r) => r.grade).length}</p>}
               {round.some((r) => !r.correct) ? (
                 <div>
                   <p className="small muted">Worth reviewing:</p>

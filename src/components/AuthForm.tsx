@@ -80,7 +80,7 @@ export function AuthForm({ mode, discord, guest }: { mode: 'sign-in' | 'sign-up'
       )}
       {guest && (
         <div className="notice small">
-          You&apos;re using LeafID as a guest. Everything you&apos;ve done so far — progress, uploads and votes — moves to
+          You&apos;re using Forester&apos;s Field Kit as a guest. Everything you&apos;ve done so far — progress, uploads and votes — moves to
           your account when you {mode === 'sign-up' ? 'create it' : 'sign in'}.
         </div>
       )}

@@ -4,11 +4,8 @@ import { GuestGate } from '@/components/GuestGate';
 import { TopicQuiz } from '@/components/TopicQuiz';
 import { getUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
-import type { TopicItem } from '@/data/topics';
-import { isTopicScope, nextTopicQuestion } from '@/lib/topic-quiz';
-
-/** Drop the photo list so the answer to each photo is not sent to the browser. */
-const toClientItem = (i: TopicItem) => ({ id: i.id, name: i.name, aka: i.aka, note: i.note, scientific: i.scientific, group: i.group, tips: i.tips, lookalikes: i.lookalikes });
+import { clientItem } from '@/data/topics';
+import { isGraded, isTopicScope, nextTopicQuestion } from '@/lib/topic-quiz';
 
 export async function generateMetadata(props: PageProps<'/quizzes/[topic]'>) {
   const topic = await getTopic((await props.params).topic);
@@ -29,11 +26,17 @@ export default async function TopicPracticePage(props: PageProps<'/quizzes/[topi
   return (
     <div className="stack" style={{ gap: '1.25rem' }}>
       <div>
-        <p className="eyebrow"><Link href="/quizzes">Quizzes</Link> · Practice</p>
+        <p className="eyebrow"><Link href="/courses">Courses</Link> · Practice</p>
         <h1>{topic.title}</h1>
         <p className="muted small" style={{ margin: 0 }}>
           From the {topic.source}. <Link href={`${base}/study`}>Open the study guide →</Link>
         </p>
+        {isGraded(topic) && (
+          <p className="small" style={{ margin: '0.35rem 0 0' }}>
+            After each answer you also rate the {topic.noun}: minor, moderate or major, and AGS or UGS.{' '}
+            <Link href={`${base}/grade`}>Practise rating only →</Link>
+          </p>
+        )}
       </div>
       <div className="segmented">
         <Link href={`${base}?scope=all`} aria-current={scope === 'all'}>Everything</Link>
@@ -47,7 +50,7 @@ export default async function TopicPracticePage(props: PageProps<'/quizzes/[topi
         topicId={topic.id}
         question={topic.question}
         scope={scope}
-        items={topic.items.map(toClientItem)}
+        items={topic.items.map(clientItem)}
         initial={initial}
       />
     </div>

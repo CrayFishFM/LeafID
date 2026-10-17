@@ -20,3 +20,8 @@ export const topicImageUrl = (topic: Topic, file: string) => `/quizzes/${topic.i
 
 /** Full display name, e.g. "Brook trout (Speckled trout)". */
 export const itemLabel = (i: TopicItem) => (i.aka ? `${i.name} (${i.aka})` : i.name);
+
+/** An item without its photo list or ratings, so the answer to a question is not sent to the browser. */
+export const clientItem = (i: TopicItem) => ({
+  id: i.id, name: i.name, aka: i.aka, note: i.note, scientific: i.scientific, group: i.group, tips: i.tips, lookalikes: i.lookalikes,
+});

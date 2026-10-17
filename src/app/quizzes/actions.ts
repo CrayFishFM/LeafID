@@ -4,7 +4,11 @@ import { topicItem } from '@/data/topics';
 import { SKIPPED } from '@/lib/answers';
 import { requireUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
-import { isTopicScope, itemForKey, nextTopicQuestion, recordTopicAttempt, TOPIC_MAX_HINTS, topicHint } from '@/lib/topic-quiz';
+import type { Severity, Stock } from '@/data/topics/types';
+import {
+  isTopicScope, itemForKey, nextGradeQuestion, nextTopicQuestion, pickGradeCase, recordGrade, recordTopicAttempt,
+  SEVERITIES, STOCKS, TOPIC_MAX_HINTS, topicHint,
+} from '@/lib/topic-quiz';
 
 async function topicOrThrow(id: string) {
   const topic = await getTopic(id);
@@ -38,5 +42,22 @@ export async function submitTopicAnswer(topicId: string, imageKey: string, chose
     correct,
     hints: Math.max(0, Math.min(TOPIC_MAX_HINTS, Math.floor(hints))),
   });
-  return { correct, item: item.id };
+  // Graded topics (defects) follow up with severity and AGS/UGS for the same photo.
+  return { correct, item: item.id, grade: pickGradeCase(item) };
+}
+
+export async function getGradeQuestion(topicId: string, avoid: string[]) {
+  const user = await requireUser();
+  const topic = await topicOrThrow(topicId);
+  return await nextGradeQuestion(user.id, topic, avoid.slice(0, 5));
+}
+
+export async function submitGrade(topicId: string, imageKey: string, caseIndex: number, severity: Severity, stock: Stock) {
+  const user = await requireUser();
+  const topic = await topicOrThrow(topicId);
+  const item = itemForKey(topic, imageKey);
+  if (!item || !SEVERITIES.includes(severity) || !STOCKS.includes(stock) || !Number.isInteger(caseIndex)) {
+    throw new Error('Invalid answer');
+  }
+  return await recordGrade(user.id, topic, item, caseIndex, severity, stock);
 }

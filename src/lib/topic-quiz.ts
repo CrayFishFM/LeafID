@@ -1,4 +1,8 @@
 import { topicImageUrl, topicItem, type Topic, type TopicItem } from '@/data/topics';
+import type { Rating, Severity, Stock } from '@/data/topics/types';
+import { SEVERITIES, STOCKS } from './grading';
+
+export { SEVERITIES, STOCKS };
 import { SKIPPED } from './answers';
 import { exec, query } from './db';
 import { ALPHA, levelFor, type Level } from './progress';
@@ -84,6 +88,21 @@ function shuffle<T>(xs: T[]): T[] {
   return a;
 }
 
+/** Weak and unseen items are picked more often; recently asked ones are skipped. */
+function pickAdaptive(pool: TopicItem[], progress: TopicProgress, avoid: string[]): TopicItem {
+  const stats = new Map(progress.items.map((s) => [s.id, s]));
+  // Skip recently asked items, unless that leaves nothing (e.g. a 3-item group after 3 answers).
+  const fresh = pool.filter((i) => !avoid.includes(i.id));
+  const candidates = pool.length > 2 && fresh.length > 0 ? fresh : pool;
+  const weighted = candidates.map((i) => {
+    const st = stats.get(i.id)!;
+    return { item: i, w: st.attempts === 0 ? 3 : 0.3 + (1 - st.mastery) * 4 };
+  });
+  let r = Math.random() * weighted.reduce((a, x) => a + x.w, 0);
+  for (const x of weighted) if ((r -= x.w) <= 0) return x.item;
+  return weighted[weighted.length - 1].item;
+}
+
 /** Adaptive, like the leaf quiz: weak and unseen items come up more, wrong choices are look-alikes. */
 export async function nextTopicQuestion(userId: string, topic: Topic, scope: string, avoid: string[] = []): Promise<TopicQuestion | null> {
   const progress = await getTopicProgress(userId, topic);
@@ -96,17 +115,7 @@ export async function nextTopicQuestion(userId: string, topic: Topic, scope: str
   }
   if (pool.length === 0) return null;
 
-  const stats = new Map(progress.items.map((s) => [s.id, s]));
-  // Skip recently asked items, unless that leaves nothing (e.g. a 3-item group after 3 answers).
-  const fresh = pool.filter((i) => !avoid.includes(i.id));
-  const candidates = pool.length > 2 && fresh.length > 0 ? fresh : pool;
-  const weighted = candidates.map((i) => {
-    const st = stats.get(i.id)!;
-    return { item: i, w: st.attempts === 0 ? 3 : 0.3 + (1 - st.mastery) * 4 };
-  });
-  let r = Math.random() * weighted.reduce((a, x) => a + x.w, 0);
-  let target: TopicItem = weighted[weighted.length - 1].item;
-  for (const x of weighted) if ((r -= x.w) <= 0) { target = x.item; break; }
+  const target = pickAdaptive(pool, progress, avoid);
 
   // Wrong choices: a past mix-up, then look-alikes, then the same group, then anything.
   const distractors: string[] = [];
@@ -143,4 +152,60 @@ export async function recordTopicAttempt(userId: string, topic: Topic, a: { item
     `INSERT INTO topic_attempt (user_id, topic, item, chosen, correct, hints, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [userId, topic.id, a.item, a.chosen, a.correct ? 1 : 0, a.hints, Date.now()],
   );
+}
+
+// ---- Grading: severity (minor / moderate / major) and AGS / UGS ----
+
+/** Grading answers are kept as topic_attempt rows under their own topic id, apart from the ID answers. */
+export const gradeTopicId = (topicId: string) => `${topicId}:grade`;
+
+export const isGraded = (topic: Topic) => topic.items.some((i) => i.ratings?.length);
+
+/** Which of an item's rating cases a question asks about. `when` is the condition to show, if any. */
+export interface GradeCase { index: number; when?: string }
+
+export function pickGradeCase(item: TopicItem): GradeCase | null {
+  if (!item.ratings?.length) return null;
+  const index = Math.floor(Math.random() * item.ratings.length);
+  return { index, when: item.ratings[index].when };
+}
+
+export interface GradeQuestion {
+  imageKey: string;
+  imageUrl: string;
+  item: string;
+  grade: GradeCase;
+}
+
+export interface GradeResult {
+  rating: Rating;
+  severityOk: boolean;
+  stockOk: boolean;
+}
+
+export function getGradeProgress(userId: string, topic: Topic) {
+  return getTopicProgress(userId, { ...topic, id: gradeTopicId(topic.id) });
+}
+
+/** A named photo to grade; items you grade wrong come up more often. */
+export async function nextGradeQuestion(userId: string, topic: Topic, avoid: string[] = []): Promise<GradeQuestion | null> {
+  const pool = topic.items.filter((i) => i.images.length > 0 && i.ratings?.length);
+  if (pool.length === 0) return null;
+  const target = pickAdaptive(pool, await getGradeProgress(userId, topic), avoid);
+  const file = pick(target.images);
+  return { imageKey: `${topic.id}:${file}`, imageUrl: topicImageUrl(topic, file), item: target.id, grade: pickGradeCase(target)! };
+}
+
+export async function recordGrade(userId: string, topic: Topic, item: TopicItem, caseIndex: number, severity: Severity, stock: Stock): Promise<GradeResult> {
+  const rating = item.ratings?.[caseIndex];
+  if (!rating) throw new Error('Invalid answer');
+  const severityOk = rating.severity === severity;
+  const stockOk = rating.stock === stock;
+  await recordTopicAttempt(userId, { ...topic, id: gradeTopicId(topic.id) }, {
+    item: item.id,
+    chosen: `${severity}/${stock}`,
+    correct: severityOk && stockOk,
+    hints: 0,
+  });
+  return { rating, severityOk, stockOk };
 }

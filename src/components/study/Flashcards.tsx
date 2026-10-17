@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import type { StudyCard } from '@/data/study/remote-sensing';
+import type { StudyCard } from '@/data/study/types';
 
-const STORE = 'study:remote-sensing:known';
-
-function loadKnown(): Set<number> {
+function loadKnown(store: string): Set<string> {
   try {
-    return new Set(JSON.parse(localStorage.getItem(STORE) ?? '[]') as number[]);
+    return new Set(JSON.parse(localStorage.getItem(store) ?? '[]') as string[]);
   } catch {
     return new Set();
   }
@@ -35,22 +33,24 @@ export function Answer({ card }: { card: StudyCard }) {
 }
 
 /** Flip cards for every review question; the ones you know are remembered in this browser. */
-export function Flashcards({ cards, weeks }: { cards: StudyCard[]; weeks: string[] }) {
+export function Flashcards({ guideId, cards, sections, allLabel }: { guideId: string; cards: StudyCard[]; sections: string[]; allLabel: string }) {
+  // Known cards are remembered by their question, so adding or reordering cards keeps them.
+  const store = `study:${guideId}:known-cards`;
   const [week, setWeek] = useState('all');
   const [view, setView] = useState<'cards' | 'list'>('cards');
   const [onlyLearning, setOnlyLearning] = useState(false);
   const [order, setOrder] = useState<number[]>(() => cards.map((_, i) => i));
   const [pos, setPos] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [known, setKnown] = useState<Set<number>>(new Set());
+  const [known, setKnown] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- restore saved progress after hydration
-    setKnown(loadKnown());
-  }, []);
+    setKnown(loadKnown(store));
+  }, [store]);
 
   const deck = useMemo(
-    () => order.filter((i) => (week === 'all' || cards[i].week === week) && (!onlyLearning || !known.has(i))),
+    () => order.filter((i) => (week === 'all' || cards[i].section === week) && (!onlyLearning || !known.has(cards[i].q))),
     // `known` is left out on purpose: marking a card shouldn't pull it out from under you mid-deck.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [order, week, onlyLearning, cards],
@@ -61,9 +61,9 @@ export function Flashcards({ cards, weeks }: { cards: StudyCard[]; weeks: string
   function mark(isKnown: boolean) {
     if (idx === undefined) return;
     const next = new Set(known);
-    if (isKnown) next.add(idx); else next.delete(idx);
+    if (isKnown) next.add(cards[idx].q); else next.delete(cards[idx].q);
     setKnown(next);
-    try { localStorage.setItem(STORE, JSON.stringify([...next])); } catch { /* storage blocked: keep it for this visit */ }
+    try { localStorage.setItem(store, JSON.stringify([...next])); } catch { /* storage blocked: keep it for this visit */ }
     go(1);
   }
 
@@ -93,14 +93,14 @@ export function Flashcards({ cards, weeks }: { cards: StudyCard[]; weeks: string
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const inWeek = cards.map((c, i) => ({ c, i })).filter(({ c }) => week === 'all' || c.week === week);
-  const knownCount = inWeek.filter(({ i }) => known.has(i)).length;
+  const inWeek = cards.map((c, i) => ({ c, i })).filter(({ c }) => week === 'all' || c.section === week);
+  const knownCount = inWeek.filter(({ c }) => known.has(c.q)).length;
 
   return (
     <div className="stack">
       <div className="segmented">
-        <button aria-current={week === 'all'} onClick={() => reset(() => setWeek('all'))}>All weeks</button>
-        {weeks.map((w) => <button key={w} aria-current={week === w} onClick={() => reset(() => setWeek(w))}>{w}</button>)}
+        <button aria-current={week === 'all'} onClick={() => reset(() => setWeek('all'))}>{allLabel}</button>
+        {sections.map((w) => <button key={w} aria-current={week === w} onClick={() => reset(() => setWeek(w))}>{w}</button>)}
       </div>
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div className="row" style={{ gap: '0.5rem' }}>
@@ -118,8 +118,11 @@ export function Flashcards({ cards, weeks }: { cards: StudyCard[]; weeks: string
           {inWeek.map(({ c, i }) => (
             <article key={i} className="card stack" style={{ gap: '0.5rem' }}>
               <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <h3 style={{ margin: 0 }}><span className="muted">Q{c.n}.</span> {c.q}</h3>
-                {known.has(i) && <span className="chip chip-ok">Known</span>}
+                <h3 style={{ margin: 0 }}>{c.n && <span className="muted">Q{c.n}. </span>}{c.q}</h3>
+                <span className="row" style={{ gap: '0.35rem' }}>
+                  {c.extra && <span className="chip">From the lecture</span>}
+                  {known.has(c.q) && <span className="chip chip-ok">Known</span>}
+                </span>
               </div>
               <Answer card={c} />
             </article>
@@ -139,7 +142,7 @@ export function Flashcards({ cards, weeks }: { cards: StudyCard[]; weeks: string
             <>
               {/* Tapping the card flips it too; the buttons below (and Space) do the same from the keyboard. */}
               <div className={`card flashcard ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped((f) => !f)} aria-live="polite">
-                <span className="small muted">{card.week} · Q{card.n} · {Math.min(pos, deck.length - 1) + 1} of {deck.length}</span>
+                <span className="small muted">{card.section}{card.n ? ` · Q${card.n}` : card.extra ? ' · From the lecture' : ''} · {Math.min(pos, deck.length - 1) + 1} of {deck.length}</span>
                 <span className="flashcard-q">{card.q}</span>
                 {flipped ? <div className="flashcard-a"><Answer card={card} /></div> : <span className="small muted">Tap or press Space to show the answer</span>}
               </div>

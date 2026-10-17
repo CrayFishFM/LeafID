@@ -4,8 +4,11 @@ Study tools for forestry students, organised by course (formerly LeafID):
 
 - **Dendrology** – tree ID by leaf for the 26 species on the Ontario tree ID list (Mh, Mr, Ms, Mm, Mp, Or, Ow, Ob, Be, Iw, Bw, By, Al, Ew, Bd, Aw, Ab, Elderberry, Am, Bn, Wb, Staghorn sumac, Pl, Pt, Pb, Pd): field guide, leaf key and adaptive photo quiz (details below).
 - **Forest Health** – hardwood defect photo quiz. After naming a defect you rate it: minor / moderate / major and AGS / UGS (some ratings depend on a condition, e.g. a dark face scar over 900 cm²). A "rate only" mode (`/quizzes/defects/grade`) names the defect and asks just the rating. Ratings live in `src/data/topics/defects.ts` (code only, not admin-editable); grading answers are stored in `topic_attempt` under the topic id `defects:grade`.
+- **Ecology** – midterm review (`/courses/ecology`): forest regions, shade tolerance and silviculture, tree physiology (with a clickable trunk cross-section), reproduction and succession.
 - **Wildlife** – Ontario fish ID photo quiz.
-- **Remote Sensing** – midterm review (`/courses/remote-sensing`): flashcards for every review question, a practice test, scale and cruise-line drills, a UTM zone explorer and sorting drills. Content is in `src/data/study/remote-sensing.ts`.
+- **Remote Sensing** – midterm review (`/courses/remote-sensing`), with scale and cruise-line drills and a UTM zone explorer.
+
+Each midterm review is a `StudyGuide` in `src/data/study/` (flashcards, practice test, sorting and ordering drills) rendered by `StudyGuideTabs`; course-specific drills are passed in as extra tabs. Answers not taken straight from the lecture carry a `check` note that shows as "Check this".
 
 Courses are listed in `src/data/courses.ts`; `/courses` shows them (the old `/quizzes` list redirects there).
 

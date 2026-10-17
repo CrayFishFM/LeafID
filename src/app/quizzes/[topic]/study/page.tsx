@@ -45,14 +45,14 @@ export default async function TopicStudyPage(props: PageProps<'/quizzes/[topic]/
         <section id="grading" className="card stack study-card">
           <div>
             <h2 style={{ margin: 0 }}>Grading {topic.noun}s: severity and AGS / UGS</h2>
-            <p className="small muted" style={{ margin: 0 }}>From the Forest Health course. Many trees have more than one {topic.noun}.</p>
+            <p className="small muted" style={{ margin: 0 }}>From the Forest Health course and the Ontario Tree Marking Guide (p. 66). Many trees have more than one {topic.noun}.</p>
           </div>
           <div className="table-wrap">
             <table className="table">
               <thead><tr><th scope="col">Class</th><th scope="col">Meaning</th></tr></thead>
               <tbody>
-                <tr><td><strong>AGS</strong> — Acceptable Growing Stock</td><td>Will most likely keep growing for another 20 years, and is expected to keep or improve its quality.</td></tr>
-                <tr><td><strong>UGS</strong> — Unacceptable Growing Stock</td><td>High risk: expected to decline and die. If it is likely to die in the next 20–25 years, it can be harvested.</td></tr>
+                <tr><td><strong>AGS</strong> — Acceptable Growing Stock</td><td>Form and appearance suggest it can reasonably be expected to maintain and/or improve its quality, and contribute vigorous, high-quality stems to future crops (likely to keep growing for another ~20 years).</td></tr>
+                <tr><td><strong>UGS</strong> — Unacceptable Growing Stock</td><td>High risk: expected to decline during the next cutting cycle (likely to die in the next 20–25 years), so it can be harvested. May also be of poor form or low quality that can&apos;t be expected to improve.</td></tr>
               </tbody>
             </table>
           </div>

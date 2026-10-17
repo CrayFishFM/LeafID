@@ -17,6 +17,8 @@ export interface Course {
   topics?: string[];
   /** The main thing to do, then the rest. */
   links: CourseLink[];
+  /** A library leaf photo key for the card, for courses without quiz photos. */
+  photo?: string;
 }
 
 export const COURSES: Course[] = [
@@ -35,13 +37,22 @@ export const COURSES: Course[] = [
     id: 'forest-health',
     title: 'Forest Health',
     subject: 'Hardwood defects',
-    blurb: 'Name the defect from a photo, then rate it: minor, moderate or major, and AGS or UGS.',
+    blurb: 'Name the defect from a photo and rate it (minor, moderate or major; AGS or UGS), plus a midterm review: fungi, other defects, tree marking, cavity and mast trees.',
     topics: ['defects'],
     links: [
       { label: 'Identify & rate', href: '/quizzes/defects' },
       { label: 'Rate only', href: '/quizzes/defects/grade' },
-      { label: 'Study guide', href: '/quizzes/defects/study' },
+      { label: 'Defect guide', href: '/quizzes/defects/study' },
+      { label: 'Midterm review', href: '/courses/forest-health' },
     ],
+  },
+  {
+    id: 'ecology',
+    title: 'Ecology',
+    subject: 'Midterm review',
+    blurb: 'Forest regions, shade tolerance and silviculture, tree physiology, reproduction and succession: flashcards, a practice test and drills.',
+    links: [{ label: 'Open the study guide', href: '/courses/ecology' }],
+    photo: 'lib:Pt/1.jpg',
   },
   {
     id: 'wildlife',

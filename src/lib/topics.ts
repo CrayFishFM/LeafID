@@ -5,8 +5,9 @@ import { exec, one, pool, query } from './db';
 
 /*
  * The extra quizzes (fish, hardwood defects…) live in quiz_topic / quiz_item so admins can fix
- * names and tips. src/data/topics only seeds them: on start, missing topics, items and groups are
- * added and photo lists are refreshed (photos ship as files), but edited text is never overwritten.
+ * names and tips. src/data/topics seeds them: on start, missing topics, items and groups are added,
+ * photo lists are refreshed (photos ship as files), and items no admin has edited take the seed's
+ * text. Text an admin edited is never overwritten.
  */
 
 interface TopicRow {
@@ -35,7 +36,12 @@ export async function seedTopics() {
       await pool.execute(
         `INSERT INTO quiz_item (topic, id, name, aka, note, scientific, grp, tips, lookalikes, images, sort)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE images = VALUES(images), sort = VALUES(sort)`,
+         ON DUPLICATE KEY UPDATE images = VALUES(images), sort = VALUES(sort),
+           -- Text an admin never edited follows the seed, so corrections here reach the live site.
+           name = IF(updated_at IS NULL, VALUES(name), name), aka = IF(updated_at IS NULL, VALUES(aka), aka),
+           note = IF(updated_at IS NULL, VALUES(note), note), scientific = IF(updated_at IS NULL, VALUES(scientific), scientific),
+           grp = IF(updated_at IS NULL, VALUES(grp), grp), tips = IF(updated_at IS NULL, VALUES(tips), tips),
+           lookalikes = IF(updated_at IS NULL, VALUES(lookalikes), lookalikes)`,
         [t.id, i.id, i.name, i.aka ?? null, i.note ?? null, i.scientific ?? null, i.group,
           JSON.stringify(i.tips), JSON.stringify(i.lookalikes), JSON.stringify(i.images), ii],
       );

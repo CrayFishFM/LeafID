@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { SortDrill } from '@/data/study/remote-sensing';
+import type { RankDrill, SortDrill } from '@/data/study/types';
 
 function shuffle<T>(xs: T[]): T[] {
   const a = [...xs];
@@ -68,10 +68,16 @@ function Sorter({ drill }: { drill: SortDrill }) {
   );
 }
 
-/** Put the GIS components in the instructor's order of importance. */
-function Ranker({ answer }: { answer: string[] }) {
-  // Starts in a fixed scrambled order so the server and browser render the same thing.
-  const [list, setList] = useState(() => [answer[2], answer[4], answer[0], answer[3], answer[1]]);
+/** A fixed scramble (so the server and browser render the same): alphabetical, or reversed if that is the answer. */
+function scramble(order: string[]) {
+  const a = [...order].sort((x, y) => x.localeCompare(y));
+  return a.every((x, i) => x === order[i]) ? [...order].reverse() : a;
+}
+
+/** Put items in the right order with up / down buttons. */
+function Ranker({ drill }: { drill: RankDrill }) {
+  const answer = drill.order;
+  const [list, setList] = useState(() => scramble(answer));
   const [checked, setChecked] = useState(false);
 
   const move = (i: number, d: number) => setList((xs) => {
@@ -83,8 +89,8 @@ function Ranker({ answer }: { answer: string[] }) {
   return (
     <div className="card stack">
       <div>
-        <h3 style={{ margin: 0 }}>Rank the 5 GIS components</h3>
-        <p className="small muted" style={{ margin: 0 }}>Most important at the top, as the instructor ranks them.</p>
+        <h3 style={{ margin: 0 }}>{drill.title}</h3>
+        <p className="small muted" style={{ margin: 0 }}>{drill.prompt}</p>
       </div>
       <ol className="sort-list rank-list">
         {list.map((c, i) => (
@@ -102,7 +108,7 @@ function Ranker({ answer }: { answer: string[] }) {
           <button className="btn btn-primary btn-sm" onClick={() => setChecked(true)}>Check order</button>
         ) : (
           <>
-            <span className="small">People matter most (they must be trained), then data. Hardware matters least: it changes often.</span>
+            <span className="small">{drill.explain}</span>
             <button className="btn btn-sm" onClick={() => { setList(shuffle(answer)); setChecked(false); }}>Try again</button>
           </>
         )}
@@ -111,11 +117,11 @@ function Ranker({ answer }: { answer: string[] }) {
   );
 }
 
-export function SortDrills({ drills, gisComponents }: { drills: SortDrill[]; gisComponents: string[] }) {
+export function SortDrills({ drills, ranks }: { drills: SortDrill[]; ranks: RankDrill[] }) {
   return (
     <div className="grid grid-2" style={{ alignItems: 'start' }}>
       {drills.map((d) => <Sorter key={d.id} drill={d} />)}
-      <Ranker answer={gisComponents} />
+      {ranks.map((r) => <Ranker key={r.id} drill={r} />)}
     </div>
   );
 }

@@ -31,6 +31,7 @@ export async function courseCards(userId?: string): Promise<CourseCardData[]> {
     if (c.id === 'dendrology') {
       return { ...c, cover: leafCover?.url, stats: leaf?.total ? { total: leaf.total, correct: leaf.correct } : null };
     }
+    if (c.photo) return { ...c, cover: photos.find((p) => p.key === c.photo)?.url, stats: null };
     const topic = topics.find((t) => c.topics?.includes(t.id));
     const first = topic?.items.find((i) => i.images.length > 0);
     const stats = (c.topics ?? []).reduce<{ total: number; correct: number } | null>((acc, id) => {

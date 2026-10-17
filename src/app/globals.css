@@ -407,3 +407,9 @@ textarea.input { min-height: 90px; resize: vertical; }
 .sort-list li.is-wrong { background: var(--bad-bg); border-color: var(--bad); }
 .sort-label { font-weight: 500; }
 .rank-list .icon-btn { width: 36px; height: 36px; min-height: 36px; }
+
+.cross-section { width: 100%; max-width: 340px; height: auto; justify-self: center; }
+.shade-table { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); }
+.shade-col { background: var(--surface-2); border-radius: 10px; padding: 0.6rem 0.75rem; }
+.shade-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+.shade-col ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }

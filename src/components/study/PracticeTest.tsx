@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { TestQuestion } from '@/data/study/remote-sensing';
+import type { TestQuestion } from '@/data/study/types';
 
 const LENGTH = 12;
 

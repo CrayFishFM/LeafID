@@ -59,8 +59,8 @@ export const DEFECTS: Topic = {
       ],
       lookalikes: ['white-face-scar', 'cavity'],
       ratings: [
-        { when: 'Smaller than 900 cm²', severity: 'moderate', stock: 'either', note: 'Small dark face scars (< 900 cm²) are moderate.' },
-        { when: 'Larger than 900 cm²', severity: 'major', stock: 'UGS', note: 'Large dark face scars (> 900 cm²) are major.' },
+        { when: 'Smaller than 900 cm²', severity: 'moderate', stock: 'either', note: 'Small dark face scars (< 900 cm²) are moderate. 900 cm² is 30 × 30 cm, a little bigger than a sheet of paper.' },
+        { when: 'Larger than 900 cm²', severity: 'major', stock: 'UGS', note: 'Large dark face scars (> 900 cm²) are major. 900 cm² is 30 × 30 cm, a little bigger than a sheet of paper.' },
       ],
     },
     {
@@ -81,7 +81,7 @@ export const DEFECTS: Topic = {
         'A sign of extensive heart rot.',
       ],
       lookalikes: ['coal-fungus', 'black-knot', 'burl'],
-      ratings: major('Mostly on yellow and white birch.'),
+      ratings: major('Mainly found on yellow and white birch.'),
     },
     {
       id: 'shoestring-root-rot', name: 'Shoestring root rot', aka: 'Armillaria', scientific: 'Armillaria spp.', group: 'conks', images: ['08.webp'],
@@ -151,8 +151,8 @@ export const DEFECTS: Topic = {
     {
       id: 'white-face-scar', name: 'White face scar', group: 'wounds', images: ['15.webp'],
       tips: [
-        'An open wound where the exposed wood is still pale and firm.',
-        'Light-coloured wood means decay has not taken hold yet.',
+        'Bark (callus) is growing over and covering the wound.',
+        'Any exposed wood is still pale and firm: decay has not taken hold yet.',
       ],
       lookalikes: ['dark-face-scar', 'sun-scald'],
       ratings: MINOR,
@@ -242,7 +242,7 @@ export const DEFECTS: Topic = {
       id: 'beech-bark-disease', name: 'Beech bark disease', group: 'disease', images: ['25.webp'],
       tips: [
         'White, woolly specks of scale insects on smooth beech bark.',
-        'Later, the bark becomes pitted with tarry spots and small cankers.',
+        'Once the fungus is in: small orange-red fruiting bodies in lemon-shaped patterns, then cankers and cracked bark.',
       ],
       lookalikes: ['nectria-canker', 'black-bark'],
       ratings: major('Only UGS once the fruiting bodies are there. Scale insects alone are not UGS.'),
@@ -273,7 +273,7 @@ export const DEFECTS: Topic = {
         'Looks like burnt sausages wrapped around the branch.',
       ],
       lookalikes: ['clinker', 'coal-fungus'],
-      ratings: [MODERATE[0], { when: 'More than 50% of the crown affected', severity: 'moderate', stock: 'UGS', note: 'Black knot on more than 50% of the crown is UGS.' }],
+      ratings: [moderate('Mainly found on cherry species.')[0], { when: 'More than 50% of the crown affected', severity: 'moderate', stock: 'UGS', note: 'Black knot on more than 50% of the crown is UGS.' }],
     },
     {
       id: 'mossy-top', name: 'Mossy top fungus', scientific: 'Oxyporus populinus', group: 'conks', images: ['29.webp'],
@@ -282,7 +282,7 @@ export const DEFECTS: Topic = {
         'Usually on maple; a sign of heart rot.',
       ],
       lookalikes: ['spine-tooth', 'artists-conk'],
-      ratings: major('Counted as major/UGS, but it acts very slowly: a tree caught early may still be kept as AGS.'),
+      ratings: [{ severity: 'moderate', stock: 'UGS', note: 'Mossy top is a moderate defect, but always UGS.' }],
     },
     {
       id: 'cavity', name: 'Cavity on main stem', group: 'wounds', images: ['30.webp'],

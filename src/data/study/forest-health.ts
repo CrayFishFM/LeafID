@@ -13,20 +13,14 @@ const OTHER = 'Other hardwood defects';
 const MARKING = 'Tree marking';
 const WILDLIFE = 'Cavity & mast trees';
 
-/** Defects from the lectures that have no photo in the defect quiz. */
+/** Defects on the midterm review that have no photo in the defect quiz. */
 export const OTHER_DEFECTS: { name: string; severity: Severity; stock: Stock; note?: string }[] = [
-  { name: 'Emerald ash borer', severity: 'major', stock: 'UGS' },
   { name: 'Fire scar (hardwoods)', severity: 'major', stock: 'UGS' },
   { name: 'Dutch elm disease', severity: 'major', stock: 'UGS' },
   { name: 'Oak wilt', severity: 'major', stock: 'UGS' },
   { name: 'Tar spot', severity: 'minor', stock: 'AGS' },
   { name: 'Frost damage', severity: 'minor', stock: 'AGS' },
   { name: 'Leaf scorch', severity: 'minor', stock: 'AGS' },
-  { name: 'Tree absorption (CODIT)', severity: 'minor', stock: 'AGS' },
-  { name: 'U-shaped fork', severity: 'minor', stock: 'AGS' },
-  { name: 'V-shaped fork', severity: 'minor', stock: 'AGS' },
-  { name: 'Wind or ice damage (crown)', severity: 'minor', stock: 'AGS' },
-  { name: 'Wolf tree', severity: 'minor', stock: 'AGS' },
 ];
 
 /** Every defect with a single severity, for the "major to minor" drills. */
@@ -58,7 +52,7 @@ const CARDS: StudyCard[] = [
       'Biotic = living (infectious). E.g. insects, animals (squirrels, deer, forest techs…) and fungi. Caused by living things using or eating the tree. Found on leaves/needles, inside the stem or branches, or in the roots.',
     ],
     test: [
-      multi('Select all the ABIOTIC (non-living) conditions.', ['Frost crack', 'Fire scar', 'Artist’s conk', 'Mechanical damage', 'Emerald ash borer', 'Broken branches'], [0, 1, 3, 5], 'Abiotic: seams, cracks, mechanical damage, fire scars, broken branches. Fungi and insects are biotic.'),
+      multi('Select all the ABIOTIC (non-living) conditions.', ['Frost crack', 'Fire scar', 'Artist’s conk', 'Mechanical damage', 'Dutch elm disease', 'Broken branches'], [0, 1, 3, 5], 'Abiotic: seams, cracks, mechanical damage, fire scars, broken branches. Fungi and insects are biotic.'),
       tf('Biotic conditions are non-infectious.', false, 'Biotic = living and infectious (insects, animals, fungi). Abiotic = non-living, non-infectious.'),
       mc('Abiotic conditions are mainly caused by…', ['Fungi and insects', 'Weather, fire and equipment/machinery', 'Squirrels and deer', 'Lichen'], 1, 'Weather (ice, snow, heat), fire and equipment.'),
     ],
@@ -102,20 +96,6 @@ const CARDS: StudyCard[] = [
       tf('Saprophytic fungi feed on live tissue.', false, 'Saprophytic fungi feed on dead tissue and recycle nutrients.'),
     ],
   },
-  {
-    section: BASICS, q: 'Do lichen, algae and moss harm trees?',
-    a: [
-      'No. They live on the bark without harming the tree, so no control is needed.',
-      'Lichen is a fungus and an alga living together (symbiosis). Moss doesn’t only grow on the north side: algae and moss grow on any moist, shady site.',
-    ],
-    test: [
-      tf('Lichen, algae and moss harm trees and should be controlled.', false, 'They live on the bark without harming the tree; no control is needed.'),
-      mc('Lichen is…', ['A fungus and an alga living together', 'A moss', 'A parasitic fungus', 'An insect'], 0, 'A symbiotic fungus + alga.'),
-    ],
-  },
-  { section: BASICS, q: 'What does CFSA stand for?', a: ['Crown Forest Sustainability Act.'], test: [
-      typed('What does CFSA stand for?', ['Crown Forest Sustainability Act'], 'Crown Forest Sustainability Act.'),
-    ] },
 
   // ---- AGS, UGS & defects ----
   {
@@ -158,7 +138,7 @@ const CARDS: StudyCard[] = [
   },
   { section: GRADING, q: 'Name the major defects (always UGS).', a: names('major'), test: [
       multi('Select all the MAJOR defects.', ['Spine tooth fungus', 'Burl', 'Artist’s conk', 'Sunscald', 'Butt flare', 'Cobra canker', 'Crook'], [0, 2, 4, 5], 'Burl and crook are minor; sunscald is moderate.'),
-      multi('Select all the MAJOR defects.', ['Coal fungus', 'Black bark', 'Lean > 10°', 'Fire scar', 'Epicormic branching', 'Emerald ash borer'], [0, 1, 3, 5], 'Lean is moderate; epicormic branching is minor.'),
+      multi('Select all the MAJOR defects.', ['Coal fungus', 'Black bark', 'Lean > 10°', 'Fire scar', 'Epicormic branching', 'Butternut canker'], [0, 1, 3, 5], 'Lean is moderate; epicormic branching is minor.'),
     ] },
   { section: GRADING, q: 'Name the moderate defects.', a: names('moderate'), test: [
       multi('Select all the MODERATE defects.', ['Sugar maple borer', 'Spiral seam', 'Epicormic branching', 'Lean > 10°', 'Black bark', 'Sunscald', 'Sweep'], [0, 1, 3, 5], 'Epicormic branching and sweep are minor; black bark is major.'),
@@ -196,14 +176,6 @@ const CARDS: StudyCard[] = [
       tf('A beech with beech scale insects only (no fungus) is UGS.', false, 'BBD is only UGS once the fungus is there.'),
       mc('Black knot becomes UGS when it affects more than…', ['10% of the crown', '25% of the crown', '50% of the crown', 'Any of the crown'], 2, 'More than 50% of the crown.'),
       tf('A fluxing seam that is oozing is UGS.', true, 'Fluxing seams are moderate, but UGS if oozing.'),
-    ],
-  },
-  {
-    section: GRADING, extra: true, q: 'What are the crown position classes?',
-    a: ['D = Dominant', 'C = Codominant', 'I = Intermediate', 'S = Suppressed', 'Crown position, size and quality (plus bark characteristics) indicate a tree’s potential vigour.'],
-    test: [
-      order('Put the crown position classes in order, from the top of the canopy down.', ['Dominant', 'Codominant', 'Intermediate', 'Suppressed'], 'D, C, I, S.'),
-      typed('In crown classes, what does “S” stand for?', ['Suppressed'], 'Suppressed: outcompeted, below the canopy.'),
     ],
   },
 
@@ -247,17 +219,17 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: OTHER, q: 'What is emerald ash borer (EAB), and how is it rated?',
+    section: OTHER, q: 'What is butternut canker, and how is it rated?',
     a: [
-      'An insect native to Asia. Larvae tunnel through the ash tree’s vascular system, stopping the movement of water, nutrients and sugars.',
-      'Attacks healthy and stressed ash; once infested, mortality is nearly 100%. No known natural enemies here.',
-      'It travels only a few km a year on its own, but spreads far in firewood, logs, lumber and wood chips. The CFIA prohibits moving ash material and firewood out of regulated areas.',
+      'Sunken, elongated cankers on butternut, often with black, sooty, inky stains.',
+      'Leads to dying branches and a thinning crown.',
+      'Butternut is an endangered species in Ontario.',
       'Major defect, UGS.',
     ],
     test: [
-      mc('Emerald ash borer is native to…', ['Europe', 'Asia', 'South America', 'Ontario'], 1, 'Asia.'),
-      tf('EAB only attacks stressed ash trees.', false, 'It attacks both healthy and stressed ash; mortality is nearly 100%.'),
-      mc('How does EAB spread long distances?', ['On its own, about 100 km a year', 'In firewood, logs, lumber and wood chips moved by people', 'On the wind', 'Through root grafts'], 1, 'Only a few km a year on its own; far in moved wood.'),
+      mc('Butternut canker is rated…', ['Minor, AGS', 'Moderate', 'Major, UGS', 'Not a defect'], 2, 'Major defect, UGS.'),
+      mc('Butternut canker looks like…', ['Sunken, elongated cankers with black, sooty stains', 'Small orange-red dots in lemon-shaped patterns', 'Black spots on the leaves', 'White woolly wax on the bark'], 0, 'Sunken, elongated cankers with black, inky stains; dying branches and a thin crown.'),
+      tf('Butternut is an endangered species in Ontario.', true, 'Butternut is endangered in Ontario.'),
     ],
   },
   {
@@ -301,17 +273,10 @@ const CARDS: StudyCard[] = [
       tf('Frost damage and leaf scorch are minor defects (AGS).', true, 'Minor, AGS.'),
     ] },
   {
-    section: OTHER, q: 'Which other (anthropogenic and form) defects are minor / AGS?',
-    a: ['Tree absorption of objects (CODIT)', 'U-shaped and V-shaped forks', 'Wind or ice damage to the crown', 'Wolf tree', 'Stilted roots are also shown in the lecture, with no rating.'],
+    section: OTHER, q: 'Rate the other hardwood defects from major to minor.',
+    a: ['Major, UGS: beech bark disease, butternut canker, Dutch elm disease, oak wilt.', 'Minor, AGS: tar spot, frost damage, leaf scorch.'],
     test: [
-      multi('Select all the defects that are minor / AGS.', ['U-shaped fork', 'Wolf tree', 'Oak wilt', 'Wind or ice damage to the crown', 'Dutch elm disease', 'Tree absorption (CODIT)'], [0, 1, 3, 5], 'Oak wilt and Dutch elm disease are major / UGS.'),
-    ],
-  },
-  {
-    section: OTHER, q: 'What are the signs of insect damage on a tree?',
-    a: ['Leaf discolouration', 'Branch dieback', 'Exit holes', 'Egg masses', 'Frass (wood shavings)', 'Running sap', 'More woodpecker activity', 'Noticeable insect populations'],
-    test: [
-      multi('Select all the signs of insect damage.', ['Frass (wood shavings)', 'Exit holes', 'Egg masses', 'Lichen on the bark', 'More woodpecker activity', 'Moss on the north side'], [0, 1, 2, 4], 'Also leaf discolouration, branch dieback, running sap and visible insects.'),
+      multi('Select all the defects that are minor / AGS.', ['Tar spot', 'Oak wilt', 'Frost damage', 'Butternut canker', 'Leaf scorch', 'Dutch elm disease'], [0, 2, 4], 'BBD, butternut canker, Dutch elm disease and oak wilt are all major / UGS.'),
     ],
   },
 
@@ -434,14 +399,6 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: WILDLIFE, q: 'What is a chicot, and why is it a special consideration?',
-    a: ['A chicot is a snag (standing dead tree), used e.g. by chimney swifts.', 'For health and safety, it needs a tree-length reserve around it.'],
-    test: [
-      mc('A chicot is…', ['A snag (standing dead tree)', 'A young mast tree', 'A type of fungus', 'A woodpecker'], 0, 'A snag, used e.g. by chimney swifts.'),
-      tf('For health and safety, a chicot needs a tree-length reserve around it.', true, 'Tree-length reserve for H&S.'),
-    ],
-  },
-  {
     section: WILDLIFE, q: 'What is a mast tree?',
     a: [
       'A tree that produces fruit or nuts, providing food for wildlife.',
@@ -492,7 +449,7 @@ const SORTS: SortDrill[] = [
     bins: ['Abiotic', 'Biotic'],
     items: [
       { label: 'Frost crack', bin: 'Abiotic' }, { label: 'Fire scar', bin: 'Abiotic' }, { label: 'Mechanical damage', bin: 'Abiotic' },
-      { label: 'Broken branches', bin: 'Abiotic' }, { label: 'Artist’s conk', bin: 'Biotic' }, { label: 'Emerald ash borer', bin: 'Biotic' },
+      { label: 'Broken branches', bin: 'Abiotic' }, { label: 'Artist’s conk', bin: 'Biotic' }, { label: 'Beech bark disease', bin: 'Biotic' },
       { label: 'Deer browsing', bin: 'Biotic' }, { label: 'Dutch elm disease', bin: 'Biotic' },
     ],
   },
@@ -509,10 +466,10 @@ const SORTS: SortDrill[] = [
     id: 'severity', title: 'Major, moderate or minor?', prompt: 'Rate each defect from the lectures.',
     bins: ['Major', 'Moderate', 'Minor'],
     items: [
-      { label: 'Emerald ash borer', bin: 'Major' }, { label: 'Dutch elm disease', bin: 'Major' }, { label: 'Oak wilt', bin: 'Major' },
+      { label: 'Butternut canker', bin: 'Major' }, { label: 'Dutch elm disease', bin: 'Major' }, { label: 'Oak wilt', bin: 'Major' },
       { label: 'Fire scar (hardwood)', bin: 'Major' }, { label: 'Mossy top', bin: 'Moderate' }, { label: 'Black knot', bin: 'Moderate' },
       { label: 'Sunscald', bin: 'Moderate' }, { label: 'Tar spot', bin: 'Minor' }, { label: 'Leaf scorch', bin: 'Minor' },
-      { label: 'Wolf tree', bin: 'Minor' }, { label: 'V-shaped fork', bin: 'Minor' },
+      { label: 'Frost damage', bin: 'Minor' }, { label: 'Burl', bin: 'Minor' },
     ],
   },
   {

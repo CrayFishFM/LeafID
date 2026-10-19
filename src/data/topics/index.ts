@@ -1,6 +1,7 @@
 import { DEFECTS } from './defects';
 import { FISH } from './fish';
 import type { Topic, TopicItem } from './types';
+import { WATERBIRDS } from './waterbirds';
 
 export type { Topic, TopicItem } from './types';
 
@@ -10,13 +11,19 @@ export type { Topic, TopicItem } from './types';
  * here does not overwrite the database. New topics, new items and new photos are picked up.
  * Put a topic's photos in public/quizzes/<id>/.
  */
-export const TOPIC_SEED: Topic[] = [FISH, DEFECTS];
+export const TOPIC_SEED: Topic[] = [FISH, DEFECTS, WATERBIRDS];
 
 export function topicItem(topic: Topic, id: string): TopicItem | undefined {
   return topic.items.find((i) => i.id === id);
 }
 
-export const topicImageUrl = (topic: Topic, file: string) => `/quizzes/${topic.id}/${file}`;
+/** "01.webp@left" → the file "01.webp" and the side "left"; most photos have no side. */
+export function photoSide(image: string): { file: string; side?: string } {
+  const [file, side] = image.split('@');
+  return { file, side };
+}
+
+export const topicImageUrl = (topic: Topic, image: string) => `/quizzes/${topic.id}/${photoSide(image).file}`;
 
 /** Full display name, e.g. "Brook trout (Speckled trout)". */
 export const itemLabel = (i: TopicItem) => (i.aka ? `${i.name} (${i.aka})` : i.name);

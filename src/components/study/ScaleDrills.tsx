@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { pick } from '@/lib/random';
 
 const SCALES = [5000, 10000, 15840, 20000];
 const fmt = (n: number, d = 0) => n.toLocaleString('en-CA', { maximumFractionDigits: d });
-const rand = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
-const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
-/** Within 2% (or 0.05 for small numbers), so rounding a step doesn't count as wrong. */
+const rand = (lo: number, hi: number) => lo + Math.random() * (hi - lo);/** Within 2% (or 0.05 for small numbers), so rounding a step doesn't count as wrong. */
 const close = (got: number, want: number) => Math.abs(got - want) <= Math.max(Math.abs(want) * 0.02, 0.05);
 const parse = (s: string) => Number(s.replace(/[,\s]/g, '').replace(/^1:/, ''));
 

@@ -5,7 +5,7 @@ import { TopicQuiz } from '@/components/TopicQuiz';
 import { getUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
 import { clientItem } from '@/data/topics';
-import { isGraded, isTopicScope, nextTopicQuestion } from '@/lib/topic-quiz';
+import { hasPairs, isGraded, isTopicScope, nextTopicQuestion } from '@/lib/topic-quiz';
 
 export async function generateMetadata(props: PageProps<'/quizzes/[topic]'>) {
   const topic = await getTopic((await props.params).topic);
@@ -35,6 +35,12 @@ export default async function TopicPracticePage(props: PageProps<'/quizzes/[topi
           <p className="small" style={{ margin: '0.35rem 0 0' }}>
             After each answer you also rate the {topic.noun}: minor, moderate or major, and AGS or UGS.{' '}
             <Link href={`${base}/grade`}>Practise rating only →</Link>
+          </p>
+        )}
+        {hasPairs(topic) && (
+          <p className="small" style={{ margin: '0.35rem 0 0' }}>
+            Each photo is one {topic.noun}: name the species and whether it&apos;s the male or the female.{' '}
+            <Link href={`${base}/pairs`}>Practise with the male &amp; female together →</Link>
           </p>
         )}
       </div>

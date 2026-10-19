@@ -218,6 +218,12 @@ textarea.input { min-height: 90px; resize: vertical; }
 .quiz .photo { aspect-ratio: 1; }
 @media (min-width: 900px) { .quiz .photo { aspect-ratio: 4 / 3; } }
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+/* Pairs quiz: a male and female photo side by side, or one photo of both. */
+.pair-photos { display: grid; gap: 0.75rem; }
+.pair-photos.is-split { grid-template-columns: 1fr 1fr; }
+.pair-photos figure { margin: 0; min-width: 0; }
+.pair-photos figcaption { margin-top: 0.35rem; text-align: center; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.pair-photos.is-split .photo-contain img { max-height: 50vh; }
 .choice {
   display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; text-align: left;
   min-height: 72px; padding: 0.7rem 0.85rem; border-radius: 12px;

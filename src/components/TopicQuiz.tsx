@@ -1,23 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useMemo, useState } from 'react';
 import { getTopicHint, getTopicQuestion, submitGrade, submitTopicAnswer } from '@/app/quizzes/actions';
 import type { TopicItem } from '@/data/topics';
 import type { Severity, Stock } from '@/data/topics/types';
 import type { GradeCase, TopicQuestion } from '@/lib/topic-quiz';
-import { SKIPPED } from '@/lib/answers';
+import { SKIPPED, TOPIC_MAX_HINTS as MAX_HINTS } from '@/lib/answers';
 import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
 import { GradePicker, type GradeOutcome } from './GradePicker';
+import { choiceClass, HintBar, missedIds, QuestionNo, resultTitle, RoundSummary } from './quiz/QuizParts';
+import { useHints, useQuizKeys, useQuizRound } from './quiz/use-quiz';
 import { ZoomPhoto } from './ZoomPhoto';
-
-const ROUND = 10;
-const MAX_HINTS = 2;
 
 /** An item as sent to the browser: no photo list or ratings, so answers can't be read from the page. */
 export type ClientItem = Omit<TopicItem, 'images' | 'ratings'>;
 
 interface Result { correct: boolean; item: string; chosen: string; grade: GradeCase | null }
+
+const itemOf = (r: Result) => r.item;
 
 export function TopicQuiz({ topicId, question, scope, items, initial }: {
   topicId: string;
@@ -38,94 +39,44 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       })),
     [items],
   );
-  const [q, setQ] = useState(initial);
-  const [result, setResult] = useState<Result | null>(null);
-  const [hints, setHints] = useState<string[]>([]);
-  const [recent, setRecent] = useState<string[]>([]);
-  const [round, setRound] = useState<Result[]>([]);
   // Graded topics: severity + AGS/UGS asked after each ID answer.
   const [grade, setGrade] = useState<GradeOutcome | null>(null);
   const [gradedRight, setGradedRight] = useState(0);
-  const [pending, start] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const quiz = useQuizRound<TopicQuestion, string, Result>({
+    initial,
+    submit: async (q, chosen) => ({ ...(await submitTopicAnswer(topicId, q.imageKey, chosen, hints.length)), chosen }),
+    load: (recent) => getTopicQuestion(topicId, scope, recent),
+    itemOf,
+    onNext: (newRound) => {
+      reset();
+      setGrade(null);
+      if (newRound) setGradedRight(0);
+    },
+  });
+  const { q, result, round, pending, error, answer, next } = quiz;
+  const { hints, hint, reset } = useHints(MAX_HINTS, (level) => getTopicHint(topicId, q!.imageKey, level), quiz);
 
   const awaitingGrade = !!result?.grade && !grade;
-  const roundDone = round.length >= ROUND && result !== null && !awaitingGrade;
-
-  const answer = useCallback(
-    (chosen: string) => {
-      if (!q || result || pending) return;
-      start(async () => {
-        try {
-          const r = await submitTopicAnswer(topicId, q.imageKey, chosen, hints.length);
-          const res = { ...r, chosen };
-          setResult(res);
-          setRound((xs) => [...xs, res]);
-          setRecent((xs) => [r.item, ...xs].slice(0, 3));
-        } catch {
-          setError('Could not save your answer. Check your connection and try again.');
-        }
-      });
-    },
-    [q, result, pending, hints.length, topicId],
-  );
-
-  const next = useCallback(() => {
-    start(async () => {
-      try {
-        const nq = await getTopicQuestion(topicId, scope, recent);
-        if (roundDone) { setRound([]); setGradedRight(0); }
-        setQ(nq);
-        setResult(null);
-        setGrade(null);
-        setHints([]);
-        setError(null);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch {
-        setError('Could not load the next question.');
-      }
-    });
-  }, [topicId, scope, recent, roundDone]);
+  const roundDone = quiz.roundDone && !awaitingGrade;
 
   function rate(severity: Severity, stock: Stock) {
     if (!q || !result?.grade || grade || pending) return;
     const index = result.grade.index;
-    start(async () => {
+    quiz.start(async () => {
       try {
         const g = await submitGrade(topicId, q.imageKey, index, severity, stock);
         setGrade(g);
         if (g.severityOk && g.stockOk) setGradedRight((n) => n + 1);
       } catch {
-        setError('Could not save your rating. Check your connection and try again.');
+        quiz.setError('Could not save your rating. Check your connection and try again.');
       }
     });
   }
 
-  function hint() {
-    if (!q || result || hints.length >= MAX_HINTS) return;
-    const level = hints.length;
-    start(async () => {
-      try {
-        const h = await getTopicHint(topicId, q.imageKey, level);
-        if (h) setHints((xs) => (xs.length === level ? [...xs, h] : xs));
-      } catch {
-        setError('Could not load a hint. Try again.');
-      }
-    });
-  }
-
-  // Keyboard: 1–4 to answer, Enter / Space for next, H for a hint.
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
-      // Keys on the photo (or its enlarged view) belong to the photo.
-      if (e.target instanceof Element && e.target.closest('.zoom-btn, dialog[open]')) return;
-      if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
-      else if (result && !awaitingGrade && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
-      else if (!result && e.key.toLowerCase() === 'h') hint();
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+  useQuizKeys({
+    onChoice: q && !result && mode === 'choice' ? (i) => answer(q.choices[i]) : undefined,
+    onNext: result && !awaitingGrade ? next : undefined,
+    onHint: q && !result ? hint : undefined,
   });
 
   if (!q) {
@@ -137,16 +88,16 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
     );
   }
 
-  const correctCount = round.filter((r) => r.correct).length;
   const target = result ? byId[result.item] : null;
   const chosen = result && !result.correct ? byId[result.chosen] : null;
+  const graded = round.filter((r) => r.grade).length;
 
   return (
     <div className="stack">
       <div className="scorebar">
-        <span>Question <strong>{Math.min(round.length + (result ? 0 : 1), ROUND)}</strong> / {ROUND}</span>
-        <span>Correct <strong>{correctCount}</strong></span>
-        {round.some((r) => r.grade) && <span>Rated right <strong>{gradedRight}</strong></span>}
+        <QuestionNo n={quiz.questionNo} />
+        <span>Correct <strong>{quiz.correctCount}</strong></span>
+        {graded > 0 && <span>Rated right <strong>{gradedRight}</strong></span>}
         <span style={{ marginLeft: 'auto' }} />
         <AnswerModeToggle mode={mode} onChange={setMode} />
       </div>
@@ -155,7 +106,8 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
         <ZoomPhoto key={q.imageKey} className="photo photo-contain" src={q.imageUrl} alt="Photo to identify" />
 
         <div className="stack">
-          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : result.chosen === SKIPPED ? "Here's the answer" : 'Not quite') : question}</h2>
+          <h2 style={{ margin: 0 }}>{resultTitle(result, question)}</h2>
+          {q.focus && <p style={{ margin: 0 }}>Name <strong>{q.focus}</strong> in the photo.</p>}
 
           {mode === 'type' ? (
             <AnswerInput
@@ -168,33 +120,16 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
             />
           ) : (
           <div className="choices">
-            {q.choices.map((id) => {
-              const it = byId[id];
-              const cls = result ? (id === result.item ? 'correct' : id === result.chosen ? 'wrong' : '') : '';
-              return (
-                <button key={id} className={`choice ${cls}`} disabled={!!result || pending} onClick={() => answer(id)}>
-                  <span className="name">{it.name}</span>
-                  {it.aka && <span className="common">{it.aka}</span>}
-                </button>
-              );
-            })}
+            {q.choices.map((id) => (
+              <button key={id} className={`choice ${choiceClass(id, result, result?.item)}`} disabled={!!result || pending} onClick={() => answer(id)}>
+                <span className="name">{byId[id].name}</span>
+                {byId[id].aka && <span className="common">{byId[id].aka}</span>}
+              </button>
+            ))}
           </div>
           )}
 
-          {!result && (
-            <div className="stack" style={{ gap: '0.5rem' }}>
-              {hints.map((h) => <div key={h} className="hint">{h}</div>)}
-              <div className="row" style={{ gap: '0.5rem' }}>
-                {hints.length < MAX_HINTS && (
-                  <button className="btn btn-sm" onClick={hint} disabled={pending}>
-                    {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
-                  </button>
-                )}
-                {/* Shows the answer; counts as a miss so it comes up again soon. */}
-                <button className="btn btn-sm btn-ghost" onClick={() => answer(SKIPPED)} disabled={pending}>I don&apos;t know</button>
-              </div>
-            </div>
-          )}
+          {!result && <HintBar hints={hints} max={MAX_HINTS} onHint={hint} onSkip={() => answer(SKIPPED)} pending={pending} />}
 
           {error && <div className="error">{error}</div>}
 
@@ -211,7 +146,7 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
               {chosen && (
                 <p className="small"><strong>{chosen.name}</strong> instead: {chosen.tips[0]}</p>
               )}
-              {!roundDone && !awaitingGrade && !result.grade && (
+              {!roundDone && !result.grade && (
                 <button className="btn btn-primary" onClick={next} disabled={pending} autoFocus>Next question</button>
               )}
             </div>
@@ -229,26 +164,14 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
           )}
 
           {roundDone && (
-            <div className="card stack">
-              <h3 style={{ margin: 0 }}>Round complete: {correctCount} / {ROUND}</h3>
-              {round.some((r) => r.grade) && <p className="small muted" style={{ margin: 0 }}>Severity and AGS/UGS rated right: {gradedRight} / {round.filter((r) => r.grade).length}</p>}
-              {round.some((r) => !r.correct) ? (
-                <div>
-                  <p className="small muted">Worth reviewing:</p>
-                  <div className="row">
-                    {[...new Set(round.filter((r) => !r.correct).map((r) => r.item))].map((id) => (
-                      <Link key={id} href={`/quizzes/${topicId}/study#${id}`} className="chip">{byId[id].name}</Link>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <p className="muted">A perfect round — nice work.</p>
-              )}
-              <div className="row">
-                <button className="btn btn-primary" onClick={next} disabled={pending}>Next round</button>
-                <Link href={`/quizzes/${topicId}/study`} className="btn">Study guide</Link>
-              </div>
-            </div>
+            <RoundSummary
+              right={quiz.correctCount}
+              note={graded > 0 ? `Severity and AGS/UGS rated right: ${gradedRight} / ${graded}` : undefined}
+              missed={missedIds(round, itemOf).map((id) => ({ id, href: `/quizzes/${topicId}/study#${id}`, label: byId[id].name }))}
+              onNext={next}
+              pending={pending}
+              link={{ href: `/quizzes/${topicId}/study`, label: 'Study guide' }}
+            />
           )}
         </div>
       </div>

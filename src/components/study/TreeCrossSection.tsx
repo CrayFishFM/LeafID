@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { pick } from '@/lib/random';
 
 interface Layer { id: string; name: string; r: number; fill: string; about: string }
 
@@ -16,8 +17,6 @@ const LAYERS: Layer[] = [
 const RAYS = { id: 'rays', name: 'Rays', about: 'Lines of cells running from the centre outward (across the rings). They store nutrients and move them sideways. Very broad in oak.' };
 const RING = { id: 'ring', name: 'Growth ring', about: 'One year of growth: light, low-density earlywood (spring) then dense, dark latewood (summer).' };
 const ALL = [...LAYERS, RAYS, RING];
-
-const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
 
 export function TreeCrossSection() {
   const [sel, setSel] = useState<string | null>(null);

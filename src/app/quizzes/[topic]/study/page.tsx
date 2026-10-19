@@ -4,12 +4,11 @@ import { ZoomPhoto } from '@/components/ZoomPhoto';
 import type { Rating, Severity } from '@/data/topics/types';
 import { itemLabel, topicImageUrl, topicItem } from '@/data/topics';
 import { getUser } from '@/lib/auth';
-import type { Level } from '@/lib/progress';
+import { LEVEL_CHIP } from '@/lib/levels';
 import { ratingLabel, SEVERITIES, SEVERITY_LABEL, SEVERITY_RULE } from '@/lib/grading';
-import { getTopicProgress, isGraded } from '@/lib/topic-quiz';
+import { getTopicProgress, hasPairs, isGraded } from '@/lib/topic-quiz';
 import { getTopic } from '@/lib/topics';
 
-const LEVEL_CHIP: Record<Level, string> = { new: '', struggling: 'chip-bad', learning: 'chip-warn', mastered: 'chip-ok' };
 const SEVERITY_CHIP: Record<Severity, string> = { minor: 'chip-ok', moderate: 'chip-warn', major: 'chip-bad' };
 
 /** "Major · UGS", or each case when the rating depends on a condition. */
@@ -38,6 +37,7 @@ export default async function TopicStudyPage(props: PageProps<'/quizzes/[topic]/
         <div className="row">
           <Link href={`/quizzes/${topic.id}`} className="btn btn-primary">Practise {topic.short.toLowerCase()}</Link>
           {isGraded(topic) && <Link href={`/quizzes/${topic.id}/grade`} className="btn">Practise severity &amp; AGS/UGS</Link>}
+          {hasPairs(topic) && <Link href={`/quizzes/${topic.id}/pairs`} className="btn">Practise male &amp; female together</Link>}
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 export type Severity = 'minor' | 'moderate' | 'major';
 /** Growing stock class: AGS (acceptable) or UGS (unacceptable); moderate defects can go either way. */
 export type Stock = 'AGS' | 'UGS' | 'either';
+export type Sex = 'male' | 'female';
 
 export interface Rating {
   /** A condition that changes the rating, e.g. "Larger than 900 cm²". Shown with the question. */
@@ -26,8 +27,17 @@ export interface TopicItem {
   tips: string[];
   /** Items people most often mix this one up with; they show up as wrong choices. */
   lookalikes: string[];
-  /** Photos, as files in public/quizzes/<topic>/. Each one comes from a slide of the original deck. */
+  /**
+   * Photos, as files in public/quizzes/<topic>/. Each one comes from a slide of the original deck.
+   * A photo showing two birds is listed under both, with the side that is this one: "01.webp@left"
+   * (left, right, top or bottom). The question then asks about that bird.
+   */
   images: string[];
+  /**
+   * For an item that is one sex of a species (Mallard drake / Mallard hen): the species, from the
+   * topic's `pairs`, for the quiz that shows the male and female together. Lives in code only.
+   */
+  pair?: { species: string; sex: Sex };
   /**
    * Severity and AGS/UGS, for topics that grade items (defects). One entry per case; a question
    * picks one. Lives in code only (not the database), so it is not admin-editable.
@@ -49,6 +59,8 @@ export interface Topic {
   noun: string;
   groups: Record<string, string>;
   items: TopicItem[];
+  /** Species photographed as both sexes, id → name ("mallard" → "Mallard"). Lives in code only. */
+  pairs?: Record<string, string>;
   source: string;
   updatedAt?: number | null;
   updatedBy?: string | null;

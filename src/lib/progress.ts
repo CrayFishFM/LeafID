@@ -1,18 +1,8 @@
-import { SKIPPED } from './answers';
+import { tallyAttempts, type ItemStat } from './adaptive';
 import { exec, query } from './db';
 import { getLeaf } from './leaf';
 
-export type Level = 'new' | 'struggling' | 'learning' | 'mastered';
-
-export interface SpeciesStat {
-  id: string;
-  attempts: number;
-  correct: number;
-  /** 0–1, exponentially weighted so recent answers count most. */
-  mastery: number;
-  level: Level;
-  lastSeen: number | null;
-}
+export type SpeciesStat = ItemStat;
 
 export interface Confusion {
   species: string;
@@ -39,15 +29,7 @@ interface AttemptRow {
   created_at: number;
 }
 
-export const ALPHA = 0.35;
 const DAY = 86_400_000;
-
-export function levelFor(attempts: number, mastery: number): Level {
-  if (attempts === 0) return 'new';
-  if (mastery >= 0.8 && attempts >= 4) return 'mastered';
-  if (mastery >= 0.5) return 'learning';
-  return 'struggling';
-}
 
 export async function getProgress(userId: string): Promise<Progress> {
   const [rows, leaf] = await Promise.all([
@@ -58,35 +40,16 @@ export async function getProgress(userId: string): Promise<Progress> {
     getLeaf(),
   ]);
 
-  const per = new Map<string, SpeciesStat>(
-    leaf.species.map((s) => [s.id, { id: s.id, attempts: 0, correct: 0, mastery: 0, level: 'new', lastSeen: null }]),
-  );
-  const confusions = new Map<string, Confusion>();
+  const tally = tallyAttempts(leaf.species.map((s) => s.id), rows.map((r) => ({ ...r, item: r.species })));
   const weekAgo = Date.now() - 7 * DAY;
   const days = new Set<number>();
-  let correct = 0, hinted = 0, last7Total = 0, last7Correct = 0;
-
+  let hinted = 0, last7Total = 0, last7Correct = 0;
   for (const r of rows) {
-    const s = per.get(r.species);
-    if (!s) continue;
-    // A hinted correct answer counts as half-learned.
-    const score = r.correct ? (r.hints > 0 ? 0.5 : 1) : 0;
-    s.attempts++;
-    s.correct += r.correct;
-    s.mastery = s.mastery + ALPHA * (score - s.mastery);
-    s.lastSeen = r.created_at;
-    correct += r.correct;
+    if (!leaf.byId[r.species]) continue;
     if (r.hints > 0) hinted++;
     if (r.created_at >= weekAgo) { last7Total++; last7Correct += r.correct; }
     days.add(Math.floor((r.created_at - new Date().getTimezoneOffset() * 60_000) / DAY));
-    if (!r.correct && r.chosen !== SKIPPED) {
-      const k = `${r.species}>${r.chosen}`;
-      const c = confusions.get(k) ?? { species: r.species, chosen: r.chosen, count: 0 };
-      c.count++;
-      confusions.set(k, c);
-    }
   }
-  for (const s of per.values()) s.level = levelFor(s.attempts, s.mastery);
 
   // Consecutive days of practice ending today (or yesterday).
   const today = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / DAY);
@@ -94,19 +57,19 @@ export async function getProgress(userId: string): Promise<Progress> {
   for (let d = days.has(today) ? today : today - 1; days.has(d); d--) dayStreak++;
 
   const groups = Object.keys(leaf.groups).map((id) => {
-    const list = [...per.values()].filter((s) => leaf.byId[s.id].group === id);
+    const list = tally.stats.filter((s) => leaf.byId[s.id].group === id);
     return { id, attempts: list.reduce((a, s) => a + s.attempts, 0), correct: list.reduce((a, s) => a + s.correct, 0) };
   });
 
   return {
     total: rows.length,
-    correct,
+    correct: tally.correct,
     hinted,
     last7: { total: last7Total, correct: last7Correct },
     dayStreak,
-    species: [...per.values()],
+    species: tally.stats,
     groups,
-    confusions: [...confusions.values()].sort((a, b) => b.count - a.count),
+    confusions: tally.mixups.map((m) => ({ species: m.item, chosen: m.chosen, count: m.count })),
   };
 }
 

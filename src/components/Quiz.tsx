@@ -1,29 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useMemo } from 'react';
 import { getHint, getQuestion, submitAnswer } from '@/app/actions';
 import type { Question } from '@/lib/quiz';
 import { contrastTip } from '@/lib/suggestions';
-import { SKIPPED } from '@/lib/answers';
+import { LEAF_MAX_HINTS as MAX_HINTS, SKIPPED } from '@/lib/answers';
+import { useStoredPreference } from '@/lib/use-stored';
 import { AnswerInput, AnswerModeToggle, useAnswerMode, type AnswerOption } from './AnswerInput';
+import { choiceClass, HintBar, missedIds, QuestionNo, resultTitle, RoundSummary } from './quiz/QuizParts';
+import { useHints, useQuizKeys, useQuizRound } from './quiz/use-quiz';
 import { ReportButton } from './ReportButton';
 import { useLeaf } from './LeafProvider';
 import { ZoomPhoto } from './ZoomPhoto';
 
-const ROUND = 10;
-const MAX_HINTS = 3;
+const ON_OFF = ['0', '1'] as const;
 
 interface Result { correct: boolean; species: string; chosen: string }
 
+const itemOf = (r: Result) => r.species;
+
 export function Quiz({ scope, initial }: { scope: string; initial: Question | null }) {
   const leaf = useLeaf();
-  const [q, setQ] = useState<Question | null>(initial);
-  const [result, setResult] = useState<Result | null>(null);
-  const [hints, setHints] = useState<string[]>([]);
-  const [recent, setRecent] = useState<string[]>([]);
-  const [round, setRound] = useState<Result[]>([]);
-  const [codesOnly, setCodesOnly] = useState(false);
+  const [codesOnly, setCodesOnly] = useStoredPreference<'0' | '1'>('codesOnly', '0', ON_OFF);
   const [mode, setMode] = useAnswerMode();
   // Typed answers accept the code, common name (with or without the bracketed part) or scientific name.
   const options = useMemo<AnswerOption[]>(
@@ -37,78 +36,20 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
       })),
     [leaf.species],
   );
-  const [pending, start] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const quiz = useQuizRound<Question, string, Result>({
+    initial,
+    submit: async (q, chosen) => ({ ...(await submitAnswer(q.imageKey, chosen, hints.length)), chosen }),
+    load: (recent) => getQuestion(scope, recent),
+    itemOf,
+    onNext: () => reset(),
+  });
+  const { q, result, round, pending, error, answer, next, roundDone } = quiz;
+  const { hints, hint, reset } = useHints(MAX_HINTS, (level) => getHint(q!.imageKey, level), quiz);
 
-  useEffect(() => {
-    try {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- restore a saved preference
-      setCodesOnly(localStorage.getItem('codesOnly') === '1');
-    } catch {}
-  }, []);
-
-  const roundDone = round.length >= ROUND && result !== null;
-
-  const answer = useCallback(
-    (chosen: string) => {
-      if (!q || result || pending) return;
-      start(async () => {
-        try {
-          const r = await submitAnswer(q.imageKey, chosen, hints.length);
-          const res = { ...r, chosen };
-          setResult(res);
-          setRound((xs) => [...xs, res]);
-          setRecent((xs) => [r.species, ...xs].slice(0, 3));
-        } catch {
-          setError('Could not save your answer. Check your connection and try again.');
-        }
-      });
-    },
-    [q, result, pending, hints.length],
-  );
-
-  const next = useCallback(() => {
-    start(async () => {
-      try {
-        const nq = await getQuestion(scope, recent);
-        if (roundDone) setRound([]);
-        setQ(nq);
-        setResult(null);
-        setHints([]);
-        setError(null);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch {
-        setError('Could not load the next question.');
-      }
-    });
-  }, [scope, recent, roundDone]);
-
-  function hint() {
-    if (!q || result || hints.length >= MAX_HINTS) return;
-    const level = hints.length;
-    start(async () => {
-      try {
-        const h = await getHint(q.imageKey, level);
-        // Ignore a late response if another hint landed first.
-        if (h) setHints((xs) => (xs.length === level ? [...xs, h] : xs));
-      } catch {
-        setError('Could not load a hint. Try again.');
-      }
-    });
-  }
-
-  // Keyboard: 1–4 to answer, Enter / Space for next, H for a hint.
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return;
-      // Keys on the photo (or its enlarged view) belong to the photo.
-      if (e.target instanceof Element && e.target.closest('.zoom-btn, dialog[open]')) return;
-      if (!result && q && mode === 'choice' && /^[1-4]$/.test(e.key)) answer(q.choices[Number(e.key) - 1]);
-      else if (result && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
-      else if (!result && e.key.toLowerCase() === 'h') hint();
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+  useQuizKeys({
+    onChoice: q && !result && mode === 'choice' ? (i) => answer(q.choices[i]) : undefined,
+    onNext: result ? next : undefined,
+    onHint: q && !result ? hint : undefined,
   });
 
   if (!q) {
@@ -120,27 +61,19 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
     );
   }
 
-  const correctCount = round.filter((r) => r.correct).length;
   const target = result ? leaf.byId[result.species] : null;
   const chosenSp = result && !result.correct ? leaf.byId[result.chosen] : null;
 
   return (
     <div className="stack">
       <div className="scorebar">
-        <span>Question <strong>{Math.min(round.length + (result ? 0 : 1), ROUND)}</strong> / {ROUND}</span>
-        <span>Correct <strong>{correctCount}</strong></span>
+        <QuestionNo n={quiz.questionNo} />
+        <span>Correct <strong>{quiz.correctCount}</strong></span>
         <span style={{ marginLeft: 'auto' }} />
         <AnswerModeToggle mode={mode} onChange={setMode} />
         {mode === 'choice' && (
         <label className="row" style={{ gap: '0.4rem', cursor: 'pointer' }}>
-          <input
-            type="checkbox"
-            checked={codesOnly}
-            onChange={(e) => {
-              setCodesOnly(e.target.checked);
-              try { localStorage.setItem('codesOnly', e.target.checked ? '1' : '0'); } catch {}
-            }}
-          />
+          <input type="checkbox" checked={codesOnly === '1'} onChange={(e) => setCodesOnly(e.target.checked ? '1' : '0')} />
           Codes only
         </label>
         )}
@@ -159,7 +92,7 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
         </div>
 
         <div className="stack">
-          <h2 style={{ margin: 0 }}>{result ? (result.correct ? 'Correct!' : result.chosen === SKIPPED ? "Here's the answer" : 'Not quite') : 'Which tree is this?'}</h2>
+          <h2 style={{ margin: 0 }}>{resultTitle(result, 'Which tree is this?')}</h2>
 
           {mode === 'type' ? (
             <AnswerInput
@@ -174,31 +107,17 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
           <div className="choices">
             {q.choices.map((id) => {
               const s = leaf.byId[id];
-              const cls = result ? (id === result.species ? 'correct' : id === result.chosen ? 'wrong' : '') : '';
               return (
-                <button key={id} className={`choice ${cls}`} disabled={!!result || pending} onClick={() => answer(id)}>
+                <button key={id} className={`choice ${choiceClass(id, result, result?.species)}`} disabled={!!result || pending} onClick={() => answer(id)}>
                   <span className="code">{s.code}</span>
-                  {(!codesOnly || result) && s.code !== s.common && <span className="common">{s.common}</span>}
+                  {(codesOnly !== '1' || result) && s.code !== s.common && <span className="common">{s.common}</span>}
                 </button>
               );
             })}
           </div>
           )}
 
-          {!result && (
-            <div className="stack" style={{ gap: '0.5rem' }}>
-              {hints.map((h) => <div key={h} className="hint">{h}</div>)}
-              <div className="row" style={{ gap: '0.5rem' }}>
-                {hints.length < MAX_HINTS && (
-                  <button className="btn btn-sm" onClick={hint} disabled={pending}>
-                    {hints.length === 0 ? 'Give me a hint' : 'Another hint'}
-                  </button>
-                )}
-                {/* Shows the answer; counts as a miss so it comes up again soon. */}
-                <button className="btn btn-sm btn-ghost" onClick={() => answer(SKIPPED)} disabled={pending}>I don&apos;t know</button>
-              </div>
-            </div>
-          )}
+          {!result && <HintBar hints={hints} max={MAX_HINTS} onHint={hint} onSkip={() => answer(SKIPPED)} pending={pending} />}
 
           {error && <div className="error">{error}</div>}
 
@@ -221,25 +140,13 @@ export function Quiz({ scope, initial }: { scope: string; initial: Question | nu
           )}
 
           {roundDone && (
-            <div className="card stack">
-              <h3 style={{ margin: 0 }}>Round complete: {correctCount} / {ROUND}</h3>
-              {round.some((r) => !r.correct) ? (
-                <div>
-                  <p className="small muted">Worth reviewing:</p>
-                  <div className="row">
-                    {[...new Set(round.filter((r) => !r.correct).map((r) => r.species))].map((id) => (
-                      <Link key={id} href={`/learn/${id}`} className="chip">{leaf.byId[id].code} · {leaf.byId[id].common}</Link>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <p className="muted">A perfect round — nice work.</p>
-              )}
-              <div className="row">
-                <button className="btn btn-primary" onClick={next} disabled={pending}>Next round</button>
-                <Link href="/progress" className="btn">View progress</Link>
-              </div>
-            </div>
+            <RoundSummary
+              right={quiz.correctCount}
+              missed={missedIds(round, itemOf).map((id) => ({ id, href: `/learn/${id}`, label: `${leaf.byId[id].code} · ${leaf.byId[id].common}` }))}
+              onNext={next}
+              pending={pending}
+              link={{ href: '/progress', label: 'View progress' }}
+            />
           )}
         </div>
       </div>

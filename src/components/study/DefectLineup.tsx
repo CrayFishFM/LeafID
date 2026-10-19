@@ -3,19 +3,9 @@
 import { useState } from 'react';
 import type { Severity } from '@/data/topics/types';
 import { SEVERITY_LABEL } from '@/lib/grading';
+import { pick, shuffle } from '@/lib/random';
 
 const ORDER: Severity[] = ['major', 'moderate', 'minor'];
-const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
-
-function shuffle<T>(xs: T[]): T[] {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 type Defect = { name: string; severity: Severity };
 
 /** One major, one moderate and one minor defect, shuffled. */

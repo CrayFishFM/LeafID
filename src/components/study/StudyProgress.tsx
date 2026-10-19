@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { loadKnown, loadTests, type TestResult } from '@/lib/study-storage';
+import { pct } from '@/lib/format';
 
 /** What the Progress page needs about a study guide: the questions per section, no answers. */
 export interface GuideOutline {
@@ -12,7 +13,6 @@ export interface GuideOutline {
   sections: { name: string; questions: string[] }[];
 }
 
-const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
 
 /** Read after hydration: the server has no access to the browser's storage. */
 function useStudy(guideId: string) {

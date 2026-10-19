@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import type { Rating, Severity, Stock } from '@/data/topics/types';
+import type { Severity, Stock } from '@/data/topics/types';
+import type { GradeResult } from '@/lib/topic-quiz';
 import { ratingLabel, SEVERITIES, SEVERITY_LABEL, SEVERITY_RULE, STOCK_LABEL, STOCKS } from '@/lib/grading';
 
-export interface GradeOutcome { rating: Rating; severityOk: boolean; stockOk: boolean }
+/** How a rating went: the right rating, and which parts the learner got right. */
+export type GradeOutcome = GradeResult;
 
 /** Asks for a defect's severity and AGS/UGS class, then shows which parts were right. */
 export function GradePicker({ when, onSubmit, outcome, pending }: {

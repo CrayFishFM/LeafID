@@ -10,15 +10,15 @@ import { topicItem, type Topic } from '@/data/topics';
 import { getActivity } from '@/lib/activity';
 import { getUser } from '@/lib/auth';
 import { getLeaf } from '@/lib/leaf';
-import { getProgress, type Level } from '@/lib/progress';
+import { pct } from '@/lib/format';
+import { LEVEL_CHIP } from '@/lib/levels';
+import { getProgress } from '@/lib/progress';
 import { contrastTip, suggestionsFor, type Suggestion } from '@/lib/suggestions';
-import { getGradeProgress, getTopicProgress, isGraded, type TopicProgress } from '@/lib/topic-quiz';
+import { getGradeProgress, getTopicProgress, hasPairs, isGraded, pairTopic, type TopicProgress } from '@/lib/topic-quiz';
 import { listTopics } from '@/lib/topics';
 
 export const metadata = { title: 'Progress' };
 
-const LEVEL_CHIP: Record<Level, string> = { new: '', struggling: 'chip-bad', learning: 'chip-warn', mastered: 'chip-ok' };
-const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
 
 /** Each course's midterm study guide, if it has one. */
 const GUIDES: Record<string, { guide: StudyGuide; href: string }> = {
@@ -172,6 +172,7 @@ export default async function ProgressPage(props: PageProps<'/progress'>) {
     topic,
     progress: await getTopicProgress(user.id, topic),
     grade: isGraded(topic) ? await getGradeProgress(user.id, topic) : null,
+    pairs: hasPairs(topic) ? await getTopicProgress(user.id, pairTopic(topic)) : null,
   })));
   const statFor = (courseId: string) => {
     const ids = COURSES.find((c) => c.id === courseId)?.topics ?? [];
@@ -237,7 +238,7 @@ export default async function ProgressPage(props: PageProps<'/progress'>) {
                         <span className="small muted">{p.total ? `Leaf ID: ${pct(p.correct, p.total)}% correct over ${p.total} answers` : 'Leaf ID: not started yet'}</span>
                       </div>
                     )}
-                    {quizzes.map(({ topic, progress, grade }) => {
+                    {quizzes.map(({ topic, progress, grade, pairs }) => {
                       const mastered = progress.items.filter((i) => i.level === 'mastered').length;
                       return (
                         <div key={topic.id} className="stack" style={{ gap: '0.35rem' }}>
@@ -248,6 +249,7 @@ export default async function ProgressPage(props: PageProps<'/progress'>) {
                           <span className="small muted">
                             {progress.total ? `${topic.short} ID: ${pct(progress.correct, progress.total)}% correct over ${progress.total} answers` : `${topic.short} ID: not started yet`}
                             {grade && (grade.total ? ` · Rating: ${pct(grade.correct, grade.total)}% right over ${grade.total}` : ' · Rating: not started')}
+                            {pairs && (pairs.total ? ` · Male & female: ${pct(pairs.correct, pairs.total)}% right over ${pairs.total}` : ' · Male & female: not started')}
                           </span>
                         </div>
                       );

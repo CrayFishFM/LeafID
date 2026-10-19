@@ -6,11 +6,12 @@ import { requireAdmin } from '@/lib/auth';
 import { mailEnabled } from '@/lib/mail';
 import { openReportCount } from '@/lib/reports';
 import { guestStats } from '@/lib/guests';
+import { pct } from '@/lib/format';
 import { getLeaf } from '@/lib/leaf';
 
 // Formatted on the server so the client renders the same text.
 const when = (ts: number) => new Date(ts).toLocaleString('en-CA', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : '—');
+const pctLabel = (n: number, d: number) => (d ? `${pct(n, d)}%` : '—');
 
 export default async function AdminOverview() {
   const leaf = await getLeaf();
@@ -35,7 +36,7 @@ export default async function AdminOverview() {
         <div className="stat"><div className="value">{o.users.total}</div><div className="label">accounts ({o.users.recent} new this week) · {o.users.guests} guests</div></div>
         <div className="stat"><div className="value">{o.answers.learners}</div><div className="label">active learners (7 days)</div></div>
         <div className="stat"><div className="value">{o.answers.total}</div><div className="label">quiz answers ({o.answers.recent} this week)</div></div>
-        <div className="stat"><div className="value">{pct(o.answers.correct, o.answers.total)}</div><div className="label">overall accuracy</div></div>
+        <div className="stat"><div className="value">{pctLabel(o.answers.correct, o.answers.total)}</div><div className="label">overall accuracy</div></div>
         <Link href="/admin/photos?status=pending" className="stat" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="value">{needsReview}</div><div className="label">photos awaiting the crowd</div>
         </Link>
@@ -122,7 +123,7 @@ export default async function AdminOverview() {
         <div className="stats">
           <div className="stat"><div className="value">{g.total}</div><div className="label">guests ({g.newThisWeek} new this week)</div></div>
           <div className="stat"><div className="value">{g.activeThisWeek}</div><div className="label">answered questions this week</div></div>
-          <div className="stat"><div className="value">{pct(g.answers.guests, g.answers.everyone)}</div><div className="label">of this week&apos;s answers came from guests</div></div>
+          <div className="stat"><div className="value">{pctLabel(g.answers.guests, g.answers.everyone)}</div><div className="label">of this week&apos;s answers came from guests</div></div>
           <div className="stat"><div className="value">{g.conversions.thisWeek}</div><div className="label">made an account this week ({g.conversions.total} total)</div></div>
         </div>
         <div className="grid grid-2">

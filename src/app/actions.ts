@@ -1,14 +1,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { clampHints } from '@/lib/adaptive';
 import { requireUser } from '@/lib/auth';
 import { castVote, deleteSubmission } from '@/lib/community';
 import { speciesForKey } from '@/lib/photos';
-import { SKIPPED } from '@/lib/answers';
+import { LEAF_MAX_HINTS, SKIPPED } from '@/lib/answers';
 import { getLeaf, isSpecies } from '@/lib/leaf';
 import { recordAttempt } from '@/lib/progress';
 import { isReportReason, reportImage } from '@/lib/reports';
-import { hintFor, isScope, MAX_HINTS, nextQuestion } from '@/lib/quiz';
+import { hintFor, isScope, nextQuestion } from '@/lib/quiz';
 
 export async function getQuestion(scope: string, avoid: string[]) {
   const user = await requireUser();
@@ -18,7 +19,7 @@ export async function getQuestion(scope: string, avoid: string[]) {
 export async function getHint(imageKey: string, level: number) {
   await requireUser();
   const species = await speciesForKey(imageKey);
-  if (!species || level < 0 || level >= MAX_HINTS) return null;
+  if (!species || level < 0 || level >= LEAF_MAX_HINTS) return null;
   return await hintFor(species, level);
 }
 
@@ -31,7 +32,7 @@ export async function submitAnswer(imageKey: string, chosen: string, hints: numb
     species,
     chosen,
     correct,
-    hints: Math.max(0, Math.min(MAX_HINTS, Math.floor(hints))),
+    hints: clampHints(hints, LEAF_MAX_HINTS),
     image: imageKey,
   });
   return { correct, species };

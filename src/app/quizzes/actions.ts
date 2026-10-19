@@ -1,13 +1,14 @@
 'use server';
 
 import { topicItem } from '@/data/topics';
-import { SKIPPED } from '@/lib/answers';
+import { clampHints } from '@/lib/adaptive';
+import { SKIPPED, TOPIC_MAX_HINTS } from '@/lib/answers';
 import { requireUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
 import type { Severity, Stock } from '@/data/topics/types';
 import {
-  isTopicScope, itemForKey, nextGradeQuestion, nextTopicQuestion, pickGradeCase, recordGrade, recordTopicAttempt,
-  SEVERITIES, STOCKS, TOPIC_MAX_HINTS, topicHint,
+  isTopicScope, itemForKey, nextGradeQuestion, nextPairQuestion, nextTopicQuestion, pairForKey, pairTopic, pickGradeCase,
+  recordGrade, recordTopicAttempt, SEVERITIES, STOCKS, topicHint,
 } from '@/lib/topic-quiz';
 
 async function topicOrThrow(id: string) {
@@ -40,7 +41,7 @@ export async function submitTopicAnswer(topicId: string, imageKey: string, chose
     item: item.id,
     chosen,
     correct,
-    hints: Math.max(0, Math.min(TOPIC_MAX_HINTS, Math.floor(hints))),
+    hints: clampHints(hints, TOPIC_MAX_HINTS),
   });
   // Graded topics (defects) follow up with severity and AGS/UGS for the same photo.
   return { correct, item: item.id, grade: pickGradeCase(item) };
@@ -60,4 +61,20 @@ export async function submitGrade(topicId: string, imageKey: string, caseIndex: 
     throw new Error('Invalid answer');
   }
   return await recordGrade(user.id, topic, item, caseIndex, severity, stock);
+}
+
+export async function getPairQuestion(topicId: string, avoid: string[]) {
+  const user = await requireUser();
+  const topic = await topicOrThrow(topicId);
+  return await nextPairQuestion(user.id, topic, avoid.slice(0, 5));
+}
+
+export async function submitPairAnswer(topicId: string, imageKey: string, chosen: string) {
+  const user = await requireUser();
+  const topic = await topicOrThrow(topicId);
+  const species = pairForKey(topic, imageKey);
+  if (!species || (chosen !== SKIPPED && !topic.pairs?.[chosen])) throw new Error('Invalid answer');
+  const correct = species.id === chosen;
+  await recordTopicAttempt(user.id, pairTopic(topic), { item: species.id, chosen, correct, hints: 0 });
+  return { correct, item: species.id };
 }

@@ -1,7 +1,9 @@
+import { buildChoices, isScope as isGroupScope, pickAdaptive, scopePool } from './adaptive';
 import type { LeafData } from './leaf-shared';
 import { getLeaf } from './leaf';
 import { allPhotos } from './photos';
 import { getProgress } from './progress';
+import { pick } from './random';
 
 export interface Question {
   imageKey: string;
@@ -14,27 +16,7 @@ export interface Question {
 /** 'all', 'weak' or a group id. */
 export type QuizScope = string;
 
-export function isScope(leaf: LeafData, v: unknown): v is QuizScope {
-  return v === 'all' || v === 'weak' || (typeof v === 'string' && v in leaf.groups);
-}
-
-const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
-
-function shuffle<T>(xs: T[]): T[] {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function weightedPick(items: { id: string; w: number }[]): string {
-  const total = items.reduce((a, i) => a + i.w, 0);
-  let r = Math.random() * total;
-  for (const i of items) if ((r -= i.w) <= 0) return i.id;
-  return items[items.length - 1].id;
-}
+export const isScope = (leaf: LeafData, v: unknown): v is QuizScope => isGroupScope(leaf.groups, v);
 
 /**
  * Adaptive question: species the learner is weak on (or hasn't seen) come up more often,
@@ -42,48 +24,20 @@ function weightedPick(items: { id: string; w: number }[]): string {
  */
 export async function nextQuestion(userId: string, scope: QuizScope, avoid: string[] = []): Promise<Question | null> {
   const [progress, photos, leaf] = await Promise.all([getProgress(userId), allPhotos(), getLeaf()]);
-  const SPECIES = leaf.species, SPECIES_BY_ID = leaf.byId;
   const withPhotos = new Set(photos.map((p) => p.species));
-
-  let pool = SPECIES.filter((s) => withPhotos.has(s.id));
-  if (scope === 'weak') {
-    const weak = progress.species.filter((s) => s.level === 'struggling' || s.level === 'learning').map((s) => s.id);
-    if (weak.length >= 2) pool = pool.filter((s) => weak.includes(s.id));
-  } else if (scope !== 'all') {
-    pool = pool.filter((s) => s.group === scope);
-  }
+  const pool = scopePool(leaf.species.filter((s) => withPhotos.has(s.id)), scope, progress.species);
   if (pool.length === 0) return null;
 
-  const stats = new Map(progress.species.map((s) => [s.id, s]));
-  // Skip recently asked species, unless that leaves nothing (e.g. a 3-species group after 3 answers).
-  const fresh = pool.filter((s) => !avoid.includes(s.id));
-  const candidates = pool.length > 2 && fresh.length > 0 ? fresh : pool;
-  const target = weightedPick(
-    candidates.map((s) => {
-      const st = stats.get(s.id)!;
-      return { id: s.id, w: st.attempts === 0 ? 3 : 0.3 + (1 - st.mastery) * 4 };
-    }),
-  );
-
-  const photo = pick(photos.filter((p) => p.species === target));
-
-  // Distractors: personal confusions first, then look-alikes, then same group, then anything.
-  const distractors: string[] = [];
-  const add = (id: string) => {
-    if (id !== target && SPECIES_BY_ID[id] && !distractors.includes(id) && distractors.length < 3) distractors.push(id);
-  };
-  const personal = progress.confusions.filter((c) => c.species === target).map((c) => c.chosen);
-  shuffle(personal).slice(0, 1).forEach(add);
-  shuffle(SPECIES_BY_ID[target].lookalikes.map((l) => l.id)).forEach(add);
-  shuffle(SPECIES.filter((s) => s.group === SPECIES_BY_ID[target].group).map((s) => s.id)).forEach(add);
-  shuffle(SPECIES.map((s) => s.id)).forEach(add);
+  const target = pickAdaptive(pool, progress.species, avoid);
+  const photo = pick(photos.filter((p) => p.species === target.id));
+  const mixedWith = progress.confusions.filter((c) => c.species === target.id).map((c) => c.chosen);
 
   return {
     imageKey: photo.key,
     imageUrl: photo.url,
     community: !!photo.community,
     credit: photo.credit ? `${photo.credit.artist} · ${photo.credit.license}` : photo.community ? 'Community photo' : null,
-    choices: shuffle([target, ...distractors]),
+    choices: buildChoices({ ...target, lookalikes: target.lookalikes.map((l) => l.id) }, leaf.species, mixedWith),
   };
 }
 
@@ -99,4 +53,3 @@ export async function hintFor(species: string, level: number): Promise<string | 
   return hints[level] ?? null;
 }
 
-export const MAX_HINTS = 3;

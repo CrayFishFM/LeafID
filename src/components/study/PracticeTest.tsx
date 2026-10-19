@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { StudyCard, TestQuestion } from '@/data/study/types';
 import { saveTest } from '@/lib/study-storage';
+import { shuffle } from '@/lib/random';
 
 const LENGTHS = [10, 20];
 
@@ -11,15 +12,6 @@ interface Asked {
   card: StudyCard;
   /** Display order of choices (mc, multi) or the starting order of items (order). */
   order: number[];
-}
-
-function shuffle<T>(xs: T[]): T[] {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 /** A shuffled order that isn't already the answer. */

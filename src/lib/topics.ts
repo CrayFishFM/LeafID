@@ -62,21 +62,26 @@ export const listTopics = cache(async (): Promise<Topic[]> => {
          FROM quiz_item i LEFT JOIN \`user\` u ON u.id = i.updated_by ORDER BY i.sort, i.id`,
     ),
   ]);
-  return topics.map((t) => ({
-    id: t.id, title: t.title, short: t.short, blurb: t.blurb, question: t.question, noun: t.noun, source: t.source,
-    groups: parseJson<Record<string, string>>(t.groups, {}),
-    updatedAt: t.updated_at, updatedBy: t.updated_by,
-    items: items.filter((i) => i.topic === t.id).map((i): TopicItem => ({
-      id: i.id, name: i.name, aka: i.aka ?? undefined, note: i.note ?? undefined, scientific: i.scientific ?? undefined,
-      group: i.grp,
-      tips: parseJson<string[]>(i.tips, []),
-      lookalikes: parseJson<string[]>(i.lookalikes, []),
-      images: parseJson<string[]>(i.images, []),
-      // Severity / AGS-UGS ratings are not stored in the database; they come from the seed.
-      ratings: TOPIC_SEED.find((st) => st.id === t.id)?.items.find((si) => si.id === i.id)?.ratings,
-      updatedAt: i.updated_at, updatedBy: i.updated_by,
-    })),
-  }));
+  return topics.map((t) => {
+    const seed = TOPIC_SEED.find((st) => st.id === t.id);
+    return {
+      id: t.id, title: t.title, short: t.short, blurb: t.blurb, question: t.question, noun: t.noun, source: t.source,
+      groups: parseJson<Record<string, string>>(t.groups, {}),
+      pairs: seed?.pairs,
+      updatedAt: t.updated_at, updatedBy: t.updated_by,
+      items: items.filter((i) => i.topic === t.id).map((i): TopicItem => ({
+        id: i.id, name: i.name, aka: i.aka ?? undefined, note: i.note ?? undefined, scientific: i.scientific ?? undefined,
+        group: i.grp,
+        tips: parseJson<string[]>(i.tips, []),
+        lookalikes: parseJson<string[]>(i.lookalikes, []),
+        images: parseJson<string[]>(i.images, []),
+        // Severity / AGS-UGS ratings and male-female pairs are not stored in the database; they come from the seed.
+        ratings: seed?.items.find((si) => si.id === i.id)?.ratings,
+        pair: seed?.items.find((si) => si.id === i.id)?.pair,
+        updatedAt: i.updated_at, updatedBy: i.updated_by,
+      })),
+    };
+  });
 });
 
 export async function getTopic(id: unknown): Promise<Topic | null> {

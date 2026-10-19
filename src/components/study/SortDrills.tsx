@@ -2,15 +2,7 @@
 
 import { useState } from 'react';
 import type { RankDrill, SortDrill } from '@/data/study/types';
-
-function shuffle<T>(xs: T[]): T[] {
-  const a = [...xs];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+import { shuffle } from '@/lib/random';
 
 /** Put each item in a bin, then check them all at once. */
 function Sorter({ drill }: { drill: SortDrill }) {

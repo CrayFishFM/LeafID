@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { ZoomPhoto } from '@/components/ZoomPhoto';
 import { getSession } from '@/lib/auth';
 import { libraryPhotos } from '@/lib/photos';
-import { getProgress, type Level } from '@/lib/progress';
+import { LEVEL_CHIP } from '@/lib/levels';
+import { getProgress } from '@/lib/progress';
 import { getLeaf } from '@/lib/leaf';
 
 export const metadata = { title: 'Field guide' };
 
-const LEVEL_CHIP: Record<Level, string> = { new: '', struggling: 'chip-bad', learning: 'chip-warn', mastered: 'chip-ok' };
 
 const STEPS = [
   { k: '1. Arrangement', v: 'Opposite (in pairs) or alternate (staggered) along the twig? "MAD Horse" — Maple, Ash, Dogwood, Horse-chestnut, plus elderberry — are opposite.' },

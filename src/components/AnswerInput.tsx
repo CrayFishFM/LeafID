@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
+import { useStoredPreference } from '@/lib/use-stored';
 
 export interface AnswerOption {
   id: string;
@@ -14,23 +15,10 @@ export interface AnswerOption {
 
 export type AnswerMode = 'choice' | 'type';
 
-const KEY = 'answerMode';
+const MODES = ['choice', 'type'] as const;
 
 /** Multiple choice or typed answers, remembered in this browser. */
-export function useAnswerMode(): [AnswerMode, (m: AnswerMode) => void] {
-  const [mode, setMode] = useState<AnswerMode>('choice');
-  useEffect(() => {
-    try {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- restore a saved preference
-      if (localStorage.getItem(KEY) === 'type') setMode('type');
-    } catch {}
-  }, []);
-  const set = (m: AnswerMode) => {
-    setMode(m);
-    try { localStorage.setItem(KEY, m); } catch {}
-  };
-  return [mode, set];
-}
+export const useAnswerMode = () => useStoredPreference<AnswerMode>('answerMode', 'choice', MODES);
 
 export function AnswerModeToggle({ mode, onChange }: { mode: AnswerMode; onChange: (m: AnswerMode) => void }) {
   return (

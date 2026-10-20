@@ -1,66 +1,109 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { SHADE_TABLE } from '@/data/study/ecology';
 
 const SYSTEM: Record<string, string> = {
   'Very intolerant': 'Clearcut', Intolerant: 'Clearcut', Intermediate: 'Shelterwood', Tolerant: 'Selection', 'Very tolerant': 'Selection',
 };
 
-/** One line to type per class: "Tolerant: White cedar, Red maple, …". */
-const LINES = SHADE_TABLE.map((r) => `${r.level}: ${r.species.join(', ')}`);
-const TOTAL_CHARS = LINES.reduce((n, l) => n + l.length, 0);
+const TOTAL_CHARS = SHADE_TABLE.reduce((n, r) => n + r.species.join('').length, 0);
 
 const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
-/** A typing test over the table: the answer shows faintly and you type over it, one class per line. */
-function TypingTest() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [line, setLine] = useState(0);
+/** The box header shared by the view and the typing test. */
+function ShadeHead({ level, sun, extra }: { level: string; sun: string; extra: ReactNode }) {
+  return (
+    <div className="shade-head">
+      <strong>{level}</strong>
+      <span className="small muted">{sun}</span>
+      {extra}
+    </div>
+  );
+}
+
+/** One class's box: its species show faintly and you type over them, one at a time. */
+function TypeBox({ level, sun, species, onKeys, onDone }: {
+  level: string; sun: string; species: string[];
+  onKeys: (typed: number, wrong: number) => void; onDone: () => void;
+}) {
+  const [idx, setIdx] = useState(0);
   const [typed, setTyped] = useState('');
-  const [errors, setErrors] = useState(0);
-  const [keys, setKeys] = useState(0);
-  const [started, setStarted] = useState<number | null>(null);
-  const [finished, setFinished] = useState<number | null>(null);
-  const [hide, setHide] = useState(false);
-  const done = finished !== null;
+  const complete = idx === species.length;
 
   function onType(value: string) {
-    if (done) return;
-    const target = LINES[line];
+    const target = species[idx];
     const v = value.slice(0, target.length);
     if (v.length > typed.length) {
-      // Count each new wrong character once, as it's typed.
+      // Count each new wrong letter once, as it's typed.
       const added = v.slice(typed.length);
-      setKeys((k) => k + added.length);
-      setErrors((e) => e + [...added].filter((ch, i) => !same(ch, target[typed.length + i])).length);
-      if (started === null) setStarted(Date.now());
+      onKeys(added.length, [...added].filter((ch, i) => !same(ch, target[typed.length + i])).length);
     }
-    // A line only moves on once it's typed right (case doesn't matter).
+    // A species only moves on once it's typed right (case doesn't matter).
     if (v.length === target.length && same(v, target)) {
-      if (line === LINES.length - 1) {
-        setFinished(Date.now());
-        setTyped(v);
-      } else {
-        setLine(line + 1);
-        setTyped('');
-      }
+      setIdx(idx + 1);
+      setTyped('');
+      if (idx + 1 === species.length) onDone();
       return;
     }
     setTyped(v);
   }
 
-  function restart() {
-    setLine(0);
-    setTyped('');
-    setErrors(0);
-    setKeys(0);
-    setStarted(null);
-    setFinished(null);
-    inputRef.current?.focus();
+  return (
+    <div className={`shade-col type-box${complete ? ' is-complete' : ''}`}>
+      <ShadeHead level={level} sun={sun} extra={<span className={`chip ${complete ? 'chip-ok' : ''}`}>{idx} / {species.length}</span>} />
+      <ul className="small">
+        {species.map((sp, si) => (
+          <li key={sp} className={si < idx ? 'is-done' : si === idx ? 'is-active' : ''}>
+            {si < idx ? sp : [...sp].map((ch, i) => {
+              const t = si === idx ? typed[i] : undefined;
+              const cls = t === undefined ? 'is-todo' : same(t, ch) ? 'is-ok' : 'is-bad';
+              return <span key={i} className={`${cls}${si === idx && i === typed.length ? ' is-caret' : ''}`}>{ch}</span>;
+            })}
+          </li>
+        ))}
+      </ul>
+      {!complete && (
+        <input className="type-input" value={typed} onChange={(e) => onType(e.target.value)}
+          aria-label={`Type the ${level.toLowerCase()} species: ${species[idx]}`} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} />
+      )}
+    </div>
+  );
+}
+
+/** A typing test over the table, in the same boxes: click a box and type its species over the faint text. */
+function TypingTest() {
+  const [hide, setHide] = useState(false);
+  const [round, setRound] = useState(0);
+  const [keys, setKeys] = useState(0);
+  const [errors, setErrors] = useState(0);
+  const [boxesDone, setBoxesDone] = useState(0);
+  const started = useRef<number | null>(null);
+  const [minutes, setMinutes] = useState(0);
+  const done = boxesDone === SHADE_TABLE.length;
+
+  function onKeys(typed: number, wrong: number) {
+    started.current ??= Date.now();
+    setKeys((k) => k + typed);
+    setErrors((e) => e + wrong);
   }
 
-  const minutes = started !== null && finished !== null ? (finished - started) / 60000 : 0;
+  function onDone() {
+    setBoxesDone((n) => {
+      if (n + 1 === SHADE_TABLE.length && started.current !== null) setMinutes((Date.now() - started.current) / 60000);
+      return n + 1;
+    });
+  }
+
+  function restart() {
+    setRound((r) => r + 1);
+    setKeys(0);
+    setErrors(0);
+    setBoxesDone(0);
+    setMinutes(0);
+    started.current = null;
+  }
+
   const wpm = minutes > 0 ? Math.round(TOTAL_CHARS / 5 / minutes) : 0;
   const accuracy = keys > 0 ? Math.round(((keys - errors) / keys) * 100) : 100;
 
@@ -68,30 +111,16 @@ function TypingTest() {
     <div className="stack">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <label className="row small" style={{ gap: '0.4rem' }}>
-          <input type="checkbox" checked={hide} onChange={(e) => { setHide(e.target.checked); inputRef.current?.focus(); }} />
+          <input type="checkbox" checked={hide} onChange={(e) => setHide(e.target.checked)} />
           Hide the faint answer (type from memory)
         </label>
-        <span className="small muted">{done ? 'Done' : `Line ${line + 1} of ${LINES.length}`} · {errors} mistake{errors === 1 ? '' : 's'}</span>
+        <span className="small muted">{boxesDone} / {SHADE_TABLE.length} classes · {errors} mistake{errors === 1 ? '' : 's'}</span>
       </div>
-
-      <div className={`type-test${hide ? ' is-hidden' : ''}`} onClick={() => inputRef.current?.focus()}>
-        {LINES.map((target, li) => {
-          const text = li < line || done ? target : li === line ? typed : '';
-          return (
-            <p key={li} className={`type-line${li === line && !done ? ' is-active' : ''}${li < line || done ? ' is-done' : ''}`}>
-              {[...target].map((ch, i) => {
-                const t = text[i];
-                const cls = t === undefined ? 'is-todo' : same(t, ch) ? 'is-ok' : 'is-bad';
-                const caret = li === line && !done && i === typed.length;
-                return <span key={i} className={`${cls}${caret ? ' is-caret' : ''}`}>{ch}</span>;
-              })}
-            </p>
-          );
-        })}
-        <input ref={inputRef} className="type-input" value={typed} onChange={(e) => onType(e.target.value)} disabled={done}
-          aria-label={`Type: ${LINES[line]}`} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} />
+      <div className={`shade-table type-test${hide ? ' is-hidden' : ''}`}>
+        {SHADE_TABLE.map((r) => (
+          <TypeBox key={`${r.level}-${round}`} level={r.level} sun={r.sun} species={r.species} onKeys={onKeys} onDone={onDone} />
+        ))}
       </div>
-
       <div className="row">
         {done ? (
           <>
@@ -100,7 +129,7 @@ function TypingTest() {
           </>
         ) : (
           <>
-            <span className="small muted">Click the text and start typing. Fix any red letters to move to the next line.</span>
+            <span className="small muted">Click a box and type its species. Fix any red letters to move to the next one.</span>
             <button className="btn btn-sm" onClick={restart}>Restart</button>
           </>
         )}
@@ -134,11 +163,7 @@ export function ShadeTable() {
         <div className="shade-table">
           {SHADE_TABLE.map((r) => (
             <div key={r.level} className="shade-col">
-              <div className="shade-head">
-                <strong>{r.level}</strong>
-                <span className="small muted">{r.sun}</span>
-                <span className="chip">{SYSTEM[r.level]}</span>
-              </div>
+              <ShadeHead level={r.level} sun={r.sun} extra={<span className="chip">{SYSTEM[r.level]}</span>} />
               <ul className="small">{r.species.map((s) => <li key={s}>{s}</li>)}</ul>
             </div>
           ))}

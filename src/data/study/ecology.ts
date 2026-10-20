@@ -35,22 +35,22 @@ const CARDS: StudyCard[] = [
     section: REGIONS, q: 'Name Canada’s forest regions.',
     a: ['Boreal', 'Subalpine', 'Montane', 'Coast', 'Columbian', 'Deciduous (Carolinian)', 'Great Lakes–St. Lawrence', 'Acadian', 'Grasslands', 'Tundra'],
     test: [
-      typed('How many forest regions does Canada have?', ['10'], 'Boreal, Subalpine, Montane, Coast, Columbian, Deciduous, GLSL, Acadian, Grasslands, Tundra.'),
-      multi('Select the forest regions of Canada.', ['Boreal', 'Acadian', 'Columbian', 'Subalpine', 'Mediterranean', 'Tropical'], [0, 1, 2, 3], 'Mediterranean and tropical are not Canadian forest regions.'),
+      multi('Select the forest regions of Canada.', ['Boreal', 'Acadian', 'Columbian', 'Subalpine', 'Taiga', 'Pacific Maritime'], [0, 1, 2, 3], 'Taiga and Pacific Maritime are not on the list: Boreal, Subalpine, Montane, Coast, Columbian, Deciduous, GLSL, Acadian, Grasslands, Tundra.'),
     ],
   },
   {
     section: REGIONS, q: 'Name the forest regions of Ontario. Which one is Pembroke in?',
     a: [
-      'Boreal: about 50% of Ontario, the largest in Ontario and Canada.',
-      'Hudson Bay Lowlands: about 26%.',
+      'Boreal: about 50% of Ontario, the largest in Ontario and Canada. Split on the map into Boreal – Forest and Barren (far north) and Boreal – Predominantly Forest.',
       'Great Lakes–St. Lawrence (GLSL): about 20%, the second largest. Pembroke and Renfrew County are here.',
       'Deciduous (Carolinian): about 3%, the southernmost.',
       'Most of Ontario’s population lives in the GLSL and Deciduous regions.',
     ],
     test: [
-      mc('Which forest region is Pembroke in?', ['Boreal', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], 1, 'Pembroke and Renfrew County are in the GLSL region.'),
-      order('Put Ontario’s forest regions in order of area, largest first.', ['Boreal', 'Hudson Bay Lowlands', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)'], 'About 50%, 26%, 20% and 3%.'),
+      mc('Which forest region is Pembroke in?', ['Boreal – Predominantly Forest', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)', 'Boreal – Forest and Barren'], 1, 'Pembroke and Renfrew County are in the GLSL region.'),
+      order('Put Ontario’s forest regions in order of area, largest first.', ['Boreal', 'Great Lakes–St. Lawrence', 'Deciduous (Carolinian)'], 'About 50%, 20% and 3%.'),
+      mc('On the Ontario map, the Boreal region is split into…', ['Forest and Barren, and Predominantly Forest', 'Northern and Southern Boreal', 'Coniferous and Mixedwood', 'Upland and Lowland'], 0, 'Boreal – Forest and Barren (far north) and Boreal – Predominantly Forest.'),
+      tf('Most of Ontario’s population lives in the GLSL and Deciduous regions.', true, 'The Boreal is the largest region but has few people.'),
     ],
   },
   {
@@ -87,7 +87,7 @@ const CARDS: StudyCard[] = [
       'Rare species such as the southern flying squirrel, red-bellied woodpecker and Massasauga rattlesnake.',
     ],
     test: [
-      mc('Which region has the most tree species but the least forest?', ['Boreal', 'GLSL', 'Deciduous (Carolinian)', 'Hudson Bay Lowlands'], 2, 'It is mostly cleared for farms and cities.'),
+      mc('Which region has the most tree species but the least forest?', ['Boreal', 'GLSL', 'Deciduous (Carolinian)'], 2, 'It is mostly cleared for farms and cities.'),
       multi('Which species are found in the Deciduous region but not the dominant GLSL list?', ['Butternut (Bn)', 'Black walnut (Wb)', 'White oak (Ow)', 'Hickory', 'Black spruce (Sb)'], [0, 1, 2, 3], 'Bn, Wb, Ow and hickory.'),
     ],
   },
@@ -101,7 +101,7 @@ const CARDS: StudyCard[] = [
     ],
     test: [
       mc('Shade tolerance determines…', ['A tree’s height', 'The choice of silvicultural system', 'The forest region', 'Seed viability'], 1, 'Tolerance → selection, shelterwood or clearcut.'),
-      tf('Shade tolerance is a tree’s capacity to develop and grow in the shade of, and in competition with, other trees.', true, 'That is the definition.'),
+      mc('Shade tolerance is the capacity of a tree to…', ['Develop and grow in the shade of, and in competition with, other trees', 'Survive a fire', 'Grow only in full sunlight', 'Keep its leaves over winter'], 0, 'Develop and grow in the shade of, and in competition with, other trees.'),
     ],
   },
   {
@@ -152,11 +152,15 @@ const CARDS: StudyCard[] = [
       'Most of the overstory is removed in a series of 2 or more harvests, to establish and shelter regeneration under the remaining canopy.',
       'Even-aged. Regeneration establishes in 30–70% sunlight (leave 40–60% crown closure).',
       'For mid-tolerant species such as white pine and red oak. Red oak (OrUS) only needs 1 final removal cut.',
+      'Cuts: preparatory cut (around age 80) → regeneration cut (around 100) → first removal cut → final removal cut (around 120).',
+      'Regeneration needs help (lots of prep), so it is the most costly system.',
       'Must be tree marked (except final removals); protect regeneration in the first and final removals.',
     ],
     test: [
       mc('In the shelterwood system, regeneration establishes in…', ['> 70% sunlight', '30–70% sunlight', 'About 30% sunlight', 'Full shade'], 1, '30–70% sunlight, leaving 40–60% crown closure.'),
       mc('A red oak shelterwood (OrUS) needs how many removal cuts?', ['1 final removal', '2', '3', 'None'], 0, 'OrUS only requires 1 (final) removal cut.'),
+      order('Put the shelterwood cuts in order.', ['Preparatory cut', 'Regeneration cut', 'First removal cut', 'Final removal cut'], 'Prep (~80 years) → regeneration (~100) → first removal → final removal (~120).'),
+      mc('Which silvicultural system costs the most?', ['Clearcut', 'Shelterwood', 'Selection', 'They all cost the same'], 1, 'Shelterwood: regeneration needs help and a lot of prep.'),
     ],
   },
   {
@@ -292,35 +296,46 @@ const CARDS: StudyCard[] = [
       'Abnormal rings: drought, frost, false rings, missing rings.',
     ],
     test: [
-      multi('Which can be dated from growth rings?', ['Fire scars', 'Insect defoliation', 'Release after cutting', 'Drought (abnormal rings)', 'The tree’s species'], [0, 1, 2, 3], 'Wounds, growth rate changes, reaction wood and abnormal rings.'),
+      mc('Fire scars and mechanical damage show up in the rings as…', ['Wounds', 'A change in growth rate', 'Reaction wood', 'False rings'], 0, 'Wounds: fire scars, natural catastrophes, mechanical damage.'),
+      mc('Release after cutting or a blowdown shows up in the rings as…', ['A wound', 'A change in growth rate', 'A missing ring', 'A double pith'], 1, 'Changes in growth rate: release from cutting, blowdowns or drought, and insect defoliation.'),
+      multi('Which are abnormal (aberrant) rings?', ['Frost rings', 'False rings', 'Missing rings', 'Fire scars'], [0, 1, 2], 'Abnormal rings: drought, frost, false and missing. Fire scars are wounds.'),
     ],
   },
   {
     section: PHYS, q: 'What problems can come up when aging a tree from its rings (dendrochronology)?',
     a: ['1. A double pith', '2. Hitting branch stubs', '3. Extensive scarring', '4. Centre rot', 'Also false and missing rings, which make the count wrong.'],
     test: [
-      multi('Which are problems when aging a tree from its rings?', ['A double pith', 'Hitting branch stubs', 'Extensive scarring', 'Centre rot', 'Earlywood'], [0, 1, 2, 3], 'Also false and missing rings.'),
+      multi('Which are problems when aging a tree from its rings?', ['A double pith', 'Hitting branch stubs', 'Extensive scarring', 'Centre rot', 'Wide rings after release'], [0, 1, 2, 3], 'Double pith, branch stubs, scarring and centre rot (plus false and missing rings). Wide rings can still be counted.'),
     ],
   },
   {
     section: PHYS, q: 'What is reaction wood?',
-    a: ['Wood a tree forms to support itself after it is pushed or leaning (e.g. after something falls on it, or wind).', 'Tension wood in hardwoods; compression wood in conifers.'],
+    a: [
+      'Wood a tree forms to support itself after it is pushed or leaning (e.g. after something falls on it, or wind).',
+      'Conifers: compression wood, on the leeward side (memory aid: C–C).',
+      'Hardwoods (broadleaf): tension (reaction) wood, on the windward side (memory aid: B–R).',
+    ],
     test: [
       mc('Reaction wood in hardwoods is called…', ['Tension wood', 'Compression wood', 'Heartwood', 'Latewood'], 0, 'Tension wood in hardwoods; compression wood in conifers.'),
       mc('Reaction wood in conifers is called…', ['Tension wood', 'Compression wood', 'Sapwood', 'Earlywood'], 1, 'Compression wood.'),
+      mc('On which side of a leaning conifer does compression wood form?', ['Leeward', 'Windward', 'Both sides equally', 'In the pith'], 0, 'Conifers: compression wood on the leeward side. Hardwoods: tension wood on the windward side.'),
     ],
   },
   {
     section: PHYS, q: 'Where and how do buds form on a branch?',
     a: [
-      'Terminal bud: at the end of the twig.',
-      'Lateral buds: off the side of the stem or branch.',
-      'Vegetative buds grow into leaves and branch growth; reproductive buds grow into flowers or cones.',
-      'A bud can develop into a seed cone, a vegetative shoot or a pollen cone, or stay latent or abort.',
+      'Terminal bud: at the end of the twig. Usually contains vegetative structures (leaves, branch growth).',
+      'Sub-terminal buds: just behind the terminal bud.',
+      'Lateral buds: off the side of the stem or branch. They may develop into latent vegetative buds or reproductive buds (flowers, cones).',
+      'Buds near the base of the shoot most often become pollen cones; those nearer the terminal become seed cones.',
+      'Latent buds generally develop into new shoots, stimulated by removal of the terminal bud.',
+      'Buds may also abort, which is common near the base of the shoot.',
     ],
     test: [
-      mc('A bud at the end of a twig is a…', ['Lateral bud', 'Terminal bud', 'Latent bud', 'Root bud'], 1, 'Terminal = end; lateral = off the side.'),
-      mc('Reproductive buds grow into…', ['Leaves and branch growth', 'Flowers or cones', 'Roots', 'Bark'], 1, 'Vegetative buds make leaves and branches; reproductive buds make flowers or cones.'),
+      mc('A bud at the end of a twig is a…', ['Lateral bud', 'Terminal bud', 'Latent bud', 'Sub-terminal bud'], 1, 'Terminal = end; sub-terminal = just behind it; lateral = off the side.'),
+      mc('Terminal buds usually contain…', ['Vegetative structures', 'Pollen cones', 'Seed cones only', 'Nothing; they abort'], 0, 'Terminal buds are usually vegetative; lateral buds can be latent or reproductive.'),
+      mc('Buds near the BASE of the shoot most often become…', ['Seed cones', 'Pollen cones', 'Terminal buds', 'Roots'], 1, 'Pollen cones near the base; seed cones nearer the terminal.'),
+      mc('Latent buds are stimulated to grow into new shoots by…', ['Removal of the terminal bud', 'Fire', 'Pollination', 'Cold winters'], 0, 'Removing the terminal bud wakes up latent buds.'),
     ],
   },
   {
@@ -343,7 +358,8 @@ const CARDS: StudyCard[] = [
     test: [
       mc('Viability is…', ['The transfer of pollen', 'The capacity of a seed to germinate', 'Storing seeds to overcome dormancy', 'Seed spread by wind'], 1, 'Viability = capacity to germinate.'),
       mc('Seed stratification is…', ['Spreading seeds by wind', 'Storing seeds under set conditions to overcome dormancy', 'The capacity of a seed to germinate', 'Transfer of pollen'], 1, 'Set temperature, moisture, gas exchange and medium for a set time.'),
-      multi('Germination depends on…', ['Temperature', 'Soil moisture', 'Oxygen', 'Moonlight'], [0, 1, 2], 'Temperature, soil moisture and oxygen.'),
+      multi('Germination depends on…', ['Temperature', 'Soil moisture', 'Oxygen levels', 'Tree height'], [0, 1, 2], 'Temperature, soil moisture and oxygen levels.'),
+      mc('Pollination is…', ['The transfer of pollen, resulting in fertilization', 'The capacity of a seed to germinate', 'The embryo resuming growth', 'Seed spread by animals'], 0, 'The transfer of pollen, resulting in fertilization.'),
     ],
   },
   {
@@ -363,7 +379,8 @@ const CARDS: StudyCard[] = [
       'Birds and animals: eat nuts or fleshy fruit and spread the seeds through digestion (e.g. red oak), or seeds stick to fur and drop off.',
     ],
     test: [
-      multi('Select the seed dispersal methods.', ['Wind', 'Gravity', 'Streams and snowmelt', 'Birds and animals', 'Photosynthesis'], [0, 1, 2, 3], 'Wind, gravity, water, and animals (digestion or fur).'),
+      mc('Maple, ash and pine seeds have broad wings so they are dispersed by…', ['Wind', 'Gravity', 'Animals', 'Snowmelt'], 0, 'The wings let the wind carry them further.'),
+      tf('Some seeds are dispersed by sticking to animal fur and dropping off later.', true, 'Animals also spread seeds by eating nuts or fleshy fruit.'),
       mc('Red oak acorns are mainly dispersed by…', ['Wind', 'Animals and birds', 'Snowmelt', 'Fire'], 1, 'Animals eat and move the nuts.'),
     ],
   },
@@ -371,8 +388,9 @@ const CARDS: StudyCard[] = [
     section: REPRO, q: 'What factors influence flowering / cone production?',
     a: ['Age (not too young or too old)', 'Plant hormones', 'Lack of nutrients: nitrogen (photosynthesis) and potassium (growth)', 'Temperature', 'Soil moisture', 'Light quality and intensity: as close to full sunlight as possible (canopy placement)'],
     test: [
-      multi('Which factors influence flowering?', ['Age', 'Plant hormones', 'Nutrients (N and K)', 'Temperature', 'Soil moisture', 'Light quality and intensity', 'Moon phase'], [0, 1, 2, 3, 4, 5], 'Everything except moon phase.'),
       mc('In flowering, nitrogen is important for ___ and potassium for ___.', ['Growth; photosynthesis', 'Photosynthesis; growth', 'Roots; bark', 'Seeds; leaves'], 1, 'Nitrogen (photosynthesis), potassium (growth).'),
+      mc('For the best flowering, a tree’s crown should be…', ['As close to full sunlight as possible', 'In deep shade', 'Under the canopy', 'Light doesn’t matter'], 0, 'Light quality and intensity: as close to full sunlight as possible (canopy placement).'),
+      tf('The youngest trees flower best.', false, 'Age matters: not too young or too old. Young trees may flower, but the seed won’t be viable.'),
     ],
   },
   {
@@ -398,7 +416,14 @@ const CARDS: StudyCard[] = [
     ],
     test: [
       mc('Female (seed) cones are usually found…', ['Low in the crown', 'High in the crown', 'On the roots', 'Only on dead branches'], 1, 'Higher up; male pollen cones are lower.'),
-      multi('Why are female cones high in the crown?', ['Closer to full sunlight for energy', 'Helps prevent inbreeding', 'Easier for squirrels to reach'], [0, 1], 'Sunlight and preventing self-pollination.'),
+      tf('Female cones sit high in the crown partly to help prevent inbreeding.', true, 'Also: the top is closer to full sunlight, giving energy for flowers and seeds.'),
+    ],
+  },
+  {
+    section: REPRO, q: 'Which parts of a conifer cone help determine how its seed is dispersed?',
+    a: ['The scale, the seed and the seed wing: together they determine the vector of dispersal (e.g. a winged seed travels on the wind).'],
+    test: [
+      multi('Which cone parts help determine the vector of dispersal?', ['Scale', 'Seed', 'Seed wing', 'Peduncle'], [0, 1, 2], 'The scale, seed and seed wing.'),
     ],
   },
   {
@@ -441,6 +466,14 @@ const CARDS: StudyCard[] = [
       mc('A flower with both pistils and stamens is…', ['Perfect', 'Dioecious', 'Serotinous', 'Incomplete'], 0, 'Perfect (bisexual).'),
     ],
   },
+  {
+    section: REPRO, q: 'What is a peduncle?',
+    a: ['The stalk that holds a flower or a cluster of flowers (and later the fruit or cone) on the branch.'],
+    check: 'On the midterm topic list, but not defined in the lecture slides. This is the standard botany definition.',
+    test: [
+      mc('A peduncle is…', ['The stalk that holds a flower or flower cluster', 'The female part of a flower', 'A seed wing', 'A bud at the end of a twig'], 0, 'The stalk of a flower or flower cluster.'),
+    ],
+  },
 
   // ---- Succession ----
   {
@@ -473,13 +506,6 @@ const CARDS: StudyCard[] = [
       mc('Which is a pioneer species?', ['Sugar maple', 'Hemlock', 'White birch', 'Ironwood'], 2, 'Poplar, white birch, larch, jack pine, black spruce.'),
       mc('Which is a GLSL climax species?', ['Trembling aspen', 'Beech', 'Jack pine', 'Larch'], 1, 'Sugar maple, beech, hemlock, ironwood.'),
       multi('Which are Boreal climax species?', ['Black spruce', 'Balsam fir', 'Trembling aspen', 'Jack pine'], [0, 1], 'Black spruce and balsam fir.'),
-    ],
-  },
-  {
-    section: SUCC, q: 'What are the major disturbances that restart succession?',
-    a: ['Fire', 'Disease / insect epidemic', 'Flooding', 'Glacier', 'Landslide', 'Human activity', 'Wind'],
-    test: [
-      multi('Select the major disturbances.', ['Fire', 'Disease / insect epidemic', 'Flooding', 'Wind', 'Human activity', 'Shade'], [0, 1, 2, 3, 4], 'Also glaciers and landslides.'),
     ],
   },
   {
@@ -540,6 +566,16 @@ const SORTS: SortDrill[] = [
       { label: 'Volcano', bin: 'Primary' }, { label: 'Landslide', bin: 'Primary' }, { label: 'Glacier', bin: 'Primary' },
       { label: 'Forest fire', bin: 'Secondary' }, { label: 'Windstorm', bin: 'Secondary' }, { label: 'Harvesting', bin: 'Secondary' },
       { label: 'Abandoned farm field', bin: 'Secondary' },
+    ],
+  },
+  {
+    id: 'rings', title: 'Dating events from rings', prompt: 'What kind of ring evidence does each event leave?',
+    bins: ['Wound', 'Growth rate change', 'Reaction wood', 'Abnormal ring'],
+    items: [
+      { label: 'Fire scar', bin: 'Wound' }, { label: 'Mechanical damage', bin: 'Wound' },
+      { label: 'Release after cutting', bin: 'Growth rate change' }, { label: 'Insect defoliation', bin: 'Growth rate change' },
+      { label: 'Windthrow', bin: 'Reaction wood' },
+      { label: 'Frost', bin: 'Abnormal ring' }, { label: 'False ring', bin: 'Abnormal ring' }, { label: 'Missing ring', bin: 'Abnormal ring' },
     ],
   },
   {

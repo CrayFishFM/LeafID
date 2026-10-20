@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { StudyCard, TestQuestion } from '@/data/study/types';
 import { saveTest } from '@/lib/study-storage';
 import { shuffle } from '@/lib/random';
+import { DragList } from './DragList';
 
 const LENGTHS = [10, 20];
 
@@ -93,8 +94,6 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
     onDone(ok);
   }
 
-  const move = (i: number, d: number) => setList((xs) => { const a = [...xs]; [a[i], a[i + d]] = [a[i + d], a[i]]; return a; });
-
   return (
     <div className="stack" style={{ gap: '0.75rem' }}>
       <div>
@@ -162,17 +161,9 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
 
       {q.kind === 'order' && (
         <>
-          <ol className="sort-list rank-list">
-            {list.map((ii, pos) => (
-              <li key={ii} className={!done ? '' : ii === pos ? 'is-right' : 'is-wrong'}>
-                <span className="sort-label">{pos + 1}. {q.order[ii]}</span>
-                <span className="rank-arrows">
-                  <button className="btn btn-sm icon-btn" aria-label={`Move ${q.order[ii]} up`} disabled={done || pos === 0} onClick={() => move(pos, -1)}>↑</button>
-                  <button className="btn btn-sm icon-btn" aria-label={`Move ${q.order[ii]} down`} disabled={done || pos === list.length - 1} onClick={() => move(pos, 1)}>↓</button>
-                </span>
-              </li>
-            ))}
-          </ol>
+          <DragList items={list} onChange={setList} disabled={done} label={(ii) => q.order[ii]}
+            render={(ii, pos) => <>{pos + 1}. {q.order[ii]}</>}
+            rowClass={(ii, pos) => (!done ? '' : ii === pos ? 'is-right' : 'is-wrong')} />
           {!done && (
             <button className="btn btn-primary" style={{ alignSelf: 'flex-start' }} onClick={() => finish(list.every((ii, pos) => ii === pos))}>
               Check order

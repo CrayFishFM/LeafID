@@ -431,6 +431,10 @@ textarea.input { min-height: 90px; resize: vertical; }
 .rank-list li { grid-template-columns: 1fr auto; align-items: center; }
 .rank-arrows { display: flex; gap: 0.25rem; }
 .rank-list .icon-btn { width: 36px; height: 36px; min-height: 36px; }
+.drag-list li { grid-template-columns: 1fr; }
+.drag-list.is-draggable li { grid-template-columns: auto 1fr auto; cursor: grab; user-select: none; }
+.drag-list li.is-dragging { cursor: grabbing; border-color: var(--primary); box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); position: relative; z-index: 1; }
+.drag-grip { display: grid; place-items: center; width: 28px; height: 36px; margin: -0.3rem 0; color: var(--muted); font-size: 1.1rem; touch-action: none; cursor: grab; }
 
 .cross-section { width: 100%; max-width: 340px; height: auto; justify-self: center; }
 .shade-table { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); }

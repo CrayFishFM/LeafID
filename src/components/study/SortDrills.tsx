@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { RankDrill, SortDrill } from '@/data/study/types';
 import { shuffle } from '@/lib/random';
+import { DragList } from './DragList';
 
 /** Put each item in a bin, then check them all at once. */
 function Sorter({ drill }: { drill: SortDrill }) {
@@ -67,17 +68,11 @@ function scramble(order: string[]) {
   return a.every((x, i) => x === order[i]) ? [...order].reverse() : a;
 }
 
-/** Put items in the right order with up / down buttons. */
+/** Put items in the right order by dragging (or with up / down buttons). */
 function Ranker({ drill }: { drill: RankDrill }) {
   const answer = drill.order;
   const [list, setList] = useState(() => scramble(answer));
   const [checked, setChecked] = useState(false);
-
-  const move = (i: number, d: number) => setList((xs) => {
-    const a = [...xs];
-    [a[i], a[i + d]] = [a[i + d], a[i]];
-    return a;
-  });
 
   return (
     <div className="card stack">
@@ -85,17 +80,9 @@ function Ranker({ drill }: { drill: RankDrill }) {
         <h3 style={{ margin: 0 }}>{drill.title}</h3>
         <p className="small muted" style={{ margin: 0 }}>{drill.prompt}</p>
       </div>
-      <ol className="sort-list rank-list">
-        {list.map((c, i) => (
-          <li key={c} className={!checked ? '' : answer[i] === c ? 'is-right' : 'is-wrong'}>
-            <span className="sort-label">{i + 1}. {c}{checked && answer[i] !== c && <span className="small"> (should be #{answer.indexOf(c) + 1})</span>}</span>
-            <span className="rank-arrows">
-              <button className="btn btn-sm icon-btn" aria-label={`Move ${c} up`} disabled={checked || i === 0} onClick={() => move(i, -1)}>↑</button>
-              <button className="btn btn-sm icon-btn" aria-label={`Move ${c} down`} disabled={checked || i === list.length - 1} onClick={() => move(i, 1)}>↓</button>
-            </span>
-          </li>
-        ))}
-      </ol>
+      <DragList items={list} onChange={setList} disabled={checked} label={(c) => c}
+        render={(c, i) => <>{i + 1}. {c}{checked && answer[i] !== c && <span className="small"> (should be #{answer.indexOf(c) + 1})</span>}</>}
+        rowClass={(c, i) => (!checked ? '' : answer[i] === c ? 'is-right' : 'is-wrong')} />
       <div className="row">
         {!checked ? (
           <button className="btn btn-primary btn-sm" onClick={() => setChecked(true)}>Check order</button>

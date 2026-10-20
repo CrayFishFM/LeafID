@@ -1,37 +1,11 @@
 import Link from 'next/link';
 import { CheckNotice } from '@/components/study/CheckNotice';
+import { ShadeTable } from '@/components/study/ShadeTable';
 import { StudyGuideTabs } from '@/components/study/StudyGuideTabs';
 import { TreeCrossSection } from '@/components/study/TreeCrossSection';
-import { ECOLOGY, SHADE_TABLE } from '@/data/study/ecology';
+import { ECOLOGY } from '@/data/study/ecology';
 
 export const metadata = { title: 'Ecology midterm review' };
-
-const SYSTEM: Record<string, string> = {
-  'Very intolerant': 'Clearcut', Intolerant: 'Clearcut', Intermediate: 'Shelterwood', Tolerant: 'Selection', 'Very tolerant': 'Selection',
-};
-
-function ShadeTable() {
-  return (
-    <div className="card stack">
-      <div>
-        <h3 style={{ margin: 0 }}>Shade tolerance by species</h3>
-        <p className="small muted" style={{ margin: 0 }}>From the lecture. The silvicultural system follows from the tolerance.</p>
-      </div>
-      <div className="shade-table">
-        {SHADE_TABLE.map((r) => (
-          <div key={r.level} className="shade-col">
-            <div className="shade-head">
-              <strong>{r.level}</strong>
-              <span className="small muted">{r.sun}</span>
-              <span className="chip">{SYSTEM[r.level]}</span>
-            </div>
-            <ul className="small">{r.species.map((s) => <li key={s}>{s}</li>)}</ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function EcologyPage() {
   const guide = ECOLOGY;

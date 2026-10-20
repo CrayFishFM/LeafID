@@ -19,7 +19,6 @@ export const SHADE_TABLE: { level: string; sun: string; species: string[] }[] = 
   { level: 'Very tolerant', sun: '1–3% sun', species: ['Beech', 'Balsam fir', 'Hemlock', 'Ironwood', 'Sugar maple'] },
 ];
 
-const tolerance3 = (level: string) => (level.endsWith('intolerant') || level === 'Intolerant' ? 'Intolerant' : level === 'Intermediate' ? 'Intermediate' : 'Tolerant');
 const speciesIn = (...levels: string[]) => SHADE_TABLE.filter((r) => levels.includes(r.level)).flatMap((r) => r.species);
 
 const CARDS: StudyCard[] = [
@@ -112,16 +111,29 @@ const CARDS: StudyCard[] = [
       mc('Very tolerant trees need about…', ['60–100% sun', '30–60% sun', '10–30% sun', '1–3% sun'], 3, '1–3% of full sunlight.'),
     ],
   },
-  { section: SHADE, q: 'Name the shade-intolerant species (intolerant and very intolerant).', a: speciesIn('Very intolerant', 'Intolerant'), test: [
-      multi('Select the shade-INTOLERANT species.', ['Jack pine', 'Trembling aspen', 'White birch', 'Sugar maple', 'Red pine', 'Hemlock'], [0, 1, 2, 4], 'Sugar maple and hemlock are very tolerant.'),
-      mc('Tamarack (larch) is…', ['Very intolerant', 'Intermediate', 'Tolerant', 'Very tolerant'], 0, 'Very intolerant (60–100% sun).'),
+  { section: SHADE, q: 'Name the VERY INTOLERANT species (60–100% sun).', a: speciesIn('Very intolerant'), test: [
+      multi('Select the VERY INTOLERANT species.', ['Jack pine', 'Trembling aspen', 'Tamarack', 'Black ash', 'Red pine', 'Willow'], [0, 1, 2, 5], 'Black ash and red pine are intolerant (30–60% sun), not very intolerant.'),
+      mc('Tamarack (larch) is…', ['Very intolerant', 'Intolerant', 'Intermediate', 'Tolerant'], 0, 'Very intolerant (60–100% sun).'),
+      mc('Pin cherry is…', ['Very intolerant', 'Intolerant', 'Intermediate', 'Tolerant'], 0, 'Very intolerant. Black cherry is intolerant.'),
     ] },
-  { section: SHADE, q: 'Name the intermediate (mid-tolerant) species.', a: speciesIn('Intermediate'), test: [
+  { section: SHADE, q: 'Name the INTOLERANT species (30–60% sun).', a: speciesIn('Intolerant'), test: [
+      multi('Select the INTOLERANT species.', ['Black ash', 'White birch', 'Red pine', 'Black walnut', 'White ash', 'Balsam poplar'], [0, 1, 2, 3], 'White ash is intermediate; balsam poplar is very intolerant.'),
+      mc('Red pine is…', ['Very intolerant', 'Intolerant', 'Intermediate', 'Tolerant'], 1, 'Intolerant (30–60% sun). Jack pine is very intolerant; white pine is intermediate.'),
+      mc('Black cherry is…', ['Very intolerant', 'Intolerant', 'Intermediate', 'Very tolerant'], 1, 'Intolerant, with hickory, juniper, butternut and black walnut.'),
+    ] },
+  { section: SHADE, q: 'Name the INTERMEDIATE (mid-tolerant) species (10–30% sun).', a: speciesIn('Intermediate'), test: [
       multi('Select the INTERMEDIATE species.', ['Red oak', 'White pine', 'Yellow birch', 'Beech', 'Jack pine', 'Basswood'], [0, 1, 2, 5], 'Beech is very tolerant; jack pine very intolerant.'),
+      mc('White elm is…', ['Intolerant', 'Intermediate', 'Tolerant', 'Very tolerant'], 1, 'Intermediate (10–30% sun).'),
+      mc('Which ash is intermediate?', ['White ash', 'Black ash', 'Both', 'Neither'], 0, 'White ash is intermediate; black ash is intolerant.'),
     ] },
-  { section: SHADE, q: 'Name the shade-tolerant species (tolerant and very tolerant).', a: speciesIn('Tolerant', 'Very tolerant'), test: [
-      multi('Select the shade-TOLERANT species.', ['Sugar maple', 'Beech', 'Hemlock', 'Balsam fir', 'Tamarack', 'Red maple'], [0, 1, 2, 3, 5], 'Tamarack is very intolerant.'),
+  { section: SHADE, q: 'Name the TOLERANT species (3–10% sun).', a: speciesIn('Tolerant'), test: [
+      multi('Select the TOLERANT species.', ['White cedar', 'Red maple', 'Black spruce', 'White spruce', 'Sugar maple', 'Hemlock'], [0, 1, 2, 3], 'Sugar maple and hemlock are very tolerant.'),
       tf('In the lecture table, black spruce is shade tolerant.', true, 'Tolerant (3–10% sun), with white cedar, red maple, red and white spruce.'),
+      mc('Red maple is…', ['Intermediate', 'Tolerant', 'Very tolerant', 'Intolerant'], 1, 'Red maple is tolerant; sugar maple is very tolerant; silver maple is intermediate.'),
+    ] },
+  { section: SHADE, q: 'Name the VERY TOLERANT species (1–3% sun).', a: speciesIn('Very tolerant'), test: [
+      multi('Select the VERY TOLERANT species.', ['Beech', 'Balsam fir', 'Hemlock', 'Ironwood', 'Red spruce', 'Sugar maple'], [0, 1, 2, 3, 5], 'Red spruce is tolerant (3–10% sun).'),
+      mc('Which maple is very tolerant?', ['Sugar maple', 'Red maple', 'Silver maple', 'All three'], 0, 'Sugar maple is very tolerant, red maple tolerant, silver maple intermediate.'),
     ] },
   {
     section: SHADE, q: 'What are the 3 silvicultural systems, and which shade tolerance goes with each?',
@@ -519,9 +531,9 @@ const CARDS: StudyCard[] = [
 
 const SORTS: SortDrill[] = [
   {
-    id: 'shade', title: 'Shade tolerance', prompt: 'Intolerant, intermediate or tolerant? (Very intolerant counts as intolerant; very tolerant as tolerant.)',
-    bins: ['Intolerant', 'Intermediate', 'Tolerant'],
-    items: SHADE_TABLE.flatMap((r) => r.species.slice(0, 3).map((sp) => ({ label: sp, bin: tolerance3(r.level) }))),
+    id: 'shade', title: 'Shade tolerance', prompt: 'Put every species from the lecture table in its class.',
+    bins: SHADE_TABLE.map((r) => r.level),
+    items: SHADE_TABLE.flatMap((r) => r.species.map((sp) => ({ label: sp, bin: r.level }))),
   },
   {
     id: 'system', title: 'Which silvicultural system?', prompt: 'Pick the system for a stand dominated by each species.',

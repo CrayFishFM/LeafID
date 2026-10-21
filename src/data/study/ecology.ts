@@ -58,7 +58,7 @@ const CARDS: StudyCard[] = [
       'Coniferous (softwood) and mixedwood forests dominate; heavily influenced by natural disturbances.',
       'Conifers: Bf (balsam fir), La (larch), Pj (jack pine), Sb (black spruce), Sw (white spruce).',
       'Hardwoods: Bw (white birch), Pb (balsam poplar), Pt (trembling aspen), willow.',
-      'Wildlife: black bears, wolves, lynx, moose, caribou, great grey owl, pine marten.',
+      'Wildlife: black bears, wolves, lynx, moose, caribou, great (grey) owl, pine marten.',
     ],
     test: [
       multi('Select the dominant Boreal species.', ['Jack pine (Pj)', 'Black spruce (Sb)', 'Balsam fir (Bf)', 'Sugar maple (Mh)', 'Red oak (Or)', 'Trembling aspen (Pt)'], [0, 1, 2, 5], 'Boreal conifers: Bf, La, Pj, Sb, Sw. Hardwoods: Bw, Pb, Pt, willow.'),
@@ -137,7 +137,12 @@ const CARDS: StudyCard[] = [
     ] },
   {
     section: SHADE, q: 'What are the 3 silvicultural systems, and which shade tolerance goes with each?',
-    a: ['Clearcut: intolerant and very intolerant species.', 'Shelterwood: intermediate species.', 'Selection: tolerant and very tolerant species.'],
+    a: [
+      'Clearcut: intolerant and very intolerant species.',
+      'Shelterwood: intermediate species.',
+      'Selection: tolerant and very tolerant species.',
+      'This is the rule of thumb. Black spruce is tolerant on the table, but the lecture uses black spruce as an even-aged stand example, and spruce is planted after clearcuts.',
+    ],
     test: [
       mc('Which silvicultural system suits INTOLERANT species?', ['Selection', 'Shelterwood', 'Clearcut', 'Group selection'], 2, 'Intolerant → clearcut.'),
       mc('Which system suits INTERMEDIATE species?', ['Selection', 'Shelterwood', 'Clearcut', 'No harvest'], 1, 'Intermediate → shelterwood.'),
@@ -164,14 +169,15 @@ const CARDS: StudyCard[] = [
       'Most of the overstory is removed in a series of 2 or more harvests, to establish and shelter regeneration under the remaining canopy.',
       'Even-aged. Regeneration establishes in 30–70% sunlight (leave 40–60% crown closure).',
       'For mid-tolerant species such as white pine and red oak. Red oak (OrUS) only needs 1 final removal cut.',
-      'Cuts: preparatory cut (around age 80) → regeneration cut (around 100) → first removal cut → final removal cut (around 120).',
+      'Cuts: preparatory cut → regeneration cut → first removal cut → final removal cut (around age 120). About 60 years with all the prep.',
       'Regeneration needs help (lots of prep), so it is the most costly system.',
       'Must be tree marked (except final removals); protect regeneration in the first and final removals.',
     ],
+    check: 'The ages for each cut come from your notes, not the slides, and the notes can be read two ways (regen cut at 80 or 100). Only the final removal at ~120 is clear.',
     test: [
       mc('In the shelterwood system, regeneration establishes in…', ['> 70% sunlight', '30–70% sunlight', 'About 30% sunlight', 'Full shade'], 1, '30–70% sunlight, leaving 40–60% crown closure.'),
       mc('A red oak shelterwood (OrUS) needs how many removal cuts?', ['1 final removal', '2', '3', 'None'], 0, 'OrUS only requires 1 (final) removal cut.'),
-      order('Put the shelterwood cuts in order.', ['Preparatory cut', 'Regeneration cut', 'First removal cut', 'Final removal cut'], 'Prep (~80 years) → regeneration (~100) → first removal → final removal (~120).'),
+      order('Put the shelterwood cuts in order.', ['Preparatory cut', 'Regeneration cut', 'First removal cut', 'Final removal cut'], 'Prep → regeneration → first removal → final removal (~120 years).'),
       mc('Which silvicultural system costs the most?', ['Clearcut', 'Shelterwood', 'Selection', 'They all cost the same'], 1, 'Shelterwood: regeneration needs help and a lot of prep.'),
     ],
   },
@@ -265,8 +271,8 @@ const CARDS: StudyCard[] = [
       'Vascular cambium: the layer between them that makes new xylem toward the inside and new phloem toward the outside, adding a new ring each year.',
     ],
     test: [
-      mc('Xylem carries…', ['Sugars from the leaves to the roots', 'Water and minerals from the roots to the leaves', 'Only air', 'Seeds'], 1, 'Xylem: water up. Phloem: food from the leaves to the roots and growing areas.'),
-      mc('Phloem carries…', ['Water up from the roots', 'Food from the leaves to the roots and growing areas', 'Nothing; it is dead', 'Pollen'], 1, 'Phloem is part of the inner bark.'),
+      mc('Xylem carries…', ['Food from the leaves to the roots', 'Water and minerals from the roots to the leaves', 'Water and minerals from the leaves to the roots', 'Stored food from the centre of the trunk outward'], 1, 'Xylem moves water and minerals UP from the roots to the leaves/needles, and gives physical support. Phloem moves food from the leaves to the roots; rays store nutrients and move them from the centre outward.'),
+      mc('Phloem carries…', ['Water and minerals from the roots to the leaves', 'Food from the leaves to the roots and growing areas', 'Water down from the leaves to the roots', 'Stored food from the centre of the trunk outward'], 1, 'Phloem moves food (sugars) FROM the leaves/needles TO the roots and where new wood is being made. Xylem moves water up; rays store nutrients and move them from the centre outward.'),
       mc('Which layer makes new xylem and phloem?', ['Pith', 'Heartwood', 'Vascular cambium', 'Outer bark'], 2, 'The vascular cambium: xylem inward, phloem outward.'),
     ],
   },
@@ -278,7 +284,7 @@ const CARDS: StudyCard[] = [
       'Vascular cambium: makes xylem inward and phloem outward.',
       'Sapwood: outer rings; moves water from roots to leaves and stores food.',
       'Heartwood: older, darker central rings; no longer stores or moves anything.',
-      'Pith: the very centre of the stem. Rays run from the centre outward and store and move nutrients sideways.',
+      'Pith: the very centre of the stem, with storage tissue. Rays run from the centre outward (across the rings) and store nutrients and move them between cells.',
     ],
     test: [
       order('Put the trunk layers in order, from the outside in.', ['Outer bark', 'Inner bark (phloem)', 'Vascular cambium', 'Sapwood', 'Heartwood', 'Pith'], 'The cambium sits between the phloem and the sapwood.'),
@@ -440,7 +446,7 @@ const CARDS: StudyCard[] = [
   },
   {
     section: REPRO, q: 'How do young and mature cones differ?',
-    a: ['Conelet (immature cone): small and upright.', 'Mature cone: drooping (hangs down).'],
+    a: ['Conelet (immature cone): small and upright.', 'Mature cone: drooping (hangs down).', 'Not in the lecture: balsam fir is an exception; its mature cones stay upright.'],
     test: [
       mc('A conelet (immature cone) is…', ['Small and upright', 'Large and drooping', 'Woody and open', 'On the roots'], 0, 'Conelets are small and upright; mature cones droop.'),
     ],

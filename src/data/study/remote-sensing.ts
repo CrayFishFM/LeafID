@@ -448,9 +448,9 @@ const CARDS: StudyCard[] = [
   },
   {
     section: 'Weeks 3 & 4', extra: true, q: 'How long is a chain?',
-    a: ['1 chain = 66 feet = 20.12 metres.'],
+    a: ['1 chain = 20 metres (66 feet; exactly 20.12 m).'],
     test: [
-      typed('1 chain is how many metres?', ['20.12'], '1 chain = 66 feet = 20.12 m.'),
+      typed('1 chain is how many metres?', ['20', '20.12'], '1 chain = 20 m (66 feet; exactly 20.12 m).'),
       typed('1 chain is how many feet?', ['66'], '66 feet.'),
     ],
   },

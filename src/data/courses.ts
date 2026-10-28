@@ -57,15 +57,17 @@ export const COURSES: Course[] = [
   {
     id: 'wildlife',
     title: 'Wildlife',
-    subject: 'Ontario fish & water birds',
-    blurb: 'Ontario fish from the fish ID practice quiz, and the water birds lecture: ducks as drake and hen, herons, cranes and shorebirds.',
-    topics: ['fish', 'waterbirds'],
+    subject: 'Fish, water birds, reptiles & amphibians',
+    blurb: 'Ontario fish from the fish ID practice quiz, water birds (ducks as drake and hen, herons, cranes and shorebirds), and the turtles, snakes, salamanders and frogs from the amphibians and reptiles lecture.',
+    topics: ['fish', 'waterbirds', 'herps'],
     links: [
       { label: 'Practise fish ID', href: '/quizzes/fish' },
       { label: 'Fish study guide', href: '/quizzes/fish/study' },
       { label: 'Practise water bird ID', href: '/quizzes/waterbirds' },
       { label: 'Male & female ducks', href: '/quizzes/waterbirds/pairs' },
       { label: 'Water bird study guide', href: '/quizzes/waterbirds/study' },
+      { label: 'Practise reptile & amphibian ID', href: '/quizzes/herps' },
+      { label: 'Reptile & amphibian study guide', href: '/quizzes/herps/study' },
     ],
   },
   {

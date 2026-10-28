@@ -117,7 +117,6 @@ const CARDS: StudyCard[] = [
     ],
     test: [
       mc('What scale is flown in Northern Ontario?', ['1:5,000', '1:10,000', '1:15,840', '1:20,000'], 3, 'North of the French and Mattawa Rivers: 1:20,000. South: 1:10,000.'),
-      mc('Which rivers divide the 1:20,000 (north) and 1:10,000 (south) photo areas?', ['French and Mattawa', 'Ottawa and St. Lawrence', 'Albany and Moose', 'Petawawa and Madawaska'], 0, 'The French and Mattawa Rivers.'),
       typed('The old imperial photo scale (4 inches = 1 mile) is 1:____.', ['15840'], '1:15,840.'),
     ],
   },
@@ -402,8 +401,7 @@ const CARDS: StudyCard[] = [
       'Ground distance: measure the line in cm on the photo, multiply by the scale number, then convert cm to m (÷ 100).',
     ],
     test: [
-      mc('An azimuth is measured…', ['Counter-clockwise from true north', 'Clockwise from true north', 'Clockwise from east', 'From the equator'], 1, 'Clockwise from true north, 0–360°.'),
-      typed('What azimuth is due west?', ['270'], '0° north, 90° east, 180° south, 270° west.'),
+      typed('A cruise line is 3.2 cm long on a 1:20,000 photo. How many metres is it on the ground?', ['640'], '3.2 cm × 20,000 = 64,000 cm ÷ 100 = 640 m.'),
     ],
   },
   {
@@ -497,142 +495,82 @@ const CARDS: StudyCard[] = [
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Eastern white pine (Pw) from the air?',
     a: ['Crown shape: large “wheel-spoke”, explosion or octopus shape.', 'Branching: prominent, overlapping big branches, wind-swept.', 'Colour: light, flat green. Texture: coarse.', 'Site: dry upland.'],
-    test: [
-      mc('From the air: crown large “wheel-spoke”, explosion or octopus shape; light, flat green; coarse texture; site: dry upland. Which species?', ['Eastern white pine (Pw)', 'Balsam fir (Bf)', 'Eastern white cedar (Cw)', 'Yellow birch (By)'], 0, 'Eastern white pine (Pw): branching prominent, overlapping big branches, wind-swept.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Red pine (Pr) from the air?',
     a: ['Crown shape: large, circular “pom-pom”.', 'Branching: well-defined, open branches.', 'Colour: dark, flat green. Texture: small clumps.', 'Site: dry, sandy.'],
-    test: [
-      mc('From the air: crown large, circular “pom-pom”; dark, flat green; small clumps texture; site: dry, sandy. Which species?', ['White spruce (Sw)', 'Red pine (Pr)', 'Larch / tamarack (La)', 'American beech (Be)'], 1, 'Red pine (Pr): branching well-defined, open branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Jack pine (Pj) from the air?',
     a: ['Crown shape: small, irregular, pointed.', 'Branching: thin, open branches.', 'Colour: dark green, sometimes a red hue. Texture: smooth, fuzzy.', 'Site: dry, sandy, ridges.'],
-    test: [
-      mc('From the air: crown small, irregular, pointed; dark green, sometimes a red hue; smooth, fuzzy texture; site: dry, sandy, ridges. Which species?', ['Sugar maple (Mh)', 'Black spruce (Sb)', 'Jack pine (Pj)', 'Red oak (Or)'], 2, 'Jack pine (Pj): branching thin, open branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Balsam fir (Bf) from the air?',
     a: ['Crown shape: narrow, symmetrical, pointed cone.', 'Branching: dense but less prominent than white spruce.', 'Colour: shiny, dense, dark green. Texture: smooth.', 'Site: moist, low-lying.'],
-    test: [
-      mc('From the air: crown narrow, symmetrical, pointed cone; shiny, dense, dark green; smooth texture; site: moist, low-lying. Which species?', ['Trembling and largetooth aspen (Pt, Pl)', 'Eastern hemlock (He)', 'Red maple (Mr)', 'Balsam fir (Bf)'], 3, 'Balsam fir (Bf): branching dense but less prominent than white spruce.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise White spruce (Sw) from the air?',
     a: ['Crown shape: large cone.', 'Branching: well-defined, prominent branches.', 'Colour: dark green. Texture: coarse.', 'Site: moist lower slopes.'],
-    test: [
-      mc('From the air: crown large cone; dark green; coarse texture; site: moist lower slopes. Which species?', ['White spruce (Sw)', 'Eastern white cedar (Cw)', 'White birch (Bw)', 'Balsam poplar (Pb)'], 0, 'White spruce (Sw): branching well-defined, prominent branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Black spruce (Sb) from the air?',
     a: ['Crown shape: slender, pointed.', 'Branching: well-defined, prominent branches.', 'Colour: dark green. Texture: fairly smooth.', 'Site: moist lowlands, bogs.'],
-    test: [
-      mc('From the air: crown slender, pointed; dark green; fairly smooth texture; site: moist lowlands, bogs. Which species?', ['Larch / tamarack (La)', 'Black spruce (Sb)', 'Yellow birch (By)', 'Black ash (Ab)'], 1, 'Black spruce (Sb): branching well-defined, prominent branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Eastern hemlock (He) from the air?',
     a: ['Crown shape: oval cone with a point.', 'Branching: large individual branches.', 'Colour: shiny dark green. Texture: tight layers.', 'Site: moist, well-drained lower slopes.'],
-    test: [
-      mc('From the air: crown oval cone with a point; shiny dark green; tight layers texture; site: moist, well-drained lower slopes. Which species?', ['American beech (Be)', 'Sugar maple (Mh)', 'Eastern hemlock (He)', 'Black cherry (Cb)'], 2, 'Eastern hemlock (He): branching large individual branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Eastern white cedar (Cw) from the air?',
     a: ['Crown shape: small cone.', 'Branching: dense, thick branches.', 'Colour: shiny dark green. Texture: smooth.', 'Site: lowland swamps, fresh hillsides, dry ledges.'],
-    test: [
-      mc('From the air: crown small cone; shiny dark green; smooth texture; site: lowland swamps, fresh hillsides, dry ledges. Which species?', ['Alder and willow (AL, Wi)', 'Red maple (Mr)', 'Red oak (Or)', 'Eastern white cedar (Cw)'], 3, 'Eastern white cedar (Cw): branching dense, thick branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Larch / tamarack (La) from the air?',
     a: ['Crown shape: narrow pyramidal cone.', 'Branching: columnar branches.', 'Colour: light. Texture: coarse.', 'Site: lowland swamps, fresh hillsides, dry ledges.'],
-    test: [
-      mc('From the air: crown narrow pyramidal cone; light; coarse texture; site: lowland swamps, fresh hillsides, dry ledges. Which species?', ['Larch / tamarack (La)', 'White birch (Bw)', 'Trembling and largetooth aspen (Pt, Pl)', 'Eastern white pine (Pw)'], 0, 'Larch / tamarack (La): branching columnar branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Sugar maple (Mh) from the air?',
     a: ['Crown shape: large, irregular, open, billowy oval.', 'Branching: columnar branches.', 'Colour: light tone compared with associates. Texture: coarse.', 'Site: fresh, well-drained.'],
-    test: [
-      mc('From the air: crown large, irregular, open, billowy oval; light tone compared with associates; coarse texture; site: fresh, well-drained. Which species?', ['Yellow birch (By)', 'Sugar maple (Mh)', 'Balsam poplar (Pb)', 'Red pine (Pr)'], 1, 'Sugar maple (Mh): branching columnar branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Red maple (Mr) from the air?',
     a: ['Crown shape: medium, closed, tufted oval.', 'Branching: fine branches and twigs.', 'Colour: light tone compared with associates. Texture: smooth.', 'Site: moist to fresh, well-drained.'],
-    test: [
-      mc('From the air: crown medium, closed, tufted oval; light tone compared with associates; smooth texture; site: moist to fresh, well-drained. Which species?', ['Black ash (Ab)', 'American beech (Be)', 'Red maple (Mr)', 'Jack pine (Pj)'], 2, 'Red maple (Mr): branching fine branches and twigs.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise White birch (Bw) from the air?',
     a: ['Crown shape: small, irregular, open clumps showing branches.', 'Branching: fine, light-coloured branches and twigs.', 'Colour: dark tone. Texture: smooth.', 'Site: moist to fresh, well-drained.'],
-    test: [
-      mc('From the air: crown small, irregular, open clumps showing branches; dark tone; smooth texture; site: moist to fresh, well-drained. Which species?', ['Balsam fir (Bf)', 'Red oak (Or)', 'Black cherry (Cb)', 'White birch (Bw)'], 3, 'White birch (Bw): branching fine, light-coloured branches and twigs.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Yellow birch (By) from the air?',
     a: ['Crown shape: irregular, finely tufted.', 'Branching: compact.', 'Colour: very dark. Texture: coarse.', 'Site: moist valleys, occasionally dry.'],
-    test: [
-      mc('From the air: crown irregular, finely tufted; very dark; coarse texture; site: moist valleys, occasionally dry. Which species?', ['Yellow birch (By)', 'Trembling and largetooth aspen (Pt, Pl)', 'Alder and willow (AL, Wi)', 'White spruce (Sw)'], 0, 'Yellow birch (By): branching compact.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise American beech (Be) from the air?',
     a: ['Crown shape: large, irregular, open, billowy oval.', 'Branching: columnar branches.', 'Colour: dark blue-green. Texture: smooth.', 'Site: well-drained slopes and ledges.'],
-    test: [
-      mc('From the air: crown large, irregular, open, billowy oval; dark blue-green; smooth texture; site: well-drained slopes and ledges. Which species?', ['Balsam poplar (Pb)', 'American beech (Be)', 'Eastern white pine (Pw)', 'Black spruce (Sb)'], 1, 'American beech (Be): branching columnar branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Red oak (Or) from the air?',
     a: ['Crown shape: compact and billowy.', 'Branching: prominent branches.', 'Colour: dark. Texture: velvety smooth.', 'Site: fresh upper slopes, loamy rocky sites.'],
-    test: [
-      mc('From the air: crown compact and billowy; dark; velvety smooth texture; site: fresh upper slopes, loamy rocky sites. Which species?', ['Red pine (Pr)', 'Black ash (Ab)', 'Red oak (Or)', 'Eastern hemlock (He)'], 2, 'Red oak (Or): branching prominent branches.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Trembling and largetooth aspen (Pt, Pl) from the air?',
     a: ['Crown shape: rounded, open, billowy oval.', 'Branching: light-coloured branches and twigs.', 'Colour: light tone. Texture: fine.', 'Site: fresh to dry.'],
-    test: [
-      mc('From the air: crown rounded, open, billowy oval; light tone; fine texture; site: fresh to dry. Which species?', ['Eastern white cedar (Cw)', 'Black cherry (Cb)', 'Jack pine (Pj)', 'Trembling and largetooth aspen (Pt, Pl)'], 3, 'Trembling and largetooth aspen (Pt, Pl): branching light-coloured branches and twigs.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Balsam poplar (Pb) from the air?',
     a: ['Crown shape: narrow, tufted, with a point.', 'Branching: light-coloured branches and twigs.', 'Colour: light tone. Texture: coarse.', 'Site: deep, moist bottomland soils.'],
-    test: [
-      mc('From the air: crown narrow, tufted, with a point; light tone; coarse texture; site: deep, moist bottomland soils. Which species?', ['Balsam poplar (Pb)', 'Alder and willow (AL, Wi)', 'Balsam fir (Bf)', 'Larch / tamarack (La)'], 0, 'Balsam poplar (Pb): branching light-coloured branches and twigs.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Black ash (Ab) from the air?',
     a: ['Crown shape: narrow, irregular, open.', 'Branching: thick, ascending twigs.', 'Colour: light green. Texture: fuzzy.', 'Site: deep, moist bottomlands, swamps, beaver meadows.'],
-    test: [
-      mc('From the air: crown narrow, irregular, open; light green; fuzzy texture; site: deep, moist bottomlands, swamps, beaver meadows. Which species?', ['Eastern white pine (Pw)', 'Black ash (Ab)', 'White spruce (Sw)', 'Sugar maple (Mh)'], 1, 'Black ash (Ab): branching thick, ascending twigs.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Black cherry (Cb) from the air?',
     a: ['Crown shape: irregular, rounded.', 'Branching: thin, compact.', 'Colour: very dark. Texture: very smooth.', 'Site: deep, moist bottomlands and low slopes.'],
-    test: [
-      mc('From the air: crown irregular, rounded; very dark; very smooth texture; site: deep, moist bottomlands and low slopes. Which species?', ['Black spruce (Sb)', 'Red pine (Pr)', 'Black cherry (Cb)', 'Red maple (Mr)'], 2, 'Black cherry (Cb): branching thin, compact.'),
-    ],
   },
   {
     section: 'Weeks 5 & 6', extra: true, q: 'How do you recognise Alder and willow (AL, Wi) from the air?',
     a: ['Crown shape: large, billowy.', 'Branching: dense, drooping.', 'Colour: light tone. Texture: fuzzy.', 'Site: deep, moist lowland soils.'],
-    test: [
-      mc('From the air: crown large, billowy; light tone; fuzzy texture; site: deep, moist lowland soils. Which species?', ['White birch (Bw)', 'Jack pine (Pj)', 'Eastern hemlock (He)', 'Alder and willow (AL, Wi)'], 3, 'Alder and willow (AL, Wi): branching dense, drooping.'),
-    ],
   },
   {
     n: 40, section: 'Weeks 5 & 6', q: 'How does terrestrial (hand-held) LiDAR work, and what are its advantages and best uses?',

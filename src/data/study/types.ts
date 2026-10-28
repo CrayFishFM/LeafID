@@ -16,7 +16,7 @@ export interface StudyCard {
   opinion?: boolean;
   /** Not a question on the review sheet but covered in the lecture. */
   extra?: boolean;
-  /** Practice test questions on this card. Every card needs at least one (except opinion cards). */
+  /** Practice test questions on this card. Cards without any (opinion cards, photo-only topics) stay flashcards only. */
   test?: TestQuestion[];
 }
 

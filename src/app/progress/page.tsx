@@ -5,6 +5,7 @@ import { COURSES } from '@/data/courses';
 import { ECOLOGY } from '@/data/study/ecology';
 import { FOREST_HEALTH } from '@/data/study/forest-health';
 import { REMOTE_SENSING } from '@/data/study/remote-sensing';
+import { WILDLIFE } from '@/data/study/wildlife';
 import type { StudyGuide } from '@/data/study/types';
 import { topicItem, type Topic } from '@/data/topics';
 import { getActivity } from '@/lib/activity';
@@ -25,6 +26,7 @@ const GUIDES: Record<string, { guide: StudyGuide; href: string }> = {
   'forest-health': { guide: FOREST_HEALTH, href: '/courses/forest-health' },
   ecology: { guide: ECOLOGY, href: '/courses/ecology' },
   'remote-sensing': { guide: REMOTE_SENSING, href: '/courses/remote-sensing' },
+  wildlife: { guide: WILDLIFE, href: '/courses/wildlife' },
 };
 
 /** Only the questions go to the browser; the Progress page doesn't need the answers. */

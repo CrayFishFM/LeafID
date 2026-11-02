@@ -1,7 +1,7 @@
 /**
- * Wildlife midterm review (FOR7316), from the midterm review list and the lectures: Course Intro and
- * Freshwater Habitats, CFSA and SSG, Federal Law and Forestry, Aquatic AOC, Water Birds, and
- * Amphibians and Reptiles (mostly summarised from the Stand and Site Guide and the Ontario SAR pages).
+ * Wildlife midterm review (FOR7316). Only the questions on the midterm review slides, answered from the lectures:
+ * Course Intro and Freshwater Habitats, CFSA and SSG, Federal Law and Forestry, Aquatic AOC, Water Birds, and
+ * Amphibians and Reptiles.
  */
 import { mc, multi, order, tf, typed, type RankDrill, type SortDrill, type StudyCard, type StudyGuide } from './types';
 
@@ -61,37 +61,40 @@ const CARDS: StudyCard[] = [
   {
     section: LAW, q: 'Define and describe the Fisheries Act and how it pertains to forestry.',
     a: [
-      'The Fisheries Act (1985) is federal law, administered by the Department of Fisheries and Oceans (DFO).',
-      'Section 35(1): prohibits any “work or undertaking that results in the harmful alteration, disruption or destruction of fish habitat” (HADD).',
+      'The Fisheries Act (1985) is federal law.',
+      'Section 35(1): prohibits any “work or undertaking that results in the harmful alteration, disruption or destruction of fish habitat”.',
       'Section 36(3): “no person shall deposit or permit the deposit of a deleterious (harmful) substance of any type in water frequented by fish”.',
-      'In forestry: buffers (AOCs) are left around water, logging debris and sediment are kept out of the water, fuel is kept away, and stream crossings follow timing windows.',
+      'In forestry: all types of forest operations can change the composition, structure and function of aquatic ecosystems (SSG). So buffers (AOCs) are applied to prevent damage to water bodies, and the riparian guidelines keep trees, logging debris and fuel out of the water (e.g. machinery is stored, washed, refuelled and serviced at least 30 m from a watercourse so no deleterious substance gets in).',
     ],
     test: [
-      mc('The Fisheries Act is…', ['Provincial law', 'Federal law', 'A municipal bylaw', 'A forest management guide'], 1, 'Federal law (1985), administered by DFO.'),
-      mc('Which section prohibits the harmful alteration, disruption or destruction of fish habitat?', ['Section 35(1)', 'Section 36(3)', 'Section 12', 'Section 4.1'], 0, '35(1) = habitat (HADD). 36(3) = deleterious substances.'),
+      mc('The Fisheries Act is…', ['Provincial law', 'Federal law', 'A municipal bylaw', 'A forest management guide'], 1, 'Federal law (1985).'),
+      mc('Which section prohibits the harmful alteration, disruption or destruction of fish habitat?', ['Section 35(1)', 'Section 36(3)', 'Section 12', 'Section 4.1'], 0, '35(1) = habitat. 36(3) = deleterious substances.'),
       mc('Section 36(3) prohibits…', ['Fishing without a licence', 'Depositing a deleterious substance in water frequented by fish', 'Building roads', 'Harvesting near nests'], 1, 'Deleterious = harmful.'),
-      typed('Which federal department is responsible for the Fisheries Act? (abbreviation)', ['dfo', 'department of fisheries and oceans', 'fisheries and oceans canada'], 'DFO: Department of Fisheries and Oceans.'),
+      typed('What year is the Fisheries Act from?', ['1985'], 'The Fisheries Act (1985).'),
     ],
   },
   {
     section: LAW, q: 'Know the different acts used for AOC and FMP planning.',
     a: [
-      'Wild Animal and Plant Protection and Regulation of International and Interprovincial Trade Act (WAPPRIITA): controls trade of wild animals and plants across provincial and international borders (e.g. American ginseng).',
-      'Migratory Birds Convention Act (MBCA): protects migratory birds, their eggs and nests (e.g. Kirtland’s warbler).',
-      'Fisheries Act: protects fish and fish habitat (e.g. lake sturgeon).',
-      'Species at Risk Act (SARA): protects listed species at risk and their critical habitat (e.g. Blanding’s turtle, wolverine, five-lined skink).',
-      'Provincially: the CFSA, with the SSG giving the AOC direction.',
+      'Federal acts that govern forest management planning:',
+      'Wild Animal and Plant Protection and Regulation of International and Interprovincial Trade Act.',
+      'Migratory Birds Convention Act (MBCA).',
+      'Fisheries Act (1985): no harmful alteration of fish habitat, no deleterious substances in fish water.',
+      'Species at Risk Act (SARA, 2003): protects listed species at risk and their critical habitat.',
+      'Example species on the slide: American ginseng, Blanding’s turtle, wolverine, Kirtland’s warbler, five-lined skink, lake sturgeon.',
+      'Provincially: the CFSA requires the FMP, and foresters use the SSG to set the AOCs in it.',
     ],
-    check: 'The lecture lists the four acts and the example species beside them; what each act does (WAPPRIITA, MBCA) and which species goes with which act are filled in from general knowledge.',
+    check: 'The slide only names the Wild Animal and Plant… Trade Act and the MBCA, and shows the six species in a row without pairing them to an act.',
     test: [
       multi('Which federal acts govern forest management planning?', ['Wild Animal and Plant Protection and Regulation of International and Interprovincial Trade Act', 'Migratory Birds Convention Act', 'Fisheries Act', 'Species at Risk Act', 'Highway Traffic Act'], [0, 1, 2, 3], 'The four acts from the Federal Law lecture.'),
       typed('MBCA stands for the Migratory Birds ____ Act.', ['convention'], 'Migratory Birds Convention Act.'),
+      multi('Which species are on the acts slide as examples?', ['American ginseng', 'Blanding’s turtle', 'Wolverine', 'Kirtland’s warbler', 'Lake sturgeon', 'Mallard'], [0, 1, 2, 3, 4], 'Plus the five-lined skink.'),
     ],
   },
   {
     section: LAW, q: 'Species at Risk Act: what is it, and what are the 4 levels?',
     a: [
-      'SARA was proclaimed in June 2003. It gives legal protection to wildlife species and conserves biological diversity, aims to prevent extinction and secure recovery. It protects all listed species at risk and their critical habitat, and applies to federal (Crown) lands.',
+      'SARA was proclaimed in June 2003. It gives legal protection to wildlife species and conserves biological diversity, aims to prevent extinction and secure recovery. It protects all listed species at risk and their critical habitat, and applies to all federal (Crown) lands.',
       'It establishes COSEWIC (an independent expert panel that assesses species), requires recovery strategies and action plans, creates prohibitions to protect threatened and endangered species, and creates a public registry.',
       'Endangered (END): facing imminent extirpation or extinction.',
       'Threatened (THR): likely to become endangered if nothing is done.',
@@ -105,7 +108,7 @@ const CARDS: StudyCard[] = [
       mc('A species facing imminent extirpation or extinction is…', ['Endangered', 'Threatened', 'Special Concern', 'Not at Risk'], 0, 'Endangered.'),
       mc('A species that no longer exists in a specific region (but lives elsewhere) is…', ['Extinct', 'Extirpated', 'Endangered', 'Not at Risk'], 1, 'Extirpated = gone from a region. Extinct = gone everywhere.'),
       typed('What year was SARA proclaimed?', ['2003'], 'June 2003.'),
-      mc('The federal status of a species is set by…', ['SARO', 'COSEWIC', 'DFO', 'The SSG'], 1, 'COSEWIC (federal). SARO = Species at Risk in Ontario list (provincial).'),
+      mc('The federal status of a species is set by…', ['SARO', 'COSEWIC', 'MNRF', 'The SSG'], 1, 'COSEWIC (federal). SARO = Species at Risk in Ontario list (provincial).'),
     ],
   },
 
@@ -113,10 +116,10 @@ const CARDS: StudyCard[] = [
   {
     section: WATER, q: 'Lake temperature classifications: coldwater vs coolwater vs warmwater.',
     a: [
-      'Coldwater: best adapted to / prefers water below 19°C in summer (e.g. brook trout, lake trout).',
-      'Coolwater: 19–25°C in summer (e.g. northern pike, walleye).',
+      'Coldwater: best adapted to / prefers water below 19°C in summer (e.g. brook trout).',
+      'Coolwater: 19–25°C in summer (e.g. northern pike, walleye). Preferred temperatures may also include coldwater or warmwater ranges.',
       'Warmwater: above 25°C in summer.',
-      'In the SSG: lakes and some ponds with coldwater fish or SAR are High Potential Sensitivity (HPS); coolwater ponds are Moderate (MPS); warmwater ponds are Low (LPS).',
+      'Sensitivity: High Potential Sensitivity (HPS) = all lakes and some ponds with coldwater fish or a species at risk. Moderate (MPS) = a pond with coolwater fish. Low (LPS) = a warmwater pond.',
     ],
     test: [
       mc('Coldwater species prefer summer water temperatures…', ['Below 19°C', '19–25°C', 'Above 25°C', 'Below 10°C'], 0, 'Coldwater < 19°C, coolwater 19–25°C, warmwater > 25°C.'),
@@ -137,8 +140,8 @@ const CARDS: StudyCard[] = [
     ],
     test: [
       multi('Why are coldwater species sensitive to disturbance?', ['Less tolerant of high water temperature', 'Less tolerant of temperature fluctuations', 'Less tolerant of low oxygen', 'Need gravel spawning beds with high gas exchange', 'They spawn in spring and hatch in days'], [0, 1, 2, 3], 'They spawn in AUTUMN and eggs develop over a long time.'),
-      mc('When do coldwater fish spawn?', ['Spring', 'Summer', 'Autumn', 'Winter'], 2, 'Autumn; eggs sit on the spawning beds all winter and hatch in spring.'),
-      mc('Coldwater species need spawning beds of…', ['Mud', 'Sand', 'Gravel', 'Aquatic plants'], 2, 'Gravel, with a high rate of gas exchange for the eggs. Silt can smother them.'),
+      mc('When do coldwater fish spawn?', ['Spring', 'Summer', 'Autumn', 'Winter'], 2, 'Autumn; the eggs and fry develop over a long time.'),
+      mc('Coldwater species need spawning beds of…', ['Mud', 'Sand', 'Gravel', 'Aquatic plants'], 2, 'Gravel, with a high rate of gas exchange for the eggs.'),
     ],
   },
   {
@@ -166,20 +169,6 @@ const CARDS: StudyCard[] = [
       mc('The very bottom of the lake, inhabited mainly by decomposers and insect larvae, is the…', ['Benthic zone', 'Profundal zone', 'Limnetic zone', 'Thermocline'], 0, 'Benthic.'),
       mc('The shore area sloping from dry land into the open water is the…', ['Limnetic zone', 'Littoral zone', 'Benthic zone', 'Hypolimnion'], 1, 'Littoral.'),
       tf('Eutrophic (old) lakes have narrow littoral zones.', false, 'Eutrophic lakes have WIDE littoral zones (gentle slopes); oligotrophic (young) lakes have narrow ones (steep sides).'),
-    ],
-  },
-  {
-    section: WATER, q: 'What is thermal stratification, and what are the three layers?',
-    a: [
-      'Thermal stratification: the change of temperature at different depths in a lake. Cold water is denser, so it sits at the bottom.',
-      '1. Epilimnion: top, warmest, least dense.',
-      '2. Thermocline: middle, where temperature changes quickly.',
-      '3. Hypolimnion: bottom, coldest, densest.',
-    ],
-    extra: true,
-    test: [
-      order('Put the lake layers in order from the surface down.', ['Epilimnion', 'Thermocline', 'Hypolimnion'], 'Epilimnion (warmest) → thermocline → hypolimnion (coldest).'),
-      mc('The coldest, densest layer of a stratified lake is the…', ['Epilimnion', 'Thermocline', 'Hypolimnion', 'Limnetic zone'], 2, 'Hypolimnion.'),
     ],
   },
   {
@@ -213,21 +202,17 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: WATER, q: 'SSG definitions: lakes, ponds, and the types of streams.',
+    section: WATER, q: 'What is the difference between a permanent and an intermittent stream?',
     a: [
-      'Lake: open water at least 8 ha and at some point > 2 m deep. Small < 100 ha, medium 100–999 ha, large ≥ 1000 ha.',
-      'Pond: shallow (generally < 2 m) open water, ≤ 25% covered by emergent vegetation, ≥ 0.5 ha and < 8 ha.',
-      'Permanent stream: well-defined channel, flows ≥ 90% of the year; streambed below the water table, fed mainly by groundwater.',
-      'Intermittent stream: well-defined channel, flows only in wet seasons (30–90% of the year); in the driest summer it may be a trickle or only in the streambed.',
-      'Ephemeral stream: no well-defined channel; flows only during and after large precipitation events.',
+      'Permanent stream: a well-defined channel that flows for most (≥ 90%) of the year. The streambed is usually below the water table, so groundwater (or a permanent water feature) is the main source of flow.',
+      'Intermittent stream: a well-defined channel that flows only during wet seasons (30–90% of the year). In the driest part of summer it may be a trickle or flow only within the streambed.',
+      'Both have well-defined channels; the difference is how much of the year they flow.',
     ],
     test: [
-      mc('A lake must be at least…', ['0.5 ha', '8 ha', '25 ha', '100 ha'], 1, 'At least 8 ha, and > 2 m deep at some point.'),
-      mc('A pond is…', ['≥ 8 ha', '≥ 0.5 ha and < 8 ha', '< 500 m²', '100–999 ha'], 1, 'Ponds are ≥ 0.5 ha and < 8 ha, generally < 2 m deep.'),
-      mc('A stream that flows 30–90% of the year in a well-defined channel is…', ['Permanent', 'Intermittent', 'Ephemeral', 'A seep'], 1, 'Intermittent: flows in wet seasons.'),
+      mc('A stream that flows 30–90% of the year in a well-defined channel is…', ['Permanent', 'Intermittent', 'A seep', 'A woodland pool'], 1, 'Intermittent: flows in wet seasons.'),
       mc('What is the main difference between a permanent and intermittent stream?', ['Only permanent streams have a channel', 'Permanent flows ≥ 90% of the year (groundwater-fed); intermittent flows only in wet seasons (30–90%)', 'Intermittent streams are always bigger', 'Permanent streams have no fish'], 1, 'Both have well-defined channels; the difference is how much of the year they flow.'),
-      mc('A stream with no well-defined channel that flows only during and after big rain events is…', ['Permanent', 'Intermittent', 'Ephemeral', 'A woodland pool'], 2, 'Ephemeral.'),
-      mc('A medium lake is…', ['8–99 ha', '100–999 ha', '≥ 1000 ha', '< 8 ha'], 1, 'Small < 100 ha, medium 100–999 ha, large ≥ 1000 ha.'),
+      typed('A permanent stream flows at least what percent of the year?', ['90', '90%'], '≥ 90% of the year.'),
+      mc('The main source of flow for a permanent stream is…', ['Rain events only', 'Groundwater (or a permanent water feature)', 'Snowmelt only', 'Beaver ponds'], 1, 'The streambed is below the water table.'),
     ],
   },
 
@@ -247,59 +232,46 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: AOC, q: 'What are the riparian guidelines?',
+    section: AOC, q: 'Be able to identify the different parts of a riparian zone (diagram).',
     a: [
-      'a) No felling trees into water bodies and no debris deposited; a tree that falls in is left there (do not pull it out).',
-      'b) No logging debris left on the banks.',
-      'c) Equipment must not cause banks to slump.',
-      'd) Equipment must not travel in streams; minimise stream crossings (crossings must be in the AWS or FMP, or a revision approved by MNRF).',
-      'e) Minimise road construction in riparian areas.',
-      'f) Leave a 3 m filter strip of undisturbed forest floor or vegetation on the banks.',
-      'g) No refuelling, lubricating or storing fuel or oil in riparian areas.',
+      'The diagram (“Zonation of riparian zone according to different types of vegetation”), from the water out: submersed vegetation → floating vegetation → floating leafed vegetation → floating mat → emergent vegetation → riparian bushes → riparian trees → forest canopy trees.',
+      'Numbered on the slide: 1. standing/flowing water; 2. water vegetation; 3. emergent vegetation; 4. riparian bushes and trees; 5. forest canopy trees, OR residual forest.',
+      'The AOC is measured from the edge of vegetation that can stop sediment: ≥ 25% canopy of trees, tall (≥ 1 m) woody shrubs like alder or willow, or low (< 1 m) woody evergreen shrubs like Labrador tea or leatherleaf.',
+      'AOC width depends on slope: HPS 30–90 m (0–15% slope 30 m, > 15–30% 50 m, > 30–45% 70 m, > 45% 90 m); MPS 30 m; LPS 15 m. Inside it: no disturbance in the inner 3 m, no ruts or exposed mineral soil in the inner 15 m; slope > 30% means no clearcutting, only selection or shelterwood keeping residual forest (≈ 50% canopy closure of mature forest).',
     ],
-    extra: true,
+    check: 'Numbers 3 and 4 are arrows on the diagram with no label; they are read from where the arrows point (3 at the emergent vegetation, 4 at the riparian bushes and trees).',
     test: [
-      tf('If a tree is accidentally felled into a water body, it should be pulled out right away.', false, 'Leave it where it falls.'),
-      typed('How wide is the undisturbed filter strip left on the banks of water bodies (m)?', ['3', '3 m', '3m'], 'A 3 m filter strip.'),
-      tf('Equipment can be refuelled in the riparian area as long as it is quick.', false, 'No refuelling, lubrication or fuel storage in riparian areas.'),
-    ],
-  },
-  {
-    section: AOC, q: 'Be able to identify the different parts of a riparian zone / aquatic AOC (diagram).',
-    a: [
-      '1. The standing or flowing water.',
-      '2. The water (emergent) vegetation along the shore. The AOC is measured from the edge of vegetation that can stop sediment: ≥ 25% canopy of trees, tall (≥ 1 m) woody shrubs like alder or willow, or low (< 1 m) woody evergreen shrubs like Labrador tea or leatherleaf.',
-      '3. The inner 3 m: no disturbance; no excessive damage to saplings (< 10 cm DBH) and shrubs.',
-      '4. The inner 15 m: no ruts or significant exposed mineral soil.',
-      '5. The rest of the AOC (width depends on slope; e.g. 30 m, wider on steep slopes) kept as residual forest (≈ 50% canopy closure of mature forest). Slope > 30%: no clearcutting in the AOC, only selection or shelterwood.',
-    ],
-    check: 'The diagram is only a picture in the lecture (numbered 1–5: water, water vegetation, then the zones out to residual forest). Zones 3–5 here are matched to the restrictions on the next slides; confirm against the diagram.',
-    test: [
+      order('Put the riparian zones in order from the open water to the upland.', ['Submersed vegetation', 'Floating vegetation', 'Floating leafed vegetation', 'Floating mat', 'Emergent vegetation', 'Riparian bushes', 'Riparian trees', 'Forest canopy trees'], 'Water plants first, then shrubs and trees moving up the bank.'),
       mc('An aquatic AOC is measured from…', ['The middle of the stream', 'The high-water mark only', 'The edge of vegetation able to stop sediment movement', 'The nearest road'], 2, 'From the edge of vegetation communities capable of being an effective sediment barrier.'),
+      mc('How wide is the AOC on an HPS lake with a 0–15% slope?', ['15 m', '30 m', '50 m', '90 m'], 1, '30 m, rising to 50, 70 and 90 m as the slope gets steeper.'),
+      mc('How wide is the AOC on an LPS water body?', ['15 m', '30 m', '50 m', '90 m'], 0, 'LPS 15 m, MPS 30 m, HPS 30–90 m by slope.'),
       mc('Within the inner 15 m of an aquatic AOC, what is not permitted?', ['Any harvesting', 'Ruts or significant exposed mineral soil', 'Walking', 'Tree marking'], 1, 'No ruts or significant exposed mineral soil in the inner 15 m.'),
       mc('If the slope in the AOC is greater than 30%…', ['Clearcutting is allowed', 'No clearcutting; selection and shelterwood allowed if residual forest is kept', 'No harvest at all', 'Only herbicide'], 1, '> 30% slope: no clearcutting.'),
       mc('As a rule of thumb, residual forest is…', ['10% canopy closure', '25% canopy closure', '50% canopy closure of mature forest', '100% canopy closure'], 2, '≈ 50% canopy closure of mature forest.'),
-      typed('Saplings are trees under how many cm DBH?', ['10', '10 cm', '10cm'], 'Sapling-sized trees are < 10 cm DBH.'),
     ],
   },
   {
     section: AOC, q: 'Know the aquatic areas that need to be protected in forestry.',
     a: [
-      'Lakes and ponds (standing water).',
+      'Lakes: open water at least 8 ha and at some point > 2 m deep (small < 100 ha, medium 100–999 ha, large ≥ 1000 ha).',
+      'Ponds: shallow (generally < 2 m) open water, ≤ 25% covered by emergent vegetation, ≥ 0.5 ha and < 8 ha.',
       'Rivers and streams (flowing water: permanent and intermittent).',
       'Wetlands (PSWs get special AOCs from biologists; others have 3 m restrictions).',
-      'Woodland pools (temporary open water ≥ 500 m², < 0.5 ha, not connected to a stream): 3 m from the high-water mark.',
-      'Seepages / seeps (groundwater discharge on lower slopes; green up early, rare plants like American ginseng).',
+      'Woodland pools (temporary open water ≥ 500 m², < 0.5 ha, not connected to a stream).',
+      'Seepages / seeps (groundwater discharge on lower slopes).',
       'Moose aquatic feeding areas (MAFAs).',
       'Beaver habitat (beaver ponds).',
     ],
     test: [
       multi('Which aquatic areas need protecting in forestry?', ['Lakes', 'Rivers and streams', 'Wetlands', 'Woodland pools', 'Seepages', 'MAFAs', 'Beaver habitat', 'Gravel pits'], [0, 1, 2, 3, 4, 5, 6], 'Lakes, rivers, streams, wetlands, woodland pools, seepages, MAFAs, beaver habitat.'),
       typed('What does MAFA stand for?', ['moose aquatic feeding area', 'moose aquatic feeding areas'], 'Moose Aquatic Feeding Area.'),
+      mc('A lake must be at least…', ['0.5 ha', '8 ha', '25 ha', '100 ha'], 1, 'At least 8 ha, and > 2 m deep at some point.'),
+      mc('A pond is…', ['≥ 8 ha', '≥ 0.5 ha and < 8 ha', '< 500 m²', '100–999 ha'], 1, 'Ponds are ≥ 0.5 ha and < 8 ha, generally < 2 m deep.'),
+      mc('A medium lake is…', ['8–99 ha', '100–999 ha', '≥ 1000 ha', '< 8 ha'], 1, 'Small < 100 ha, medium 100–999 ha, large ≥ 1000 ha.'),
     ],
   },
   {
-    section: AOC, q: 'Wetlands, woodland pools and seeps: what are they and how are they protected?',
+    section: AOC, q: 'Aquatic areas: wetlands, woodland pools and seeps. What are they and how are they protected?',
     a: [
       'Wetlands: seasonally or permanently flooded by shallow water (or water table near the surface), forming hydric soils with water-tolerant plants. They affect water quality, protect shorelines, control floods and are fish spawning/nursery sites.',
       'For wetlands that are not PSWs or connected to other water: no machine travel in the frost-free period within 3 m of open water / non-woody vegetation; no excessive damage to saplings and shrubs within 3 m; no felling into or within 3 m in the frost-free period; no ruts, exposed mineral soil or disrupted hydrology.',
@@ -315,7 +287,7 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: AOC, q: 'MAFAs and beaver habitat: what are they and how are they managed?',
+    section: AOC, q: 'Aquatic areas: MAFAs and beaver habitat. What are they and how are they managed?',
     a: [
       'MAFAs: in early summer moose feed on submerged and floating aquatic plants rich in sodium, in shallow lakes, slow rivers, shallow bays and beaver ponds. Identified in the FMP by biologists; there is NO additional AOC for MAFAs.',
       'Keep residual shoreline forest preferentially next to higher-class MAFAs (class 4 > 3 > 2), larger MAFAs (> 8 ha best), accessible MAFAs, where it screens roads, connects to other cover, or keeps cover close to the plants.',
@@ -328,20 +300,6 @@ const CARDS: StudyCard[] = [
       tf('Around beaver ponds, cutting shoreline aspen to the water’s edge can benefit beavers.', true, 'Beaver AOCs aim to regenerate intolerant hardwoods like aspen near the water.'),
       mc('Beavers are considered a…', ['Invasive species', 'Keystone species', 'Species at risk', 'Coldwater species'], 1, 'Keystone: they create habitat that raises species richness.'),
       typed('No herbicide within how many metres of a beaver pond?', ['50', '50 m', '50m'], '50 m.'),
-    ],
-  },
-  {
-    section: AOC, q: 'Water crossings: timing restrictions.',
-    a: [
-      'Coldwater (HPS) streams: cross in summer; avoid installing crossings Sept 15 – April 30 (fall spawning, eggs on beds all winter, hatch in spring).',
-      'Coolwater (MPS) streams: cross any time but spring; avoid April 1 – June 30 (spring spawning, eggs hatch a few weeks later).',
-      'Crossing type (bridge, culvert, ford) is chosen with a watershed calculator. Fish passage and water flow must not be blocked; no explosives; machinery serviced ≥ 30 m from the water.',
-    ],
-    extra: true,
-    test: [
-      mc('For a coldwater stream, avoid installing crossings between…', ['April 1 – June 30', 'Sept 15 – April 30', 'July 1 – Aug 31', 'Never'], 1, 'Coldwater fish spawn in fall and eggs stay on the beds all winter.'),
-      mc('For a coolwater stream, avoid installing crossings between…', ['April 1 – June 30', 'Sept 15 – April 30', 'Nov 1 – Mar 31', 'July 15 – Sept 15'], 0, 'Coolwater fish spawn in spring.'),
-      typed('Machinery must be stored, washed, refuelled and serviced at least how many metres from the watercourse?', ['30', '30 m', '30m'], '30 m.'),
     ],
   },
 
@@ -367,17 +325,18 @@ const CARDS: StudyCard[] = [
   {
     section: BIRDS, q: 'Be able to identify/name the shoreline and aquatic bird SAR species.',
     a: [
-      'Horned grebe: Special Concern. Small duck-like waterbird; in breeding plumage a black head with golden “horns” behind the eye and a reddish neck. Threat: loss of wetlands.',
-      'Least bittern: Threatened. Smallest heron (≈ 30 cm); brown and beige with chestnut wing patches, black crown and back on males. Threat: wetland destruction; doesn’t tolerate disturbance.',
-      'Piping plover: Endangered. Small sand-coloured shorebird, orange bill with a black tip, orange legs, black breast band. Threat: human disturbance on beaches, groomed beaches, predators, storms.',
+      'Horned grebe: Special Concern. Small, compact body, short neck, blocky head and a straight, narrow bill (not duck-like). Breeding adults are dark gray-black on the back with rusty-cinnamon sides and neck, and long yellow tufts behind the eye. Lives in marshes with tall cattails; nests on floating mats of vegetation. Threat: permanent loss of wetlands to agriculture and development, and droughts.',
+      'Least bittern: Threatened. Smallest member of the heron family (≈ 30 cm); brown and beige with large chestnut wing patches, black crown and back on males (lighter on females), bright yellow legs and beak. Nests hidden in cattail marshes. Threat: wetland destruction; doesn’t tolerate human disturbance.',
+      'Piping plover: Endangered. Round, stocky, small shorebird; stubby orange bill with a black tip, bright orange legs, black crown stripe and neck band, sandy/light grey with a white belly. Nests only on dry sandy or gravelly beaches (Great Lakes shores, Lake of the Woods). Threat: human disturbance on beaches, groomed beaches with no hiding places, predators, storms.',
       'Also in the lecture (not SAR): mallard, black duck, wood duck, bufflehead, common and hooded merganser, American bittern, great blue heron, green heron, sandhill crane, killdeer, double-crested cormorant.',
     ],
     test: [
       mc('What is the Ontario status of the piping plover?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       mc('What is the status of the least bittern?', ['Special Concern', 'Threatened', 'Endangered', 'Extirpated'], 1, 'Threatened.'),
       mc('What is the status of the horned grebe?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
-      mc('A small sand-coloured shorebird with orange legs, an orange black-tipped bill and a black breast band is the…', ['Killdeer', 'Piping plover', 'Least bittern', 'Horned grebe'], 1, 'Piping plover (Endangered).'),
+      mc('A small, stocky shorebird with bright orange legs, a stubby black-tipped orange bill and a black neck band is the…', ['Killdeer', 'Piping plover', 'Least bittern', 'Horned grebe'], 1, 'Piping plover (Endangered). The killdeer has two black chest bands and is not at risk.'),
       mc('The smallest member of the heron family is the…', ['Green heron', 'American bittern', 'Least bittern', 'Great blue heron'], 2, 'Least bittern, about 30 cm (Threatened).'),
+      mc('A waterbird with rusty-cinnamon sides and neck and long yellow tufts behind the eye is the…', ['Hooded merganser', 'Horned grebe', 'Wood duck', 'Bufflehead'], 1, 'Horned grebe in breeding plumage (Special Concern).'),
       multi('Which water birds from the lecture are species at risk?', ['Horned grebe', 'Least bittern', 'Piping plover', 'Killdeer', 'Great blue heron', 'Double-crested cormorant'], [0, 1, 2], 'Horned grebe (SC), least bittern (THR), piping plover (END).'),
     ],
   },
@@ -404,6 +363,7 @@ const CARDS: StudyCard[] = [
       'Brumation: means the same as hibernation, but refers to cold-blooded animals (reptiles and amphibians).',
       'Hibernaculum (singular) / hibernacula (plural): an underground retreat used by reptiles and amphibians to hibernate, below the frost line so they don’t freeze.',
     ],
+    check: 'The slide says “Hibernacula is singular for hibernaculum”, which is backwards: hibernaculum is the singular and hibernacula the plural.',
     test: [
       mc('Brumation is…', ['Summer dormancy in mammals', 'Hibernation in cold-blooded animals', 'An underground den', 'Spring breeding migration'], 1, 'Synonymous with hibernation, for cold-blooded animals.'),
       mc('A hibernaculum is…', ['A type of turtle', 'An underground retreat below the frost line used to hibernate', 'The process of hibernating', 'A frog’s antifreeze'], 1, 'Hibernacula is the plural.'),
@@ -415,8 +375,7 @@ const CARDS: StudyCard[] = [
     a: [
       'Turtles: bury in deep mud at the bottom of ponds and lakes, below the frost line, from October to March–April. Cold slows their metabolism. They get oxygen from the water through blood-vessel-rich tissues: cloacal respiration (the butt) and buccopharyngeal respiration (the throat).',
       'Snakes: in underground dens, caves and burrows (hibernacula), usually with southern exposure and near the water table. Fall (Sept – early Nov) to spring (April – early May). They often bundle together; technically they don’t hibernate since they stay semi-active. Five-lined skinks burrow similarly, using rotten wood.',
-      'Frogs: most hibernate in the water like turtles. Wood frogs, chorus frogs and spring peepers hibernate in leaf litter and can freeze: glucose and glycogen act as antifreeze, the heart and breathing stop, and up to 70% of the body freezes. Toads burrow on land about 50 cm deep, below the frost line.',
-      'Salamanders: terrestrial ones use rodent burrows, rock cracks, log piles; aquatic ones stay active all winter.',
+      'Frogs: most hibernate in the water like turtles. Wood frogs, chorus frogs and spring peepers hibernate in leaf litter and can freeze: glucose and glycogen act as antifreeze, the heart and breathing stop, and up to 70% of the body freezes. Toads burrow on land about 50 cm deep, below the frost line. Fall (Sept – early Nov) to spring (April – early May).',
     ],
     test: [
       mc('Where do turtles hibernate?', ['In leaf litter', 'In deep mud at the bottom of ponds and lakes', 'In rock crevices on land', 'In tree cavities'], 1, 'Below the frost line in the mud.'),
@@ -429,24 +388,38 @@ const CARDS: StudyCard[] = [
     ],
   },
   {
-    section: HERPS, q: 'Be able to identify/name the reptile SAR species.',
+    section: HERPS, q: 'Be able to identify/name the reptile and amphibian SAR species.',
     a: [
-      'Turtles: snapping turtle (Special Concern), northern map turtle (Special Concern), spiny softshell (Endangered; soft leathery shell, snorkel snout), Blanding’s turtle (Threatened; bright yellow chin and throat), wood turtle (Endangered).',
-      'Snakes: eastern hognose snake (Threatened), massasauga rattlesnake (Threatened; Ontario’s only venomous snake), eastern foxsnake (Threatened), eastern (gray) ratsnake (Endangered).',
-      'Lizard: five-lined skink, Ontario’s only lizard (Special Concern on the slide; the notes say Endangered).',
+      'Snapping turtle (Special Concern): Canada’s largest freshwater turtle; large black, olive or brown shell often covered in algae; long tail with dinosaur-like triangular crests.',
+      'Northern map turtle (Special Concern): lines on the carapace look like contour lines on a map; bright yellow lines on the head and legs.',
+      'Eastern musk turtle / stinkpot (Special Concern): small; musky, skunk-like smell when disturbed; narrow, highly arched shell under 13 cm; two yellow stripes on the side of the head.',
+      'Spiny softshell (Endangered): round, flat, leathery soft shell (the only soft-shelled Ontario turtle) with tiny spines on the front edge; snorkel-like snout.',
+      'Blanding’s turtle (Threatened): bright yellow throat and chin (“smiling turtle”); domed shell like an army helmet, black to brown with yellow flecks.',
+      'Wood turtle (Endangered): orange-yellow neck, chin and front legs; highly sculpted shell with raised, pyramid-shaped scutes; spends more time on land.',
+      'Eastern hognose snake (Threatened): thick-bodied, upturned nose; when threatened it flattens its neck into a cobra-like hood, hisses, then plays dead.',
+      'Massasauga rattlesnake (Threatened): Ontario’s only venomous snake; triangular head, rattle on the tail, grey to brown with darker “saddle” blotches.',
+      'Eastern foxsnake (Threatened): one of Ontario’s largest snakes (> 1.7 m); shiny rusty-orange head, golden to light brown body with dark blotches.',
+      'Eastern (gray) ratsnake (Endangered): Ontario’s largest snake (up to 2 m); shiny black with a white chin and throat; excellent climber.',
+      'Five-lined skink (Special Concern on the slide): Ontario’s only lizard; five cream stripes, blue tail in juveniles; the tail breaks off to escape predators.',
+      'Jefferson salamander: a species at risk that can’t be told apart from the blue-spotted salamander without genetic testing.',
       'Not SAR in the lecture: midland painted turtle, eastern gartersnake, spotted salamander, blue-spotted salamander, red-spotted newt, spring peeper, gray treefrog.',
     ],
-    check: 'Five-lined skink: the slide title says Special Concern but the slide notes say Endangered (Ontario lists the Carolinian population as Endangered and the Southern Shield population as Special Concern). Blanding’s yellow chin and massasauga as the only venomous snake are from general knowledge.',
+    check: 'Five-lined skink: the slide title says Special Concern but the slide notes say Endangered. The Jefferson salamander is only mentioned as a species at risk under the blue-spotted salamander; no status is given.',
     test: [
       mc('What is the status of the Blanding’s turtle?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 1, 'Threatened.'),
       mc('What is the status of the snapping turtle?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
       mc('What is the status of the spiny softshell?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       mc('What is the status of the wood turtle?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       mc('What is the status of the northern map turtle?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
+      mc('What is the status of the eastern musk turtle (stinkpot)?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
       mc('What is the status of the eastern (gray) ratsnake?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       multi('Which snakes are Threatened?', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern foxsnake', 'Eastern (gray) ratsnake', 'Eastern gartersnake'], [0, 1, 2], 'The ratsnake is Endangered; the gartersnake is not at risk.'),
       mc('Ontario’s only lizard is the…', ['Red-spotted newt', 'Five-lined skink', 'Blue-spotted salamander', 'Spotted salamander'], 1, 'Five-lined skink. Salamanders and newts are amphibians.'),
+      mc('Ontario’s only venomous snake is the…', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern foxsnake', 'Eastern (gray) ratsnake'], 1, 'Massasauga rattlesnake (Threatened).'),
+      mc('A snake that flattens its neck into a cobra-like hood and then plays dead is the…', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern gartersnake', 'Eastern foxsnake'], 0, 'Eastern hognose snake (Threatened); it is non-venomous.'),
       mc('Which turtle has a soft, leathery shell and a snorkel-like snout?', ['Snapping turtle', 'Spiny softshell', 'Wood turtle', 'Midland painted turtle'], 1, 'Spiny softshell (Endangered).'),
+      mc('Which turtle has a bright yellow chin and throat and a helmet-shaped shell?', ['Blanding’s turtle', 'Wood turtle', 'Northern map turtle', 'Eastern musk turtle'], 0, 'Blanding’s turtle, the “smiling turtle” (Threatened).'),
+      mc('Which salamander is a species at risk that can only be told from the blue-spotted salamander by genetic testing?', ['Spotted salamander', 'Jefferson salamander', 'Red-spotted newt', 'Eastern red-backed salamander'], 1, 'Jefferson salamander.'),
       multi('Which species from the lecture are NOT species at risk?', ['Midland painted turtle', 'Eastern gartersnake', 'Spring peeper', 'Blanding’s turtle', 'Eastern foxsnake'], [0, 1, 2], 'Blanding’s and the foxsnake are both Threatened.'),
     ],
   },
@@ -471,7 +444,8 @@ const SORTS: SortDrill[] = [
       { label: 'Eastern (gray) ratsnake', bin: 'Endangered' }, { label: 'Least bittern', bin: 'Threatened' }, { label: 'Blanding’s turtle', bin: 'Threatened' },
       { label: 'Eastern hognose snake', bin: 'Threatened' }, { label: 'Massasauga rattlesnake', bin: 'Threatened' }, { label: 'Eastern foxsnake', bin: 'Threatened' },
       { label: 'Horned grebe', bin: 'Special Concern' }, { label: 'Snapping turtle', bin: 'Special Concern' }, { label: 'Northern map turtle', bin: 'Special Concern' },
-      { label: 'Midland painted turtle', bin: 'Not at risk' }, { label: 'Killdeer', bin: 'Not at risk' }, { label: 'Eastern gartersnake', bin: 'Not at risk' },
+      { label: 'Eastern musk turtle', bin: 'Special Concern' }, { label: 'Midland painted turtle', bin: 'Not at risk' }, { label: 'Killdeer', bin: 'Not at risk' },
+      { label: 'Eastern gartersnake', bin: 'Not at risk' },
     ],
   },
   {
@@ -491,8 +465,7 @@ const SORTS: SortDrill[] = [
     items: [
       { label: '< 19°C in summer', bin: 'Coldwater' }, { label: 'Brook trout', bin: 'Coldwater' }, { label: 'High Potential Sensitivity', bin: 'Coldwater' },
       { label: 'Spawn in autumn', bin: 'Coldwater' }, { label: '19–25°C in summer', bin: 'Coolwater' }, { label: 'Northern pike, walleye', bin: 'Coolwater' },
-      { label: 'Moderate Potential Sensitivity', bin: 'Coolwater' }, { label: 'Spawn in spring', bin: 'Coolwater' },
-      { label: '> 25°C in summer', bin: 'Warmwater' }, { label: 'Low Potential Sensitivity', bin: 'Warmwater' },
+      { label: 'Moderate Potential Sensitivity', bin: 'Coolwater' }, { label: '> 25°C in summer', bin: 'Warmwater' }, { label: 'Low Potential Sensitivity', bin: 'Warmwater' },
     ],
   },
   {
@@ -511,19 +484,19 @@ const SORTS: SortDrill[] = [
     items: [
       { label: 'Passed in 1994', bin: 'CFSA' }, { label: 'Independent forest audit every 5 years', bin: 'CFSA' }, { label: 'Requires an FMP', bin: 'CFSA' },
       { label: 'Legally binding guide for all forestry operations', bin: 'SSG' }, { label: 'Sets AOC sizes and timing restrictions', bin: 'SSG' },
-      { label: 'Section 35(1): no HADD of fish habitat', bin: 'Fisheries Act' }, { label: 'No deleterious substances in fish water', bin: 'Fisheries Act' },
+      { label: 'Section 35(1): no harmful alteration of fish habitat', bin: 'Fisheries Act' }, { label: 'No deleterious substances in fish water', bin: 'Fisheries Act' },
       { label: 'Federal law from 1985', bin: 'Fisheries Act' }, { label: 'Proclaimed in 2003', bin: 'SARA' }, { label: 'Establishes COSEWIC', bin: 'SARA' },
       { label: 'Protects critical habitat', bin: 'SARA' },
     ],
   },
   {
     id: 'streams', title: 'Which water feature?', prompt: 'Match each SSG definition.',
-    bins: ['Permanent stream', 'Intermittent stream', 'Ephemeral stream', 'Woodland pool'],
+    bins: ['Permanent stream', 'Intermittent stream', 'Woodland pool', 'Seep'],
     items: [
       { label: 'Flows ≥ 90% of the year', bin: 'Permanent stream' }, { label: 'Fed mainly by groundwater', bin: 'Permanent stream' },
       { label: 'Flows 30–90% of the year', bin: 'Intermittent stream' }, { label: 'A trickle in the driest summer', bin: 'Intermittent stream' },
-      { label: 'No well-defined channel', bin: 'Ephemeral stream' }, { label: 'Flows only after big rain events', bin: 'Ephemeral stream' },
       { label: 'Floods and dries; no fish', bin: 'Woodland pool' }, { label: '≥ 500 m² but < 0.5 ha', bin: 'Woodland pool' },
+      { label: 'Groundwater discharge on lower slopes', bin: 'Seep' }, { label: 'Greens up early; American ginseng', bin: 'Seep' },
     ],
   },
 ];
@@ -535,9 +508,9 @@ const RANKS: RankDrill[] = [
     explain: 'END: imminent extirpation or extinction. THR: likely to become endangered. SC: may become threatened or endangered. NAR: not at risk.',
   },
   {
-    id: 'layers', title: 'Lake layers', prompt: 'Surface at the top.',
-    order: ['Epilimnion', 'Thermocline', 'Hypolimnion'],
-    explain: 'Warmest and least dense on top; coldest and densest on the bottom.',
+    id: 'riparian', title: 'Riparian zone', prompt: 'Open water at the top, upland at the bottom.',
+    order: ['Submersed vegetation', 'Floating vegetation', 'Floating leafed vegetation', 'Floating mat', 'Emergent vegetation', 'Riparian bushes', 'Riparian trees', 'Forest canopy trees'],
+    explain: 'The zonation diagram from the Aquatic AOC lecture.',
   },
   {
     id: 'lake-size', title: 'Standing water by size', prompt: 'Largest at the top.',

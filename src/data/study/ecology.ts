@@ -420,7 +420,7 @@ const CARDS: StudyCard[] = [
       'Together in the same flower (a perfect flower): elm, basswood, black cherry.',
     ],
     test: [
-      typed('Male and female organs on SEPARATE trees is called…', ['dioecious'], 'Dioecious: poplars, ash, willows.'),
+      typed('Male and female organs on SEPARATE trees is called…', ['dioecious'], 'Dioecious: poplars, ash, willows.', ['monoecious']),
       mc('Which tree is dioecious?', ['Red oak', 'Basswood', 'Poplar', 'White pine'], 2, 'Poplars, ash and willows.'),
       mc('Elm, basswood and black cherry have…', ['Separate male and female trees', 'Perfect flowers', 'Serotinous cones', 'No flowers'], 1, 'Monoecious, with both organs in the same (perfect) flower.'),
     ],

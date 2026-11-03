@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { StudyCard, TestQuestion } from '@/data/study/types';
+import { editDistance, typoAllowance } from '@/lib/fuzzy';
 import { saveTest } from '@/lib/study-storage';
 import { shuffle } from '@/lib/random';
 import { DragList } from './DragList';
@@ -53,16 +54,25 @@ function build(cards: StudyCard[], length: number): Asked[] {
 const norm = (s: string) =>
   s.toLowerCase().replace(/&/g, 'and').normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, '').replace(/[^a-z0-9.]/g, '').replace(/\.+$/, '');
 
-function typedOk(input: string, accept: string[]) {
-  return accept.some((a) => {
+/** Whether a typed answer is right, and the answer it was corrected to if it was a near miss. */
+function checkTyped(input: string, q: Extract<TestQuestion, { kind: 'type' }>): { ok: boolean; fixed?: string } {
+  const typed = norm(input);
+  let best: { a: string; d: number } | null = null;
+  for (const a of q.accept) {
     const n = a.replace(/,/g, '');
     if (/^-?\d+(\.\d+)?$/.test(n)) {
       // Numbers: "1:10,000", "900 cm²" and "20.12 m" all count as the number.
       const m = input.replace(/^\s*1\s*:/, '').replace(/,/g, '').match(/-?\d+(\.\d+)?/);
-      return m !== null && Math.abs(Number(m[0]) - Number(n)) < 1e-9;
+      if (m !== null && Math.abs(Number(m[0]) - Number(n)) < 1e-9) return { ok: true };
+      continue;
     }
-    return norm(input) === norm(a);
-  });
+    const d = editDistance(typed, norm(a));
+    if (d === 0) return { ok: true };
+    if (d <= typoAllowance(norm(a).length) && (!best || d < best.d)) best = { a, d };
+  }
+  // A near miss counts unless it's at least as close to a known wrong answer.
+  if (best && (q.near ?? []).every((w) => editDistance(typed, norm(w)) > best.d)) return { ok: true, fixed: best.a };
+  return { ok: false };
 }
 
 /** The right answer, as text for the feedback and review. */
@@ -87,11 +97,22 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
   const [text, setText] = useState('');
   const [list, setList] = useState(asked.order);
   const [result, setResult] = useState<boolean | null>(null);
+  const [typo, setTypo] = useState<string | null>(null);
   const done = result !== null;
 
   function finish(ok: boolean) {
     setResult(ok);
     onDone(ok);
+  }
+
+  function checkText() {
+    if (q.kind !== 'type' || done || !text.trim()) return;
+    const { ok, fixed } = checkTyped(text, q);
+    if (fixed) {
+      setTypo(text);
+      setText(fixed);
+    }
+    finish(ok);
   }
 
   return (
@@ -152,7 +173,7 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
       )}
 
       {q.kind === 'type' && (
-        <form className="row" style={{ gap: '0.5rem' }} onSubmit={(e) => { e.preventDefault(); if (!done && text.trim()) finish(typedOk(text, q.accept)); }}>
+        <form className="row" style={{ gap: '0.5rem' }} onSubmit={(e) => { e.preventDefault(); checkText(); }}>
           <input className={`input ${done ? (result ? 'is-correct' : 'is-wrong') : ''}`} style={{ maxWidth: 420, flex: 1 }} value={text}
             onChange={(e) => setText(e.target.value)} disabled={done} aria-label="Your answer" autoFocus autoComplete="off" />
           {!done && <button className="btn btn-primary" disabled={!text.trim()}>Check</button>}
@@ -176,6 +197,7 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
         <div className={`card feedback ${result ? '' : 'is-wrong'}`}>
           <p style={{ margin: 0 }}>
             <strong>{result ? 'Correct.' : 'Not quite.'}</strong>
+            {typo && <> Corrected from “{typo}”.</>}
             {!result && <> Answer: <strong>{answerText(q)}</strong>.</>} {q.why}
           </p>
         </div>

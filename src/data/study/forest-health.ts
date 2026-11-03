@@ -106,7 +106,7 @@ const CARDS: StudyCard[] = [
       'Expected to contribute significantly to future crops as vigorous, high-quality stems (likely to keep growing for another ~20 years).',
     ],
     test: [
-      typed('What does AGS stand for?', ['Acceptable Growing Stock'], 'Acceptable Growing Stock.'),
+      typed('What does AGS stand for?', ['Acceptable Growing Stock'], 'Acceptable Growing Stock.', ['Unacceptable Growing Stock']),
       tf('AGS trees can be expected to maintain and/or improve their quality.', true, 'And contribute vigorous, high-quality stems to future crops.'),
     ],
   },
@@ -118,7 +118,7 @@ const CARDS: StudyCard[] = [
       'May also be of poor form and/or low quality and can’t reasonably be expected to improve.',
     ],
     test: [
-      typed('What does UGS stand for?', ['Unacceptable Growing Stock'], 'Unacceptable Growing Stock.'),
+      typed('What does UGS stand for?', ['Unacceptable Growing Stock'], 'Unacceptable Growing Stock.', ['Acceptable Growing Stock']),
       mc('UGS trees are high risk and expected to decline during…', ['The next cutting cycle', 'The next 100 years', 'The next winter', 'Never'], 0, 'During the next cutting cycle (likely to die in 20–25 years).'),
     ],
   },

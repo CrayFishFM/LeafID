@@ -88,7 +88,6 @@ const CARDS: StudyCard[] = [
     test: [
       multi('Which federal acts govern forest management planning?', ['Wild Animal and Plant Protection and Regulation of International and Interprovincial Trade Act', 'Migratory Birds Convention Act', 'Fisheries Act', 'Species at Risk Act', 'Highway Traffic Act'], [0, 1, 2, 3], 'The four acts from the Federal Law lecture.'),
       typed('MBCA stands for the Migratory Birds ____ Act.', ['convention'], 'Migratory Birds Convention Act.'),
-      multi('Which species are on the acts slide as examples?', ['American ginseng', 'Blanding’s turtle', 'Wolverine', 'Kirtland’s warbler', 'Lake sturgeon', 'Mallard'], [0, 1, 2, 3, 4], 'Plus the five-lined skink.'),
     ],
   },
   {
@@ -334,9 +333,6 @@ const CARDS: StudyCard[] = [
       mc('What is the Ontario status of the piping plover?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       mc('What is the status of the least bittern?', ['Special Concern', 'Threatened', 'Endangered', 'Extirpated'], 1, 'Threatened.'),
       mc('What is the status of the horned grebe?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
-      mc('A small, stocky shorebird with bright orange legs, a stubby black-tipped orange bill and a black neck band is the…', ['Killdeer', 'Piping plover', 'Least bittern', 'Horned grebe'], 1, 'Piping plover (Endangered). The killdeer has two black chest bands and is not at risk.'),
-      mc('The smallest member of the heron family is the…', ['Green heron', 'American bittern', 'Least bittern', 'Great blue heron'], 2, 'Least bittern, about 30 cm (Threatened).'),
-      mc('A waterbird with rusty-cinnamon sides and neck and long yellow tufts behind the eye is the…', ['Hooded merganser', 'Horned grebe', 'Wood duck', 'Bufflehead'], 1, 'Horned grebe in breeding plumage (Special Concern).'),
       multi('Which water birds from the lecture are species at risk?', ['Horned grebe', 'Least bittern', 'Piping plover', 'Killdeer', 'Great blue heron', 'Double-crested cormorant'], [0, 1, 2], 'Horned grebe (SC), least bittern (THR), piping plover (END).'),
     ],
   },
@@ -367,7 +363,7 @@ const CARDS: StudyCard[] = [
     test: [
       mc('Brumation is…', ['Summer dormancy in mammals', 'Hibernation in cold-blooded animals', 'An underground den', 'Spring breeding migration'], 1, 'Synonymous with hibernation, for cold-blooded animals.'),
       mc('A hibernaculum is…', ['A type of turtle', 'An underground retreat below the frost line used to hibernate', 'The process of hibernating', 'A frog’s antifreeze'], 1, 'Hibernacula is the plural.'),
-      typed('What is the singular of hibernacula?', ['hibernaculum'], 'Hibernaculum.'),
+      typed('What is the singular of hibernacula?', ['hibernaculum'], 'Hibernaculum.', ['hibernacula']),
     ],
   },
   {
@@ -414,12 +410,6 @@ const CARDS: StudyCard[] = [
       mc('What is the status of the eastern musk turtle (stinkpot)?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 0, 'Special Concern.'),
       mc('What is the status of the eastern (gray) ratsnake?', ['Special Concern', 'Threatened', 'Endangered', 'Not at Risk'], 2, 'Endangered.'),
       multi('Which snakes are Threatened?', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern foxsnake', 'Eastern (gray) ratsnake', 'Eastern gartersnake'], [0, 1, 2], 'The ratsnake is Endangered; the gartersnake is not at risk.'),
-      mc('Ontario’s only lizard is the…', ['Red-spotted newt', 'Five-lined skink', 'Blue-spotted salamander', 'Spotted salamander'], 1, 'Five-lined skink. Salamanders and newts are amphibians.'),
-      mc('Ontario’s only venomous snake is the…', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern foxsnake', 'Eastern (gray) ratsnake'], 1, 'Massasauga rattlesnake (Threatened).'),
-      mc('A snake that flattens its neck into a cobra-like hood and then plays dead is the…', ['Eastern hognose snake', 'Massasauga rattlesnake', 'Eastern gartersnake', 'Eastern foxsnake'], 0, 'Eastern hognose snake (Threatened); it is non-venomous.'),
-      mc('Which turtle has a soft, leathery shell and a snorkel-like snout?', ['Snapping turtle', 'Spiny softshell', 'Wood turtle', 'Midland painted turtle'], 1, 'Spiny softshell (Endangered).'),
-      mc('Which turtle has a bright yellow chin and throat and a helmet-shaped shell?', ['Blanding’s turtle', 'Wood turtle', 'Northern map turtle', 'Eastern musk turtle'], 0, 'Blanding’s turtle, the “smiling turtle” (Threatened).'),
-      mc('Which salamander is a species at risk that can only be told from the blue-spotted salamander by genetic testing?', ['Spotted salamander', 'Jefferson salamander', 'Red-spotted newt', 'Eastern red-backed salamander'], 1, 'Jefferson salamander.'),
       multi('Which species from the lecture are NOT species at risk?', ['Midland painted turtle', 'Eastern gartersnake', 'Spring peeper', 'Blanding’s turtle', 'Eastern foxsnake'], [0, 1, 2], 'Blanding’s and the foxsnake are both Threatened.'),
     ],
   },

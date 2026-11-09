@@ -32,12 +32,15 @@ export function AnswerModeToggle({ mode, onChange }: { mode: AnswerMode; onChang
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-/** 0 = exact, 1 = starts with, 2 = a word starts with, 3 = starts with, give or take a typo, -1 = no match. */
+/**
+ * 0 = exact, 1 = starts with, 2 = starts at a later word ("white pine" in "eastern white pine"),
+ * 3 = starts with, give or take a typo, -1 = no match.
+ */
 function score(o: AnswerOption, q: string): number {
   let best = -1;
   for (const t of o.terms.map(norm)) {
     if (!t) continue;
-    const s = t === q ? 0 : t.startsWith(q) ? 1 : t.split(' ').some((w) => w.startsWith(q)) ? 2
+    const s = t === q ? 0 : t.startsWith(q) ? 1 : ` ${t}`.includes(` ${q}`) ? 2
       : editDistance(q, t.slice(0, q.length)) <= typoAllowance(q.length) ? 3 : -1;
     if (s !== -1 && (best === -1 || s < best)) best = s;
   }

@@ -107,7 +107,7 @@ export default async function TopicStudyPage(props: PageProps<'/quizzes/[topic]/
                   ))}
                   <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
                     <div>
-                      <h3 style={{ margin: 0 }}>{i.name}</h3>
+                      <h3 style={{ margin: 0 }}>{i.code && <span className="chip chip-code">{i.code}</span>} {i.name}</h3>
                       {(i.aka || i.scientific) && (
                         <div className="small muted">
                           {i.aka}{i.aka && i.scientific && ' · '}{i.scientific && <em>{i.scientific}</em>}

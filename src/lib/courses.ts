@@ -28,16 +28,16 @@ export async function courseCards(userId?: string): Promise<CourseCardData[]> {
   }));
 
   return [...COURSES, ...extra].map((c) => {
-    if (c.id === 'dendrology') {
-      return { ...c, cover: leafCover?.url, stats: leaf?.total ? { total: leaf.total, correct: leaf.correct } : null };
-    }
+    // Answers across the course's quiz topics, plus leaf ID for Dendrology.
+    const stats = [...(c.topics ?? []).map((id) => totals[id]), c.id === 'dendrology' ? leaf : null]
+      .reduce<{ total: number; correct: number } | null>(
+        (acc, s) => (s?.total ? { total: (acc?.total ?? 0) + s.total, correct: (acc?.correct ?? 0) + s.correct } : acc),
+        null,
+      );
+    if (c.id === 'dendrology') return { ...c, cover: leafCover?.url, stats };
     if (c.photo) return { ...c, cover: photos.find((p) => p.key === c.photo)?.url, stats: null };
     const topic = topics.find((t) => c.topics?.includes(t.id));
     const first = topic?.items.find((i) => i.images.length > 0);
-    const stats = (c.topics ?? []).reduce<{ total: number; correct: number } | null>((acc, id) => {
-      const s = totals[id];
-      return s ? { total: (acc?.total ?? 0) + s.total, correct: (acc?.correct ?? 0) + s.correct } : acc;
-    }, null);
     return { ...c, cover: topic && first ? topicImageUrl(topic, first.images[0]) : undefined, stats };
   });
 }

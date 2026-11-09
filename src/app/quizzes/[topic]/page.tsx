@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { GuestGate } from '@/components/GuestGate';
+import { ScopeTabs } from '@/components/quiz/ScopeTabs';
 import { TopicQuiz } from '@/components/TopicQuiz';
 import { getUser } from '@/lib/auth';
 import { getTopic } from '@/lib/topics';
@@ -44,13 +45,7 @@ export default async function TopicPracticePage(props: PageProps<'/quizzes/[topi
           </p>
         )}
       </div>
-      <div className="segmented">
-        <Link href={`${base}?scope=all`} aria-current={scope === 'all'}>Everything</Link>
-        <Link href={`${base}?scope=weak`} aria-current={scope === 'weak'}>My weak spots</Link>
-        {Object.entries(topic.groups).map(([id, label]) => (
-          <Link key={id} href={`${base}?scope=${id}`} aria-current={scope === id}>{label}</Link>
-        ))}
-      </div>
+      <ScopeTabs base={base} scope={scope} groups={topic.groups} allLabel="Everything" />
       <TopicQuiz
         key={scope}
         topicId={topic.id}

@@ -15,7 +15,7 @@ interface TopicRow {
   groups: string; updated_at: number | null; updated_by: string | null;
 }
 interface ItemRow {
-  topic: string; id: string; name: string; aka: string | null; note: string | null; scientific: string | null;
+  topic: string; id: string; name: string; code: string | null; aka: string | null; note: string | null; scientific: string | null;
   grp: string; tips: string; lookalikes: string; images: string; updated_at: number | null; updated_by: string | null;
 }
 
@@ -34,15 +34,16 @@ export async function seedTopics() {
     }
     for (const [ii, i] of t.items.entries()) {
       await pool.execute(
-        `INSERT INTO quiz_item (topic, id, name, aka, note, scientific, grp, tips, lookalikes, images, sort)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO quiz_item (topic, id, name, code, aka, note, scientific, grp, tips, lookalikes, images, sort)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE images = VALUES(images), sort = VALUES(sort),
            -- Text an admin never edited follows the seed, so corrections here reach the live site.
-           name = IF(updated_at IS NULL, VALUES(name), name), aka = IF(updated_at IS NULL, VALUES(aka), aka),
+           name = IF(updated_at IS NULL, VALUES(name), name), code = IF(updated_at IS NULL, VALUES(code), code),
+           aka = IF(updated_at IS NULL, VALUES(aka), aka),
            note = IF(updated_at IS NULL, VALUES(note), note), scientific = IF(updated_at IS NULL, VALUES(scientific), scientific),
            grp = IF(updated_at IS NULL, VALUES(grp), grp), tips = IF(updated_at IS NULL, VALUES(tips), tips),
            lookalikes = IF(updated_at IS NULL, VALUES(lookalikes), lookalikes)`,
-        [t.id, i.id, i.name, i.aka ?? null, i.note ?? null, i.scientific ?? null, i.group,
+        [t.id, i.id, i.name, i.code ?? null, i.aka ?? null, i.note ?? null, i.scientific ?? null, i.group,
           JSON.stringify(i.tips), JSON.stringify(i.lookalikes), JSON.stringify(i.images), ii],
       );
     }
@@ -57,7 +58,7 @@ export const listTopics = cache(async (): Promise<Topic[]> => {
          FROM quiz_topic t LEFT JOIN \`user\` u ON u.id = t.updated_by ORDER BY t.sort, t.id`,
     ),
     query<ItemRow>(
-      `SELECT i.topic, i.id, i.name, i.aka, i.note, i.scientific, i.grp, i.tips, i.lookalikes, i.images, i.updated_at,
+      `SELECT i.topic, i.id, i.name, i.code, i.aka, i.note, i.scientific, i.grp, i.tips, i.lookalikes, i.images, i.updated_at,
               u.name AS updated_by
          FROM quiz_item i LEFT JOIN \`user\` u ON u.id = i.updated_by ORDER BY i.sort, i.id`,
     ),
@@ -70,7 +71,7 @@ export const listTopics = cache(async (): Promise<Topic[]> => {
       pairs: seed?.pairs,
       updatedAt: t.updated_at, updatedBy: t.updated_by,
       items: items.filter((i) => i.topic === t.id).map((i): TopicItem => ({
-        id: i.id, name: i.name, aka: i.aka ?? undefined, note: i.note ?? undefined, scientific: i.scientific ?? undefined,
+        id: i.id, name: i.name, code: i.code ?? undefined, aka: i.aka ?? undefined, note: i.note ?? undefined, scientific: i.scientific ?? undefined,
         group: i.grp,
         tips: parseJson<string[]>(i.tips, []),
         lookalikes: parseJson<string[]>(i.lookalikes, []),
@@ -114,7 +115,7 @@ export async function updateTopic(id: string, edit: TopicEdit, adminId: string) 
 }
 
 export interface ItemEdit {
-  name: string; aka: string; note: string; scientific: string; group: string;
+  name: string; code: string; aka: string; note: string; scientific: string; group: string;
   tips: string[]; lookalikes: string[];
 }
 
@@ -129,10 +130,10 @@ export async function updateItem(topicId: string, itemId: string, edit: ItemEdit
   if (lookalikes.length > 6) throw new Error('Pick 6 look-alikes or fewer');
 
   await exec(
-    `UPDATE quiz_item SET name = ?, aka = ?, note = ?, scientific = ?, grp = ?, tips = ?, lookalikes = ?, updated_at = ?, updated_by = ?
+    `UPDATE quiz_item SET name = ?, code = ?, aka = ?, note = ?, scientific = ?, grp = ?, tips = ?, lookalikes = ?, updated_at = ?, updated_by = ?
       WHERE topic = ? AND id = ?`,
     [
-      cleanText(edit.name, 'Name', 80), cleanText(edit.aka, 'Other name', 80, false), cleanText(edit.note, 'Tag', 80, false),
+      cleanText(edit.name, 'Name', 80), cleanText(edit.code, 'Code', 16, false), cleanText(edit.aka, 'Other name', 80, false), cleanText(edit.note, 'Tag', 80, false),
       cleanText(edit.scientific, 'Scientific name', 120, false), edit.group, JSON.stringify(tips), JSON.stringify(lookalikes),
       Date.now(), adminId, topicId, itemId,
     ],
@@ -144,9 +145,9 @@ export async function resetItem(topicId: string, itemId: string) {
   const seed = TOPIC_SEED.find((t) => t.id === topicId)?.items.find((i) => i.id === itemId);
   if (!seed) throw new Error('This item has no original version to go back to');
   await exec(
-    `UPDATE quiz_item SET name = ?, aka = ?, note = ?, scientific = ?, grp = ?, tips = ?, lookalikes = ?, updated_at = NULL, updated_by = NULL
+    `UPDATE quiz_item SET name = ?, code = ?, aka = ?, note = ?, scientific = ?, grp = ?, tips = ?, lookalikes = ?, updated_at = NULL, updated_by = NULL
       WHERE topic = ? AND id = ?`,
-    [seed.name, seed.aka ?? null, seed.note ?? null, seed.scientific ?? null, seed.group,
+    [seed.name, seed.code ?? null, seed.aka ?? null, seed.note ?? null, seed.scientific ?? null, seed.group,
       JSON.stringify(seed.tips), JSON.stringify(seed.lookalikes), topicId, itemId],
   );
 }

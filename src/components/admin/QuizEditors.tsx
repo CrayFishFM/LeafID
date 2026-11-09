@@ -67,10 +67,10 @@ export function QuizTopicEditor({ topicId, initial }: { topicId: string; initial
   );
 }
 
-interface ItemFields { name: string; aka: string; note: string; scientific: string; group: string; tips: string; lookalikes: string[] }
+interface ItemFields { name: string; code: string; aka: string; note: string; scientific: string; group: string; tips: string; lookalikes: string[] }
 
 const toFields = (i: TopicItem): ItemFields => ({
-  name: i.name, aka: i.aka ?? '', note: i.note ?? '', scientific: i.scientific ?? '', group: i.group,
+  name: i.name, code: i.code ?? '', aka: i.aka ?? '', note: i.note ?? '', scientific: i.scientific ?? '', group: i.group,
   tips: i.tips.join('\n'), lookalikes: i.lookalikes,
 });
 
@@ -88,7 +88,7 @@ export function QuizItemEditor({ topicId, item, imageUrls, groups, others, edite
   const [msg, setMsg] = useState<Msg>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [pending, start] = useTransition();
-  const set = (k: 'name' | 'aka' | 'note' | 'scientific' | 'group' | 'tips') =>
+  const set = (k: 'name' | 'code' | 'aka' | 'note' | 'scientific' | 'group' | 'tips') =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
   const id = (k: string) => `${item.id}-${k}`;
 
@@ -132,6 +132,10 @@ export function QuizItemEditor({ topicId, item, imageUrls, groups, others, edite
           <div className="field">
             <label htmlFor={id('name')}>Name (the correct answer)</label>
             <input id={id('name')} className="input" value={f.name} onChange={set('name')} required maxLength={80} />
+          </div>
+          <div className="field">
+            <label htmlFor={id('code')}>Code <span className="muted">(optional, e.g. Pw)</span></label>
+            <input id={id('code')} className="input" value={f.code} onChange={set('code')} maxLength={16} />
           </div>
           <div className="field">
             <label htmlFor={id('aka')}>Other name <span className="muted">(optional)</span></label>

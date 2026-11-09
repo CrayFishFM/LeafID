@@ -92,6 +92,40 @@ export function useHints(max: number, fetch: (level: number) => Promise<string |
   return { hints, hint, reset: () => setHints([]) };
 }
 
+/** A question that shows one photo and asks which item it is (leaf ID, conifers, fish, defects…). */
+export interface PhotoQuestion { imageKey: string; imageUrl: string; choices: string[] }
+
+/** An answer to a photo question: whether it was right, which item the photo was, and what was picked. */
+export interface PhotoResult extends Answered { item: string; chosen: string }
+
+const itemOf = (r: PhotoResult) => r.item;
+
+/** A photo ID round with hints: the state every photo quiz renders through PhotoQuiz. */
+export function usePhotoQuiz<Q extends PhotoQuestion, R extends PhotoResult>({ initial, submit, load, hint, maxHints, onNext }: {
+  initial: Q | null;
+  /** Saves an answer on the server; `hints` is how many the learner used. */
+  submit: (q: Q, chosen: string, hints: number) => Promise<Omit<R, 'chosen'>>;
+  load: (recent: string[]) => Promise<Q | null>;
+  hint: (q: Q, level: number) => Promise<string | null>;
+  maxHints: number;
+  onNext?: (newRound: boolean) => void;
+}) {
+  const quiz = useQuizRound<Q, string, R>({
+    initial,
+    submit: async (q, chosen) => ({ ...(await submit(q, chosen, hints.length)), chosen }) as R,
+    load,
+    itemOf,
+    onNext: (newRound) => {
+      reset();
+      onNext?.(newRound);
+    },
+  });
+  const { hints, hint: nextHint, reset } = useHints(maxHints, (level) => hint(quiz.q!, level), quiz);
+  return { ...quiz, hints, hint: nextHint, maxHints, itemOf };
+}
+
+export type PhotoQuizState<Q extends PhotoQuestion, R extends PhotoResult> = ReturnType<typeof usePhotoQuiz<Q, R>>;
+
 /**
  * Keyboard shortcuts: 1–4 pick a choice, Enter / Space go on, H asks for a hint. Pass only the
  * actions that apply right now. Keys typed in a text box, or on the photo and its enlarged view,

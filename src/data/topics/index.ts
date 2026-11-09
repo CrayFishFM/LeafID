@@ -1,3 +1,4 @@
+import { CONIFERS } from './conifers';
 import { DEFECTS } from './defects';
 import { FISH } from './fish';
 import { HERPS } from './herps';
@@ -12,7 +13,7 @@ export type { Topic, TopicItem } from './types';
  * here does not overwrite the database. New topics, new items and new photos are picked up.
  * Put a topic's photos in public/quizzes/<id>/.
  */
-export const TOPIC_SEED: Topic[] = [FISH, DEFECTS, WATERBIRDS, HERPS];
+export const TOPIC_SEED: Topic[] = [FISH, DEFECTS, WATERBIRDS, HERPS, CONIFERS];
 
 export function topicItem(topic: Topic, id: string): TopicItem | undefined {
   return topic.items.find((i) => i.id === id);
@@ -26,10 +27,13 @@ export function photoSide(image: string): { file: string; side?: string } {
 
 export const topicImageUrl = (topic: Topic, image: string) => `/quizzes/${topic.id}/${photoSide(image).file}`;
 
-/** Full display name, e.g. "Brook trout (Speckled trout)". */
-export const itemLabel = (i: TopicItem) => (i.aka ? `${i.name} (${i.aka})` : i.name);
+/** Full display name, e.g. "Brook trout (Speckled trout)" or "Pw · Eastern white pine". */
+export const itemLabel = (i: Pick<TopicItem, 'name' | 'aka' | 'code'>) => {
+  const name = i.aka ? `${i.name} (${i.aka})` : i.name;
+  return i.code ? `${i.code} · ${name}` : name;
+};
 
 /** An item without its photo list or ratings, so the answer to a question is not sent to the browser. */
 export const clientItem = (i: TopicItem) => ({
-  id: i.id, name: i.name, aka: i.aka, note: i.note, scientific: i.scientific, group: i.group, tips: i.tips, lookalikes: i.lookalikes,
+  id: i.id, name: i.name, code: i.code, aka: i.aka, note: i.note, scientific: i.scientific, group: i.group, tips: i.tips, lookalikes: i.lookalikes,
 });

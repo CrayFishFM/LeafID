@@ -252,5 +252,6 @@ export async function ensureSchema() {
       updated_by VARCHAR(64) NULL,
       PRIMARY KEY (topic, id)
     ) ${opts}`);
+  await addColumn('quiz_item', 'code', 'VARCHAR(16) NULL');
   await renameSpeciesIds();
 }

@@ -17,6 +17,8 @@ export interface TopicItem {
   /** Stable id, used in the database. Never change one once people have practised it. */
   id: string;
   name: string;
+  /** Species code, e.g. "Pw", shown the way the leaf quiz shows codes. */
+  code?: string;
   /** Other accepted names, shown under the main one. */
   aka?: string;
   /** A short tag shown beside the name, e.g. "Invasive species". */

@@ -16,7 +16,9 @@ export default function ForestHealthPage() {
         <p className="muted" style={{ margin: 0 }}>
           Pathology and fungi, AGS / UGS and defect severity, the other hardwood defects, tree marking, and cavity and mast
           trees. For identifying defects from photos, use the{' '}
-          <Link href="/quizzes/defects">defect quiz</Link> and its <Link href="/quizzes/defects/study">study guide</Link>.
+          <Link href="/quizzes/defects">hardwood defect quiz</Link> and its <Link href="/quizzes/defects/study">study guide</Link>, or the{' '}
+          <Link href="/quizzes/conifer-defects">conifer defect quiz</Link> and its{' '}
+          <Link href="/quizzes/conifer-defects/study">study guide</Link>.
         </p>
         <CheckNotice guide={guide} />
       </div>

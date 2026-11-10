@@ -22,16 +22,24 @@ interface ItemRow {
 export async function seedTopics() {
   for (const [ti, t] of TOPIC_SEED.entries()) {
     await pool.execute(
-      `INSERT IGNORE INTO quiz_topic (id, title, short, blurb, question, noun, source, \`groups\`, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO quiz_topic (id, title, short, blurb, question, noun, source, \`groups\`, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE sort = VALUES(sort),
+         -- Like items: text an admin never edited follows the seed.
+         title = IF(updated_at IS NULL, VALUES(title), title), short = IF(updated_at IS NULL, VALUES(short), short),
+         blurb = IF(updated_at IS NULL, VALUES(blurb), blurb), question = IF(updated_at IS NULL, VALUES(question), question),
+         noun = IF(updated_at IS NULL, VALUES(noun), noun), source = IF(updated_at IS NULL, VALUES(source), source)`,
       [t.id, t.title, t.short, t.blurb, t.question, t.noun, t.source, JSON.stringify(t.groups), ti],
     );
-    // Add groups that are new in the seed, keeping any labels an admin changed.
+    // Groups follow the seed's list, keeping any labels an admin changed.
     const row = await one<{ groups: string }>('SELECT `groups` FROM quiz_topic WHERE id = ?', [t.id]);
     const groups = parseJson<Record<string, string>>(row?.groups ?? '{}', {});
-    const merged = { ...t.groups, ...groups };
-    if (Object.keys(merged).length !== Object.keys(groups).length) {
+    const merged = Object.fromEntries(Object.entries(t.groups).map(([g, label]) => [g, groups[g] ?? label]));
+    if (JSON.stringify(merged) !== JSON.stringify(groups)) {
       await pool.execute('UPDATE quiz_topic SET `groups` = ? WHERE id = ?', [JSON.stringify(merged), t.id]);
     }
+    // Items only come from the seed, so one dropped from it is dropped here too.
+    const ids = t.items.map((i) => i.id);
+    await pool.execute(`DELETE FROM quiz_item WHERE topic = ? AND id NOT IN (${ids.map(() => '?').join(', ')})`, [t.id, ...ids]);
     for (const [ii, i] of t.items.entries()) {
       await pool.execute(
         `INSERT INTO quiz_item (topic, id, name, code, aka, note, scientific, grp, tips, lookalikes, images, sort)

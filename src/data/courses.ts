@@ -39,15 +39,15 @@ export const COURSES: Course[] = [
   {
     id: 'forest-health',
     title: 'Forest Health',
-    subject: 'Midterm review, hardwood & conifer defects',
-    blurb: 'Name the hardwood or conifer defect from a photo and rate it (minor, moderate or major; AGS or UGS), plus a midterm review: fungi, other defects, tree marking, cavity and mast trees.',
+    subject: 'Midterm review, hardwood & conifer defects, cavity trees',
+    blurb: 'Name the hardwood or conifer defect from a photo and rate it (minor, moderate or major; AGS or UGS), identify cavity trees, plus a midterm review: fungi, other defects, tree marking, cavity and mast trees.',
     topics: ['defects', 'conifer-defects'],
     links: [
       { label: 'Midterm review', href: '/courses/forest-health' },
       { label: 'Identify & rate defects', href: '/quizzes/defects' },
       { label: 'Rate only', href: '/quizzes/defects/grade' },
       { label: 'Defect guide', href: '/quizzes/defects/study' },
-      { label: 'Identify & rate conifer defects', href: '/quizzes/conifer-defects' },
+      { label: 'Conifer defects & cavity trees', href: '/quizzes/conifer-defects' },
       { label: 'Rate conifer defects only', href: '/quizzes/conifer-defects/grade' },
       { label: 'Conifer defect guide', href: '/quizzes/conifer-defects/study' },
     ],

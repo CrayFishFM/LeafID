@@ -182,12 +182,12 @@ const CARDS: StudyCard[] = [
     a: [
       'The scale means 1 unit on the map = that many of the same unit on the ground.',
       '1:20,000 → 1 cm = 20,000 cm = 200 m on the ground.',
-      '1:50,000 → 1 cm = 50,000 cm; ÷ 2.54 = 19,685 inches on the ground.',
+      '1:50,000 → 1 cm = 50,000 cm = 500 m on the ground.',
       'You can also use the bar (conversion) scale printed on the map.',
     ],
     test: [
       typed('At 1:20,000, 1 cm on the map is how many metres on the ground?', ['200'], '20,000 cm ÷ 100 = 200 m.'),
-      typed('At 1:50,000, 1 cm on the map is how many inches on the ground? (round to the nearest inch)', ['19685'], '50,000 cm ÷ 2.54 = 19,685 inches.'),
+      typed('At 1:50,000, 1 cm on the map is how many metres on the ground?', ['500'], '50,000 cm ÷ 100 = 500 m.'),
       typed('At 1:10,000, 1 cm on the map is how many metres on the ground?', ['100'], '10,000 cm ÷ 100 = 100 m.'),
     ],
   },

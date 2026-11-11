@@ -15,6 +15,8 @@ const TOOLS = 'Forestry tools';
 const AGING = 'Tree aging';
 const PRISMS = 'Prisms';
 
+const TALLY_METHODS = ['A: slash tally (////, crossed at 5)', 'B: dot count (rows of dots, slashed at 10)', 'C: dot tally (dots joined into a box, X at 10)', 'None of these'];
+
 /** The tools on the review slide. */
 const TOOL_USES: [string, string][] = [
   ['Sandvik / brush axe', 'Clearing brush.'],
@@ -102,15 +104,17 @@ const CARDS: StudyCard[] = [
   },
   {
     section: CHAIN, q: 'What are the tally methods A, B and C used for?',
+    image: { src: '/study/forest-environment/tally-methods.jpg', alt: 'Tally chart: method A uses slash marks crossed at 5, method B uses rows of dots with a slash at 10, method C uses 4 dots joined into a box with an X at 10.' },
     a: [
-      'A (slash): chaining.',
-      'B: scaling logs or lumber.',
-      'C (dot tally): timber cruising / inventory. Rows and columns are both added and the grand totals must match.',
+      'A (slash tally): four strokes, the fifth crosses them. Used for chaining.',
+      'B (dot count): rows of dots, with a slash through them at 10. Used for scaling logs or lumber.',
+      'C (dot tally): 4 dots in a square, lines join them into a box (5–8), then diagonals make an X (10). Used for timber cruising / inventory. Rows and columns are both added and the grand totals must match.',
       'Use pencil (HB, 2H, 4H). Don’t erase: strike out lettering or number errors, circle tally errors. Sheets can be used in a court of law.',
     ],
     test: [
-      mc('Which tally method is used for chaining?', ['A', 'B', 'C', 'None'], 0, 'A: slash tally for chaining.'),
-      mc('Which tally method is used for timber cruising?', ['A', 'B', 'C', 'None'], 2, 'C: dot tally.'),
+      mc('Which tally method is used for chaining?', TALLY_METHODS, 0, 'A: the slash tally, crossed at 5.'),
+      mc('Which tally method is used for timber cruising?', TALLY_METHODS, 2, 'C: the dot tally, dots joined into a box with an X at 10.'),
+      mc('Which tally method is used for scaling logs or lumber?', TALLY_METHODS, 1, 'B: the dot count, rows of dots with a slash at 10.'),
       mc('How do you fix a tally error?', ['Circle it', 'Erase it', 'Use white-out', 'Start a new sheet'], 0, 'Circle tally errors; strike out lettering errors. Never erase.'),
     ],
   },
@@ -618,11 +622,11 @@ const SORTS: SortDrill[] = [
   },
   {
     id: 'tally', title: 'Which tally method?', prompt: 'Which tally method is used for each job?',
-    bins: ['A (slash)', 'B', 'C (dot)'],
+    bins: ['A (slash)', 'B (dot count)', 'C (dot)'],
     items: [
       { label: 'Chaining', bin: 'A (slash)' },
-      { label: 'Scaling logs', bin: 'B' },
-      { label: 'Scaling lumber', bin: 'B' },
+      { label: 'Scaling logs', bin: 'B (dot count)' },
+      { label: 'Scaling lumber', bin: 'B (dot count)' },
       { label: 'Timber cruising', bin: 'C (dot)' },
       { label: 'Inventory plots', bin: 'C (dot)' },
     ],

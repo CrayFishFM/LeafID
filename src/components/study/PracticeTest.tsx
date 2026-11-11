@@ -6,6 +6,7 @@ import { editDistance, typoAllowance } from '@/lib/fuzzy';
 import { saveTest } from '@/lib/study-storage';
 import { shuffle } from '@/lib/random';
 import { DragList } from './DragList';
+import { CardImage } from './Flashcards';
 
 const LENGTHS = [10, 20];
 
@@ -121,6 +122,7 @@ function Question({ asked, onDone }: { asked: Asked; onDone: (correct: boolean) 
         <p className="eyebrow" style={{ margin: 0 }}>{KIND_HINT[q.kind]}</p>
         <h3 style={{ margin: 0 }}>{q.q}</h3>
       </div>
+      {asked.card.image && <CardImage image={asked.card.image} />}
 
       {q.kind === 'mc' && (
         <div className="choices">

@@ -1,9 +1,14 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- static study diagrams are pre-sized */
 
 import { useEffect, useMemo, useState } from 'react';
 import type { StudyCard } from '@/data/study/types';
 import { loadKnown, saveKnown } from '@/lib/study-storage';
 import { shuffle } from '@/lib/random';
+
+export function CardImage({ image }: { image: NonNullable<StudyCard['image']> }) {
+  return <img src={image.src} alt={image.alt} loading="lazy" style={{ maxWidth: '100%', height: 'auto', borderRadius: 8, background: '#fff' }} />;
+}
 
 export function Answer({ card }: { card: StudyCard }) {
   return (
@@ -128,6 +133,7 @@ export function Flashcards({ guideId, cards, sections, allLabel }: { guideId: st
               <div className={`card flashcard ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped((f) => !f)} aria-live="polite">
                 <span className="small muted">{card.section}{card.n ? ` · Q${card.n}` : card.extra ? ' · From the lecture' : ''} · {Math.min(pos, deck.length - 1) + 1} of {deck.length}</span>
                 <span className="flashcard-q">{card.q}</span>
+                {card.image && <CardImage image={card.image} />}
                 {flipped ? <div className="flashcard-a"><Answer card={card} /></div> : <span className="small muted">Tap or press Space to show the answer</span>}
               </div>
               <div className="row" style={{ justifyContent: 'space-between' }}>

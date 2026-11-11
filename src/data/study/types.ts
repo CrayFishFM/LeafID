@@ -16,6 +16,8 @@ export interface StudyCard {
   opinion?: boolean;
   /** Not a question on the review sheet but covered in the lecture. */
   extra?: boolean;
+  /** A picture shown with the question on the flashcard and in the practice test. */
+  image?: { src: string; alt: string };
   /** Practice test questions on this card. Cards without any (opinion cards, photo-only topics) stay flashcards only. */
   test?: TestQuestion[];
 }

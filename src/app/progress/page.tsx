@@ -3,6 +3,7 @@ import { GuestGate } from '@/components/GuestGate';
 import { StudyDetail, StudySummary, type GuideOutline } from '@/components/study/StudyProgress';
 import { COURSES } from '@/data/courses';
 import { ECOLOGY } from '@/data/study/ecology';
+import { FOREST_ENVIRONMENT } from '@/data/study/forest-environment';
 import { FOREST_HEALTH } from '@/data/study/forest-health';
 import { REMOTE_SENSING } from '@/data/study/remote-sensing';
 import { WILDLIFE } from '@/data/study/wildlife';
@@ -24,6 +25,7 @@ export const metadata = { title: 'Progress' };
 /** Each course's midterm study guide, if it has one. */
 const GUIDES: Record<string, { guide: StudyGuide; href: string }> = {
   'forest-health': { guide: FOREST_HEALTH, href: '/courses/forest-health' },
+  'forest-environment': { guide: FOREST_ENVIRONMENT, href: '/courses/forest-environment' },
   ecology: { guide: ECOLOGY, href: '/courses/ecology' },
   'remote-sensing': { guide: REMOTE_SENSING, href: '/courses/remote-sensing' },
   wildlife: { guide: WILDLIFE, href: '/courses/wildlife' },

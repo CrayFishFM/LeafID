@@ -53,6 +53,13 @@ export const COURSES: Course[] = [
     ],
   },
   {
+    id: 'forest-environment',
+    title: 'Forest Environment',
+    subject: 'Midterm review',
+    blurb: 'Pacing and chaining, maps and UTM, compassing, DBH and Suunto heights, tools, tree aging and prisms: flashcards, a practice test and math drills.',
+    links: [{ label: 'Open the study guide', href: '/courses/forest-environment' }],
+  },
+  {
     id: 'ecology',
     title: 'Ecology',
     subject: 'Midterm review',

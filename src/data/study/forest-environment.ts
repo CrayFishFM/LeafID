@@ -428,7 +428,9 @@ const CARDS: StudyCard[] = [
       'Crown length: centre of the crown to the tip.',
     ],
     test: [
-      mc('Ground to the first crown-forming branch is…', ['Bole height', 'Total height', 'Merchantable height', 'Stump height'], 0, 'Bole height ends at the crown point.'),
+      mc('Which height is measured from the ground up to the first living or dead branch that forms part of the crown (the crown point)?', ['Bole height', 'Total height', 'Merchantable height', 'Stump height'], 0, 'Bole height runs from the ground to the crown point. Total height goes to the tip; merchantable height to the last usable part.'),
+      mc('Total height is measured from the ground to…', ['The tip of the tree', 'The crown point', 'The last usable portion', 'Breast height'], 0, 'Total height is ground to the very top (tip).'),
+      mc('Merchantable height is measured from the ground to…', ['The last usable portion of the stem', 'The tip of the tree', 'The crown point', 'The stump'], 0, 'Merchantable height ends where the stem stops being usable.'),
     ],
   },
 
@@ -479,7 +481,8 @@ const CARDS: StudyCard[] = [
       'Count the rings: early wood + late wood = 1 annual ring (1 year).',
     ],
     test: [
-      typed('The most common boring height is stump height. How many cm is that?', ['24'], '24 cm, or breast height (1.3 m).'),
+      typed('How high off the ground is stump height, the most common place to bore (cm)?', ['24'], 'Stump height is 24 cm. The other place to bore is breast height, 1.3 m.'),
+      mc('Where can you bore a tree with an increment borer?', ['Stump height (24 cm) or breast height (1.3 m)', 'Only at 1.3 m', 'Only at the stump', 'At the crown point'], 0, 'Stump height (24 cm) is the most common; breast height (1.3 m) also works.'),
       order('Put the increment borer steps in order.', ['Assemble the borer', 'Twist the barrel in clockwise', 'Insert the extractor spoon', 'One full turn counter-clockwise', 'Pull out the core', 'Count the rings'], 'Assemble, twist in, extractor, counter-twist, extract, age.'),
       mc('One annual ring is…', ['Early wood + late wood', 'Early wood only', 'Late wood only', 'Two dark bands'], 0, 'Early + late wood = 1 year.'),
     ],

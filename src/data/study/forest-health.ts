@@ -10,7 +10,6 @@ import { mc, multi, order, tf, typed, type RankDrill, type SortDrill, type Study
 const BASICS = 'Pathology & fungi';
 const GRADING = 'AGS, UGS & defects';
 const OTHER = 'Other hardwood defects';
-const CONIFER = 'Conifer defects';
 const MARKING = 'Tree marking';
 const WILDLIFE = 'Cavity & mast trees';
 
@@ -281,153 +280,6 @@ const CARDS: StudyCard[] = [
     ],
   },
 
-  // ---- Conifer defects (Conifer Defect and Cavity ID practice quiz) ----
-  {
-    section: CONIFER, q: 'Which conifer defects are major (always UGS)?',
-    a: [
-      'Fomes root rot, shoestring (Armillaria) root rot, tomentosus root rot, velvet-top fungus and red ring rot.',
-      'White pine blister rust on the main stem; mechanical damage over 1000 cm² (about 32 × 32 cm).',
-    ],
-    test: [
-      multi('Select all the conifer defects that are major / UGS.', ['Fomes root rot', 'White pine weevil', 'Velvet-top fungus', 'Pine engraver beetle', 'Red ring rot', 'Lightning injury', 'Tomentosus root rot'], [0, 2, 4, 6], 'The root rots and decay fungi are major; weevil, engraver and lightning are moderate.'),
-      tf('Red ring rot is major even though it does not kill the tree.', true, 'Rot runs metres above and below each conk: salvage the tree before the wood is lost.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'Which conifer defects are moderate (AGS or UGS)?',
-    a: [
-      'White pine weevil, pine engraver beetle, feeding damage (porcupine, sapsucker), broken or dead top, lightning injury, fire scar, root wounds.',
-      'Blister rust only on lateral branches; mechanical damage under 1000 cm².',
-      'A broken or dead top over more than 50% of the crown is UGS.',
-    ],
-    test: [
-      mc('White pine blister rust only on the lateral branches is…', ['Moderate', 'Major', 'Minor', 'Not a defect'], 0, 'On the main stem it is major; only on side branches it is moderate.'),
-      mc('A mechanical wound larger than 1000 cm² on a conifer is…', ['Major / UGS', 'Moderate', 'Minor / AGS', 'Only a defect on pines'], 0, '1000 cm² ≈ 32 × 32 cm. Smaller wounds are moderate.'),
-      mc('A broken top affecting more than 50% of the crown is…', ['Moderate, UGS', 'Moderate, AGS', 'Major, AGS', 'Minor, AGS'], 0, 'Still moderate, but over half the crown makes it UGS.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you recognise Fomes root rot?',
-    a: [
-      'Conks at the root collar in the litter: grey-brown to dark brown zoned top, lighter margin, biscuit-coloured underside with small pores.',
-      'Trees decline in groups and break at the root collar.',
-      'Spreads through root grafts and fresh stumps / wounds: remove infected trees and neighbours whose crowns touch.',
-    ],
-    test: [
-      typed('Scientific name of Fomes root rot? (genus)', ['Heterobasidion', 'Heterobasidion annosum'], 'Heterobasidion annosum.'),
-      mc('Fomes root rot spreads mainly through…', ['Root grafts and fresh stumps', 'Wind-blown spores onto needles', 'Ribes alternate hosts', 'Bark beetles'], 0, 'Remove infected trees and their touching neighbours.'),
-      tf('A pocket of dead red pine is always Fomes root rot.', false, 'It can also be lightning travelling through root grafts: look for a struck tree.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you recognise shoestring (Armillaria) root rot?',
-    a: [
-      'Fan-shaped white mycelial felt between the bark and the wood.',
-      'Black shoestrings (rhizomorphs) under the bark or in the soil.',
-      'Clusters of honey-coloured mushrooms at the root collar in the fall. Mostly attacks stressed trees.',
-    ],
-    test: [
-      mc('Black shoestring-like strands under the bark are…', ['Rhizomorphs of Armillaria', 'Pine engraver galleries', 'Blister rust cankers', 'Velvet-top mycelium'], 0, 'Rhizomorphs give shoestring root rot its name.'),
-      mc('White fan-shaped felt between the bark and wood points to…', ['Shoestring root rot', 'Red ring rot', 'White pine weevil', 'Lightning'], 0, 'Mycelial fans are the classic Armillaria sign.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you tell tomentosus root rot from velvet-top fungus?',
-    a: [
-      'Tomentosus: yellowish-brown, velvety plush conks; stalked with a thin cap on the ground, shelf-like on the butt. Mostly spruce.',
-      'Velvet-top: reddish-brown, zoned conks with a yellow-brown margin; dirty green underside with large pores that bruises red-brown. Brown cubical rot.',
-    ],
-    test: [
-      mc('Which conk has a dirty green underside that bruises red-brown?', ['Velvet-top fungus', 'Tomentosus root rot', 'Fomes root rot', 'Red ring rot'], 0, 'Phaeolus schweinitzii.'),
-      mc('Tomentosus root rot is most common on…', ['Spruces', 'White pine', 'Red pine', 'Tamarack'], 0, 'Lower branches die and the crown thins.'),
-      mc('Velvet-top causes which rot in the heartwood?', ['Brown cubical rot', 'White pocket rot', 'Red ring rot', 'Stringy white rot'], 0, 'Brown cubical rot.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you recognise red ring rot?',
-    a: [
-      'Hoof- or shell-shaped conks on the underside of dead branch stubs on living trees.',
-      'Dull grey to black furrowed top; light brown to gold velvety underside.',
-      'Mostly mature and overmature pines.',
-    ],
-    test: [
-      mc('Where do red ring rot conks grow?', ['Under dead branch stubs of living trees', 'At the root collar in the litter', 'On the ground over rotten roots', 'Only on stumps'], 0, 'Phellinus pini, on branch stubs.'),
-      typed('Scientific name of red ring rot? (genus)', ['Phellinus', 'Phellinus pini'], 'Phellinus pini.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'What is white pine blister rust?',
-    a: [
-      'Orange-yellow spore blisters through swollen bark, dead brown flags, resin running down the bole.',
-      'Needs Ribes (currants, gooseberries) as an alternate host; it cannot spread pine to pine.',
-    ],
-    test: [
-      mc('Blister rust needs which alternate host?', ['Ribes (currants & gooseberries)', 'Spruce', 'Aspen', 'Juniper'], 0, 'It cannot spread directly from pine to pine.'),
-      tf('White pine blister rust spreads directly from pine to pine.', false, 'It must pass through Ribes.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you recognise white pine weevil, and how do you manage it?',
-    a: [
-      'The leader and top whorl wilt and curl into a “shepherd’s crook”, then turn brown.',
-      'Old attacks show as forked, crooked or multiple stems.',
-      'Worst in open-grown pine: keep crown closure (shelterwood); don’t clearcut white pine.',
-    ],
-    test: [
-      mc('A wilted, curled-over white pine leader (“shepherd’s crook”) is…', ['White pine weevil', 'Blister rust', 'Pine engraver', 'Lightning'], 0, 'Pissodes strobi kills the leader.'),
-      mc('How do you reduce white pine weevil damage?', ['Keep crown closure with a shelterwood', 'Clearcut and plant in the open', 'Remove Ribes', 'Leave fresh slash'], 0, 'The weevil prefers open-grown pine in full sun.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you recognise pine engraver beetle (Ips pini)?',
-    a: [
-      'Small round entrance holes with yellow or reddish boring dust in the bark crevices.',
-      'Engraved galleries under the bark; foliage fades green → yellow → reddish-brown, often killing the top.',
-      'Builds up in fresh slash and lightning-struck trees.',
-    ],
-    test: [
-      mc('Reddish boring dust in the bark crevices of a pine points to…', ['Pine engraver beetle', 'Sapsucker feeding', 'Red ring rot', 'White pine weevil'], 0, 'Ips pini entrance holes.'),
-      tf('Pine engraver populations build up in fresh slash.', true, 'Also in lightning-struck trees.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you tell porcupine from sapsucker feeding damage?',
-    a: [
-      'Porcupine: bark chewed off in patches high in the tree; can girdle and kill the top.',
-      'Yellow-bellied sapsucker: rows or bands of small holes in the bark, often oozing sap. Heavy feeding = 50+ holes in a band.',
-      'Both moderate: AGS or UGS depending on how bad and where.',
-    ],
-    test: [
-      mc('Rows of small holes oozing sap are…', ['Sapsucker feeding', 'Porcupine feeding', 'Pine engraver', 'Woodpecker feeding cavity'], 0, 'Yellow-bellied sapsucker.'),
-      typed('How many holes in a band counts as heavy sapsucker feeding?', ['50', '50+'], '50 or more holes in a band.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'How do you tell lightning injury, fire scar, root wounds and mechanical damage apart?',
-    a: [
-      'Lightning: a strip of bark blown off down the bole, wood singed or shattered. In red pine it travels through root grafts.',
-      'Fire scar: a tall triangular “church door” at the base, charred bark around it.',
-      'Root wounds: exposed roots with bark scraped off, often by logging equipment; an entry for root rots.',
-      'Mechanical damage: a scraped stem wound with a dry, case-hardened surface and little decay.',
-    ],
-    test: [
-      mc('A tall triangular “church door” scar at the base is…', ['Fire scar', 'Lightning injury', 'Mechanical damage', 'Escape cavity'], 0, 'Look for charred bark at the edges.'),
-      mc('A strip of bark blown off down the length of the bole is…', ['Lightning injury', 'Porcupine feeding', 'Mechanical damage', 'Blister rust'], 0, 'Singed or shattered wood underneath.'),
-      mc('Why do root wounds matter?', ['They are an entry for root rots', 'They are always major', 'They create cavities', 'They stop seed production'], 0, 'Moderate defect, but an infection court.'),
-    ],
-  },
-  {
-    section: CONIFER, q: 'Why does a broken or dead top matter, and which break is worse?',
-    a: [
-      'The upper crown is the main cone-bearing zone, so the tree makes less seed.',
-      'A frayed, broom-like break is a bigger infection risk than a clean break.',
-    ],
-    test: [
-      mc('Which top break is the bigger infection risk?', ['Frayed, broom-like break', 'Clean break', 'They are the same', 'Neither can be infected'], 0, 'More torn surface for fungi to enter.'),
-      tf('A dead top reduces seed production.', true, 'The upper crown is the main cone-bearing zone.'),
-    ],
-  },
-
   // ---- Tree marking ----
   {
     section: MARKING, q: 'What is tree marking, and why do we do it?',
@@ -593,18 +445,6 @@ const CARDS: StudyCard[] = [
 
 const SORTS: SortDrill[] = [
   {
-    id: 'conifer-severity', title: 'Conifer defects: major or moderate?', prompt: 'Rate each conifer defect.',
-    bins: ['Major', 'Moderate'],
-    items: [
-      { label: 'Fomes root rot', bin: 'Major' }, { label: 'Shoestring root rot', bin: 'Major' }, { label: 'Tomentosus root rot', bin: 'Major' },
-      { label: 'Velvet-top fungus', bin: 'Major' }, { label: 'Red ring rot', bin: 'Major' }, { label: 'Blister rust on the main stem', bin: 'Major' },
-      { label: 'Stem wound > 1000 cm²', bin: 'Major' }, { label: 'Blister rust on lateral branches only', bin: 'Moderate' },
-      { label: 'White pine weevil', bin: 'Moderate' }, { label: 'Pine engraver beetle', bin: 'Moderate' }, { label: 'Porcupine / sapsucker feeding', bin: 'Moderate' },
-      { label: 'Broken or dead top', bin: 'Moderate' }, { label: 'Lightning injury', bin: 'Moderate' }, { label: 'Fire scar', bin: 'Moderate' },
-      { label: 'Root wounds', bin: 'Moderate' }, { label: 'Stem wound < 1000 cm²', bin: 'Moderate' },
-    ],
-  },
-  {
     id: 'biotic', title: 'Abiotic or biotic?', prompt: 'Living (infectious) or non-living (non-infectious)?',
     bins: ['Abiotic', 'Biotic'],
     items: [
@@ -670,6 +510,6 @@ const RANKS: RankDrill[] = [
 ];
 
 export const FOREST_HEALTH: StudyGuide = {
-  id: 'forest-health', sections: [BASICS, GRADING, OTHER, CONIFER, MARKING, WILDLIFE], allLabel: 'All topics',
+  id: 'forest-health', sections: [BASICS, GRADING, OTHER, MARKING, WILDLIFE], allLabel: 'All topics',
   cards: CARDS, sorts: SORTS, ranks: RANKS,
 };

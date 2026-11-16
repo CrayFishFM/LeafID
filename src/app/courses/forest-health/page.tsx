@@ -14,7 +14,7 @@ export default function ForestHealthPage() {
         <p className="eyebrow"><Link href="/courses">Courses</Link> · Forest Health</p>
         <h1>Midterm review</h1>
         <p className="muted" style={{ margin: 0 }}>
-          Pathology and fungi, AGS / UGS and defect severity, the other hardwood defects, conifer defects, tree marking, and cavity and mast
+          Pathology and fungi, AGS / UGS and defect severity, the other hardwood defects, tree marking, and cavity and mast
           trees. For identifying defects from photos, use the{' '}
           <Link href="/quizzes/defects">hardwood defect quiz</Link> and its <Link href="/quizzes/defects/study">study guide</Link>, or the{' '}
           <Link href="/quizzes/conifer-defects">conifer defect &amp; cavity tree quiz</Link> and its{' '}

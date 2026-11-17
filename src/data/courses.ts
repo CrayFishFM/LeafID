@@ -25,15 +25,17 @@ export const COURSES: Course[] = [
   {
     id: 'dendrology',
     title: 'Dendrology',
-    subject: 'Tree ID by leaf & conifer ID',
-    blurb: 'The Ontario tree ID list: leaf features, look-alikes and an adaptive photo quiz, plus a key for a leaf in hand, and conifer ID by needles and cones.',
-    topics: ['conifers'],
+    subject: 'Tree ID by leaf, twig & conifer ID',
+    blurb: 'The Ontario tree ID list: leaf features, look-alikes and an adaptive photo quiz, plus a key for a leaf in hand, conifer ID by needles and cones, and winter twig ID.',
+    topics: ['conifers', 'twigs'],
     links: [
       { label: 'Practise leaf ID', href: '/quiz' },
       { label: 'Field guide', href: '/learn' },
       { label: 'Leaf key', href: '/learn/key' },
       { label: 'Practise conifer ID', href: '/quizzes/conifers' },
       { label: 'Conifer study guide', href: '/quizzes/conifers/study' },
+      { label: 'Practise twig ID', href: '/quizzes/twigs' },
+      { label: 'Twig study guide', href: '/quizzes/twigs/study' },
     ],
   },
   {

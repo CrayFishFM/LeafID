@@ -84,14 +84,16 @@ export const listTopics = cache(async (): Promise<Topic[]> => {
         tips: parseJson<string[]>(i.tips, []),
         lookalikes: parseJson<string[]>(i.lookalikes, []),
         images: parseJson<string[]>(i.images, []),
-        // Severity / AGS-UGS ratings and male-female pairs are not stored in the database; they come from the seed.
-        ratings: seed?.items.find((si) => si.id === i.id)?.ratings,
-        pair: seed?.items.find((si) => si.id === i.id)?.pair,
+        // Ratings, pairs, in-hand clues and hint pictures are not stored in the database; they come from the seed.
+        ...codeOnly(seed?.items.find((si) => si.id === i.id)),
         updatedAt: i.updated_at, updatedBy: i.updated_by,
       })),
     };
   });
 });
+
+/** The parts of an item that live in code only, not the database. */
+const codeOnly = (i: TopicItem | undefined) => ({ ratings: i?.ratings, pair: i?.pair, inHand: i?.inHand, hintImages: i?.hintImages });
 
 export async function getTopic(id: unknown): Promise<Topic | null> {
   if (typeof id !== 'string') return null;

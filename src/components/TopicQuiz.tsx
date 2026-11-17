@@ -70,7 +70,17 @@ export function TopicQuiz({ topicId, question, scope, items, initial }: {
       placeholder="Start typing a name…"
       photoAlt="Photo to identify"
       photoClassName="photo photo-contain"
-      prompt={(q) => q.focus && <p style={{ margin: 0 }}>Name <strong>{q.focus}</strong> in the photo.</p>}
+      prompt={(q) => (
+        <>
+          {q.focus && <p style={{ margin: 0 }}>Name <strong>{q.focus}</strong> in the photo.</p>}
+          {q.inHand && q.inHand.length > 0 && (
+            <div className="card small">
+              <strong>With the sample in hand:</strong>
+              <ul style={{ margin: '0.3rem 0 0', paddingLeft: '1.1rem' }}>{q.inHand.map((c) => <li key={c}>{c}</li>)}</ul>
+            </div>
+          )}
+        </>
+      )}
       score={graded > 0 && <span>Rated right <strong>{gradedRight}</strong></span>}
       hold={awaitingGrade}
       followUp={q && result?.grade && target && (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, useTransition } from 'react';
+import type { Hint } from '@/lib/answers';
 
 /*
  * The question → answer → next flow every photo quiz shares (leaf ID, topic ID, male & female,
@@ -74,8 +75,8 @@ export function useQuizRound<Q, A, R extends Answered>({ initial, submit, load, 
 }
 
 /** Hints fetched one at a time, up to `max`. */
-export function useHints(max: number, fetch: (level: number) => Promise<string | null>, quiz: { start: (fn: () => Promise<void>) => void; setError: (e: string) => void }) {
-  const [hints, setHints] = useState<string[]>([]);
+export function useHints(max: number, fetch: (level: number) => Promise<Hint | null>, quiz: { start: (fn: () => Promise<void>) => void; setError: (e: string) => void }) {
+  const [hints, setHints] = useState<Hint[]>([]);
   const hint = () => {
     if (hints.length >= max) return;
     const level = hints.length;
@@ -106,7 +107,7 @@ export function usePhotoQuiz<Q extends PhotoQuestion, R extends PhotoResult>({ i
   /** Saves an answer on the server; `hints` is how many the learner used. */
   submit: (q: Q, chosen: string, hints: number) => Promise<Omit<R, 'chosen'>>;
   load: (recent: string[]) => Promise<Q | null>;
-  hint: (q: Q, level: number) => Promise<string | null>;
+  hint: (q: Q, level: number) => Promise<Hint | null>;
   maxHints: number;
   onNext?: (newRound: boolean) => void;
 }) {

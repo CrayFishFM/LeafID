@@ -3,6 +3,7 @@ import type { Rating, Severity, Sex, Stock } from '@/data/topics/types';
 import { buildChoices, isScope, pickAdaptive, scopePool, tallyAttempts, type ItemStat, type Mixup } from './adaptive';
 import { exec, query } from './db';
 import { SEVERITIES, STOCKS } from './grading';
+import type { Hint } from './answers';
 import { pick } from './random';
 
 export { SEVERITIES, STOCKS };
@@ -21,6 +22,8 @@ export interface TopicQuestion {
   imageUrl: string;
   /** For a photo of two birds, which one to name, e.g. "the bird on the left". */
   focus?: string;
+  /** What the real sample would tell you (arrangement, smell, pith…), shown with the question. */
+  inHand?: string[];
   choices: string[];
 }
 
@@ -68,6 +71,7 @@ export async function nextTopicQuestion(userId: string, topic: Topic, scope: str
     imageKey: `${topic.id}:${file}`,
     imageUrl: topicImageUrl(topic, file),
     focus: focusText(topic, file),
+    inHand: target.inHand,
     choices: choicesFor(topic, target, progress),
   };
 }
@@ -82,8 +86,10 @@ export function itemForKey(topic: Topic, imageKey: string): TopicItem | null {
   return topic.items.find((i) => i.images.includes(file)) ?? null;
 }
 
-export function topicHint(topic: Topic, item: TopicItem, level: number): string | null {
-  const hints = [`It's in the ${topic.groups[item.group].toLowerCase()} group.`, `Look for this: ${item.tips[0]}`];
+export function topicHint(topic: Topic, item: TopicItem, level: number): Hint | null {
+  const last = `Look for this: ${item.tips[0]}`;
+  const images = item.hintImages?.map((h) => ({ src: `/quizzes/${topic.id}/hints/${h.file}`, alt: h.alt }));
+  const hints: Hint[] = [`It's in the ${topic.groups[item.group].toLowerCase()} group.`, images?.length ? { text: last, images } : last];
   return hints[level] ?? null;
 }
 

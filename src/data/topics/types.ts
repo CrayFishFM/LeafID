@@ -45,6 +45,13 @@ export interface TopicItem {
    * picks one. Lives in code only (not the database), so it is not admin-editable.
    */
   ratings?: Rating[];
+  /**
+   * What you can tell with the real sample in hand that a photo can't show (arrangement, smell,
+   * taste, feel, pith). Shown with every question, as on a practical test. Lives in code only.
+   */
+  inHand?: string[];
+  /** Extra pictures shown with the last hint, as files in public/quizzes/<topic>/hints/. Lives in code only. */
+  hintImages?: { file: string; alt: string }[];
   /** Set once an admin has edited the item. */
   updatedAt?: number | null;
   updatedBy?: string | null;

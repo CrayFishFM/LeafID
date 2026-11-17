@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { SKIPPED } from '@/lib/answers';
+import { hintText, SKIPPED, type Hint } from '@/lib/answers';
 import { ROUND } from './use-quiz';
 
 /** The heading above the choices: the question, then how the answer went. */
@@ -19,7 +19,7 @@ export const QuestionNo = ({ n }: { n: number }) => <span>Question <strong>{n}</
 
 /** Hints shown so far, a button for the next one (when `max` > 0) and "I don't know". */
 export function HintBar({ hints = [], max = 0, onHint, onSkip, pending }: {
-  hints?: string[];
+  hints?: Hint[];
   max?: number;
   onHint?: () => void;
   onSkip: () => void;
@@ -27,7 +27,17 @@ export function HintBar({ hints = [], max = 0, onHint, onSkip, pending }: {
 }) {
   return (
     <div className="stack" style={{ gap: '0.5rem' }}>
-      {hints.map((h) => <div key={h} className="hint">{h}</div>)}
+      {hints.map((h) => (
+        <div key={hintText(h)} className="hint">
+          {hintText(h)}
+          {typeof h !== 'string' && (
+            <div className="row" style={{ gap: '0.5rem', marginTop: '0.5rem' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- small slide images, shown as is */}
+              {h.images.map((img) => <img key={img.src} src={img.src} alt={img.alt} style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 6 }} />)}
+            </div>
+          )}
+        </div>
+      ))}
       <div className="row" style={{ gap: '0.5rem' }}>
         {onHint && hints.length < max && (
           <button className="btn btn-sm" onClick={onHint} disabled={pending}>

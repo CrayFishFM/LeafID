@@ -15,7 +15,8 @@ export default function WildlifePage() {
         <p className="muted" style={{ margin: 0 }}>
           The CFSA, SSG, AOCs and federal acts, lakes and streams, aquatic AOCs, duck types and water bird SAR, and
           reptiles and amphibians. For identifying species from photos, use the{' '}
-          <Link href="/quizzes/waterbirds">water bird</Link> and <Link href="/quizzes/herps">reptile & amphibian</Link> quizzes.
+          <Link href="/quizzes/waterbirds">water bird</Link>, <Link href="/quizzes/herps">reptile &amp; amphibian</Link> and{' '}
+          <Link href="/quizzes/raptors">forest raptor</Link> quizzes.
         </p>
         <CheckNotice guide={guide} />
       </div>

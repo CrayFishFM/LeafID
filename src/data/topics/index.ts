@@ -3,6 +3,7 @@ import { CONIFERS } from './conifers';
 import { DEFECTS } from './defects';
 import { FISH } from './fish';
 import { HERPS } from './herps';
+import { RAPTORS } from './raptors';
 import { TWIGS } from './twigs';
 import type { Topic, TopicItem } from './types';
 import { WATERBIRDS } from './waterbirds';
@@ -15,7 +16,7 @@ export type { Topic, TopicItem } from './types';
  * here does not overwrite the database. New topics, new items and new photos are picked up.
  * Put a topic's photos in public/quizzes/<id>/.
  */
-export const TOPIC_SEED: Topic[] = [FISH, DEFECTS, WATERBIRDS, HERPS, CONIFERS, CONIFER_DEFECTS, TWIGS];
+export const TOPIC_SEED: Topic[] = [FISH, DEFECTS, WATERBIRDS, HERPS, CONIFERS, CONIFER_DEFECTS, TWIGS, RAPTORS];
 
 export function topicItem(topic: Topic, id: string): TopicItem | undefined {
   return topic.items.find((i) => i.id === id);
